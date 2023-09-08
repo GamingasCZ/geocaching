@@ -29,12 +29,15 @@ Základní informace a odkazy na jednotlivé sekce stránky.
 ### Videa
 Ručně natočená a sestříhaná videa související s Geocachingem.
 * Základní pravidla hry
-* 
+* Navigace stránkou Geocaching.com
+* Druhy kešek
 * Používání mobilních aplikací
 * Hledání kešky
 ### Články
 Obsahy videí v textové podobě s obrázky a odkazy.
 ### Hry
-Jednoduché, nekonečné hry s Geocaching tématikou. Všechna grafika, hudba a skriptování bude ručně děláno. 
+Jednoduché, nekonečné hry s Geocaching tématikou. Všechna grafika, hudba a skriptování bude ručně zpracováno. 
 ### Nejbližší kešky
 Za pomoci API Geocachingu a geolokačních API prohlížeče se v této sekci zobrazí nejbližší kešky v okolí. Bude možné i filtrování dle typů kešky atp.
+### Nástěnka
+Zde si bude moct uživatel uložit kešky, které chce najít, nebo už našel.
