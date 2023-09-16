@@ -1,0 +1,29 @@
+Krabka vs. Svět
+
+tower defense hra, smíchaná s cookie clickerem.
+- uživatel kliká na věcičku (jen při vlně) a tím se mu přičítají peníze.
+- může si koupit klikače, které klikají za něho
+- v první vlně nejsou enemíčka, jen  máš čas na klikání
+- zvrchu jedou enemíčka (jak v PvZ)
+- musíš pokládat turrety, které enemíčka ničí
+
+
+Enemíčka:
+- kolemjdoucí - obyčejný zombík
+- dřevorubec - silnější kolemjdoucí, může hitovat i na stranách
+- pytlák - má pušku a může střílet z dálky
+- osvěcovač - osvítí oblast a tím budou všichni silnější
+- bůh deště - způsobuje mírný damage všem turretám
+
+Upgrady
+- HP upgrade
+- Útok upgrade
+- Účinnost
+- 
+
+Turrety
+- Zákaz vstupu - funguje jak brambory v PvZ
+- Nabíječky, umožňují chvilku klikat i po skončení vlny
+
+Klikače
+- - 
