@@ -6,12 +6,13 @@ tower defense hra, smíchaná s cookie clickerem.
 - v první vlně nejsou enemíčka, jen  máš čas na klikání
 - zvrchu jedou enemíčka (jak v PvZ)
 - musíš pokládat turrety, které enemíčka ničí
-
+- turrety se mohou rozbít a musíč je opravovat
 
 Enemíčka:
 - kolemjdoucí - obyčejný zombík
 - dřevorubec - silnější kolemjdoucí, může hitovat i na stranách
 - pytlák - má pušku a může střílet z dálky
+- žabák - může přeskakovat do jiných lanů
 - osvěcovač - osvítí oblast a tím budou všichni silnější
 - bůh deště - způsobuje mírný damage všem turretám
 
@@ -19,11 +20,17 @@ Upgrady
 - HP upgrade
 - Útok upgrade
 - Účinnost
-- 
+- Počet přidaných bodů
 
-Turrety
+Zábrany
+- Šiškomet - střílí šišky
+- Mrazák - zpomalí enemíčka, účinnost upgrade => zmrazí je
 - Zákaz vstupu - funguje jak brambory v PvZ
-- Nabíječky, umožňují chvilku klikat i po skončení vlny
+- Nabíječky - umožňují chvilku klikat i po skončení vlny
 
-Klikače
-- - 
+Krabička
+- Tužka - 1 bod
+- Razítko - 2 body
+- Hračka - 2 body, občas logboox zežloutne a po kliknutí dá bonusové body
+- Travel bug - Zvýší zisk bodů z enemíčka
+- Další stránky - Zvýší počet max bodů
