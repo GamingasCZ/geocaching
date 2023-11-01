@@ -1,3 +1,29 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'Rubik';
+    src: url("../assety/Rubik-VariableFont_wght.ttf");
+}
+
+:root {
+    --pozadi: #05130E;
+    --tmavsi: #3E85BA;
+    --tmavy: #2B825D;
+    --normal: #3D822B;
+    --svetly: #36D267;
+    --svetlejsi: #57BA3E;
+}
+
+* {
+    @apply font-[Rubik,_sans-serif];
+}
+
+body {
+    @apply bg-geo-50;
+}
+
+nav::after {
+    @apply w-full h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
+}
