@@ -9,11 +9,12 @@
 
 :root {
     --pozadi: #05130E;
-    --tmavsi: #3E85BA;
-    --tmavy: #2B825D;
-    --normal: #3D822B;
+    --tmavsi: #14794F;
+    --tmavy: #172f1d;
+    --normal: #cdd9ca;
     --svetly: #36D267;
     --svetlejsi: #57BA3E;
+    --fialova: #5f1771;
 }
 
 * {
@@ -21,9 +22,32 @@
 }
 
 body {
-    @apply bg-geo-50;
+    @apply mb-20 bg-geo-50;
 }
 
+header {
+    @apply relative px-2 w-max h-8 text-xl bg-geo-400;
+}
+header::after {
+    @apply content-[''] w-full h-full bg-geo-400 absolute top-0;
+    clip-path: polygon(0% -20%, 0% 100%, 60px 100%);
+}
+header::before {
+    @apply content-[''] bg-geo-300 w-full left-0 absolute bottom-0 h-2 -z-10
+}
+
+aside::before {
+    @apply content-[''] w-full absolute h-2 bg-geo-100 top-6 -z-20
+}
+
+
+/* Navbar */
 nav::after {
-    @apply w-full h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
+    @apply top-0 shadow-geo-50 shadow-lg w-full mx-4 h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
+}
+.navButton::after {
+    @apply content-[''] w-full h-full absolute bg-black bg-opacity-0 -skew-x-12 hover:bg-opacity-20;
+}
+.navButton::after[data-vybrano=1] {
+    @apply bg-opacity-40;
 }
