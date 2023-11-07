@@ -1,5 +1,5 @@
 <template>
-    <RouterLink to="domov" class="min-w-full">
+    <RouterLink to="/" class="min-w-full">
         <li class="relative p-1 pl-2 text-white border-b-4 bg-geo-50 border-b-ext-fia noteFooter">
             <h1 class="font-bold font-lg">Název videa</h1>
             <p class="text-xs">Toto je poznámka</p>

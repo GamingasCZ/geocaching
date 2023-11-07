@@ -12,6 +12,7 @@ module.exports = {
           300: 'var(--normal)',
           400: 'var(--svetly)',
           500: 'var(--svetlejsi)',
+          600: 'var(--vyrazny)',
         },
         'ext': {
           fia: 'var(--fialova)'
