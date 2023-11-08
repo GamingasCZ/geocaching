@@ -38,6 +38,9 @@ const input = ref<HTMLInputElement>()
     <li>Položil: {{ cacheData.od }}</li>
     <li>Kód: {{ cacheData.kod }}</li>
  </ul>
+ <section>
+    
+ </section>
 </main>
 
 </template>
