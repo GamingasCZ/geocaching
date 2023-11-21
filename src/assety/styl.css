@@ -25,6 +25,7 @@
 body {
     @apply mb-20 bg-geo-50;
 }
+html { @apply overflow-x-clip }
 
 header {
     @apply relative px-2 w-max h-8 text-xl bg-geo-400;
@@ -41,10 +42,13 @@ aside::before {
     @apply content-[''] w-full absolute h-2 bg-geo-100 top-6 -z-20
 }
 
+main {
+    @apply max-w-7xl;
+}
 
 /* Navbar */
 nav::after {
-    @apply top-0 shadow-geo-50 shadow-lg w-full mx-4 h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
+    @apply top-0 shadow-geo-50 shadow-lg w-[-moz-available] mx-4 h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
 }
 .navButton::after {
     @apply content-[''] w-full left-2 h-full absolute bg-black bg-opacity-0 -skew-x-12 hover:bg-opacity-20;
@@ -53,7 +57,7 @@ nav::after {
     @apply bg-opacity-30;
 }
 
-.skewButton { @apply relative; }
+.skewButton { @apply relative max-w-[90%]; }
 .skewButton::before {
     @apply content-[''] bg-inherit w-[110%] h-full -skew-x-12 absolute -left-2 -z-10 top-0;
 }
