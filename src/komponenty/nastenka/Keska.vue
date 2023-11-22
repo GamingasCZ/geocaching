@@ -10,7 +10,7 @@ defineProps<{
 </script>
 
 <template>
-<section class="bg-white p-1">{{ jmeno }}
+<section class="bg-white p-1 m-1">{{ jmeno }}
 
 </section>
 

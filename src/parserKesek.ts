@@ -1,11 +1,30 @@
 import { XMLParser } from "fast-xml-parser";
+import Barvy from "./assety/barvyKesek"
 
 export interface IntKeska {
     sekce: 0 | 1 | 2;
     jmeno: string;
     zakladatel: string;
     kod: string;
+    druh: number
+    datumVlozeni: number
 }
+
+interface Sekce {
+    jmeno: string;
+    barva: string;
+}
+
+const VYCHOZI_SEKCE = [
+    {
+        jmeno: "Nenalezené",
+        barva: Barvy.tradicni
+    },
+    {
+        jmeno: "Nalezené",
+        barva: Barvy.multi
+    }
+]
 
 export const hasLocalStorage = () => {
     try {
@@ -14,6 +33,15 @@ export const hasLocalStorage = () => {
     }
     catch (e) {
         return false
+    }
+}
+
+export const refreshList = () => {
+    if (hasLocalStorage()) {
+        return [
+            JSON.parse(localStorage.getItem("nastenka")) ?? [],
+            JSON.parse(localStorage.getItem("sekce")) ?? VYCHOZI_SEKCE
+        ]
     }
 }
 

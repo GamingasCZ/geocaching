@@ -1,4 +1,4 @@
-export default const barvy = {
+export default {
     tradicni: "#1ED624",
     multi: "#BE7121",
     mystery: "#442ABB",

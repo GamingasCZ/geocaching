@@ -48,7 +48,7 @@ main {
 
 /* Navbar */
 nav::after {
-    @apply top-0 shadow-geo-50 shadow-lg w-[-moz-available] mx-4 h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
+    @apply top-0 shadow-geo-50 shadow-lg w-[-moz-available] w-[-webkit-fill-available] mx-4 h-full content-[''] absolute -z-10 bg-geo-400 -skew-x-12;
 }
 .navButton::after {
     @apply content-[''] w-full left-2 h-full absolute bg-black bg-opacity-0 -skew-x-12 hover:bg-opacity-20;
