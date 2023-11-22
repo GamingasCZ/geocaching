@@ -55,7 +55,7 @@ export async function handleDrop(gpxData: string) {
     if (parsedCache.gpx.wpt.length > 1) kesData = parsedCache.gpx.wpt[0]
     else kesData = parsedCache.gpx.wpt
     
-    let keska = {
+    let keska: IntKeska = {
         jmeno: kesData['groundspeak:cache']['groundspeak:name'],
         od: kesData['groundspeak:cache']['groundspeak:owner'],
         kod: kesData.name,
