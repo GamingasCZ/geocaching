@@ -1,13 +1,16 @@
 import { XMLParser } from "fast-xml-parser";
-import Barvy from "./assety/barvyKesek"
+import Barvy from "./assety/barvyKesek";
 
 export interface IntKeska {
     sekce: 0 | 1 | 2;
     jmeno: string;
     zakladatel: string;
     kod: string;
-    druh: number
-    datumVlozeni: number
+    druh: number;
+    obtiznost: number;
+    teren: number;
+    barva: string;
+    datumVlozeni: number;
 }
 
 interface Sekce {
@@ -55,10 +58,24 @@ export async function handleDrop(gpxData: string) {
     if (parsedCache.gpx.wpt.length > 1) kesData = parsedCache.gpx.wpt[0]
     else kesData = parsedCache.gpx.wpt
     
+    let typKese: string
+    switch (kesData.type) {
+        case "Geocache|Traditional Cache":
+            typKese = "tradicni"; break;
+        default:
+            typKese = "jina"; break;
+    }
+    
     let keska: IntKeska = {
+        sekce: 0,
         jmeno: kesData['groundspeak:cache']['groundspeak:name'],
-        od: kesData['groundspeak:cache']['groundspeak:owner'],
+        zakladatel: kesData['groundspeak:cache']['groundspeak:owner'],
         kod: kesData.name,
+        druh: typKese,
+        obtiznost: 0, // DODělat
+        teren: 0, // DODělat
+        datumVlozeni: Date.now(),
+        barva: Barvy[typKese]     
     }
     
     let platnaKeska = !Object.values(keska).includes(undefined)

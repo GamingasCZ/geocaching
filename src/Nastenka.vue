@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { hasLocalStorage, handleDrop, refreshList } from './parserKesek'
 import type { IntKeska } from './parserKesek'
+import Barvy from './assety/barvyKesek'
 import Keska from './komponenty/nastenka/Keska.vue'
 
 const pretahuje = ref(false)
@@ -29,11 +30,15 @@ async function dropped(e: Event) {
     pretahuje.value = false
     [vsechnyKesky.value, vsechnySekce.value] = refreshList()
 }
+
+const filtrovaneKesky = (index: number) => {
+    return vsechnyKesky.value.filter(x => x.sekce == index)
+}
 </script>
 
 <template>
 <main>
- <div class="relative p-1 m-4 w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
+ <div class="relative mx-auto p-1 m-4 w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
      <p>Přetáhněte, nebo vyberte .gpx soubor</p>
      <input ref="input" type="file" accept=".gpx" name="" id="" class="absolute top-0 w-full h-full opacity-0" @dragover="pretahuje=true" @dragleave="pretahuje=false" @input="dropped">
  </div>
@@ -50,11 +55,11 @@ async function dropped(e: Event) {
     <li>Kód: {{ cacheData.kod }}</li>
  </ul>
  -->
- <div class="flex justify-between">
-     <div class="w-96 h-[30rem] max-h-[30vw]" v-for="sekce in vsechnySekce">
+ <div class="flex justify-around w-max">
+     <div class="w-96 h-[30rem] max-h-[30vw]" v-for="(sekce, index) in vsechnySekce">
          <h2 :style="{background: sekce.barva}" class="text-white">{{ sekce.jmeno }}</h2>
          <section class="bg-gray-500 w-full h-full">
-            <Keska v-for="(keska) in vsechnyKesky" v-bind="keska" />
+            <Keska v-for="keska in filtrovaneKesky(index)" v-bind="keska" />
          </section> 
      </div>
  </div>
