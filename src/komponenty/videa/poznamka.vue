@@ -1,10 +1,21 @@
+<script setup lang="ts">
+
+defineProps<{
+    nazev: string
+    text: string
+    cas: string
+    url: string
+}>()
+
+</script>
+
 <template>
-    <RouterLink to="/" class="min-w-full">
+    <RouterLink :to="`/videa/${url}`" class="min-w-full">
         <li class="relative p-1 pl-2 text-white border-b-4 bg-geo-50 border-b-ext-fia noteFooter">
-            <h1 class="font-bold font-lg">Název videa</h1>
-            <p class="text-xs">Toto je poznámka</p>
+            <h1 class="font-bold font-lg">{{ nazev }}</h1>
+            <p class="text-xs">{{ text }}</p>
             <footer class="m-0.5">
-                <span class="p-1 text-sm bg-black rounded-md">0:43</span>
+                <span class="p-1 text-sm bg-black rounded-md">{{ cas }}</span>
             </footer>
         </li>
     </RouterLink>

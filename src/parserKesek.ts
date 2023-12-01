@@ -6,14 +6,18 @@ export interface IntKeska {
     jmeno: string;
     zakladatel: string;
     kod: string;
-    druh: number;
+    druh: string;
     obtiznost: number;
     teren: number;
+    pocetWaypointu: number;
+    latitude: number;
+    longtitude: number;
     barva: string;
+    url: string;
     datumVlozeni: number;
 }
 
-interface Sekce {
+export interface Sekce {
     jmeno: string;
     barva: string;
 }
@@ -42,10 +46,11 @@ export const hasLocalStorage = () => {
 export const refreshList = () => {
     if (hasLocalStorage()) {
         return [
-            JSON.parse(localStorage.getItem("nastenka")) ?? [],
-            JSON.parse(localStorage.getItem("sekce")) ?? VYCHOZI_SEKCE
+            JSON.parse(localStorage.getItem("nastenka")!) ?? [],
+            JSON.parse(localStorage.getItem("sekce")!) ?? VYCHOZI_SEKCE
         ]
     }
+    else return [[], []]
 }
 
 export async function handleDrop(gpxData: string) {
@@ -62,6 +67,8 @@ export async function handleDrop(gpxData: string) {
     switch (kesData.type) {
         case "Geocache|Traditional Cache":
             typKese = "tradicni"; break;
+        case "Geocache|Multi-cache":
+            typKese = "multi"; break;
         default:
             typKese = "jina"; break;
     }
@@ -72,10 +79,14 @@ export async function handleDrop(gpxData: string) {
         zakladatel: kesData['groundspeak:cache']['groundspeak:owner'],
         kod: kesData.name,
         druh: typKese,
-        obtiznost: 0, // DODělat
-        teren: 0, // DODělat
+        obtiznost: kesData['groundspeak:cache']['groundspeak:difficulty'], // DODělat
+        teren: kesData['groundspeak:cache']['groundspeak:terrain'], // DODělat
         datumVlozeni: Date.now(),
-        barva: Barvy[typKese]     
+        url: kesData.url,
+        pocetWaypointu: parsedCache.gpx.wpt.length,
+        latitude: 0.1,
+        longtitude: 0.1,
+        barva: Barvy[typKese],
     }
     
     let platnaKeska = !Object.values(keska).includes(undefined)

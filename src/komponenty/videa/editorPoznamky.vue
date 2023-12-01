@@ -1,0 +1,46 @@
+<script setup lang="ts">
+import { hasLocalStorage } from '@/parserKesek';
+
+const props = defineProps<{
+    maxTime: string;
+    time: string;
+    currUrl: string
+}>()
+
+const emit = defineEmits<{
+    (e: "cancel"): void
+    (e: "saved", allNotes: any[]): void
+}>()
+
+const saveNote = (form: Event) => {
+    if (!hasLocalStorage()) return
+    let formData = (form.target as HTMLFormElement)
+    let notes = JSON.parse(localStorage.getItem("poznamky")!) ?? []
+    notes.push([
+        formData.elements[0].value,
+        formData.elements[1].value,
+        formData.elements[2].value,
+        props.currUrl
+    ])
+    localStorage.setItem("poznamky", JSON.stringify(notes))
+    emit("saved", notes)
+}
+
+</script>
+
+<template>
+    <form class="flex flex-col gap-2 p-3 m-3 bg-geo-400" @submit.prevent="saveNote">
+        <input name="name" type="text" required class="p-1 font-extrabold tracking-wide text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" autofocus autocomplete="off" placeholder="Název poznámky">
+        <textarea name="text" required class="p-1 text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" placeholder="Text poznámky"></textarea>
+        <footer class="flex justify-between items-center">
+            <div>
+                <span class="mr-2 font-bold">Čas:</span>
+                <input name="time" required class="font-bold text-white bg-black bg-opacity-40 appearance-none" type="time" min="00:00" max="01:30" :value="time">
+            </div>
+            <div>
+                <button type="button" class="p-1 mr-2 text-xl text-black" @click="emit('cancel')">Zrušit</button>
+                <button type="submit" class="p-1 text-xl font-extrabold text-white bg-black">Uložit</button>
+            </div>
+        </footer>
+    </form>
+</template>

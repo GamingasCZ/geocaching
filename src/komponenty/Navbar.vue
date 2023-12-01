@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import IkonaVidea from "../ikony/videa.svg"
+import IkonaVidea from "../ikony/videa.svg" 
 import IkonaHry from "../ikony/hry.svg"
 import IkonaNastenka from "../ikony/nastenka.svg"
 import Logo from "../ikony/logo.svg"
@@ -17,7 +17,7 @@ const vybranaStranka = ref(-1)
 
 <template>
     <nav
-        class="flex sticky z-40 m-4 mx-auto w-auto max-w-[90rem] h-12 top-0"
+        class="flex sticky z-40 m-4 mx-auto w-auto max-w-[90rem] h-12 top-0 w-full"
     >
         <!-- Logo -->
         <RouterLink class="flex ml-4" to="/" @click="vybranaStranka = -1">
@@ -29,7 +29,7 @@ const vybranaStranka = ref(-1)
         </RouterLink>
 
         <!-- Odkazy -->
-        <section class="flex items-center ml-20">
+        <section class="flex items-center sm:ml-20">
             <RouterLink v-for="(odkaz, index) in tlacitka" :to="odkaz.na" class="h-full">
                 <button
                     class="relative h-full flex gap-2 transition-[gap] items-center text-lg tracking-wide text-black font-bold pl-5 pr-3 min-w-[2rem] navButton"

@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import DomovskaStranka from './Domov.vue'
 import Videa from './Videa.vue'
+import Videoprehravac from './komponenty/Videoprehravac.vue'
 import Hry from './Hry.vue'
 import Nastenka from './Nastenka.vue'
 
@@ -16,6 +17,11 @@ const router = createRouter({
       path: '/videa',
       name: 'videa',
       component: Videa
+    },
+    {
+      path: '/videa/:video',
+      name: 'video',
+      component: Videoprehravac,
     },
     {
       path: '/hry',

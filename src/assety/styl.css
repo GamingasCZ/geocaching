@@ -11,7 +11,7 @@
     --pozadi: #05130E;
     --tmavsi: #14794F;
     --tmavy: #172f1d;
-    --normal: #cdd9ca;
+    --normal: #e3efe2;
     --svetly: #36D267;
     --svetlejsi: #57BA3E;
     --vyrazny: #b2d63b;
@@ -23,9 +23,9 @@
 }
 
 body {
-    @apply mb-20 bg-geo-50;
+    @apply flex flex-col h-screen bg-geo-50;
 }
-html { @apply overflow-x-clip }
+/* html { @apply overflow-x-clip } */
 
 header {
     @apply relative px-2 w-max h-8 text-xl bg-geo-400;
@@ -35,11 +35,11 @@ header::after {
     clip-path: polygon(0% -20%, 0% 100%, 60px 100%);
 }
 header::before {
-    @apply content-[''] bg-geo-300 w-full left-0 absolute bottom-0 h-2 -z-10
+    @apply content-[''] bg-geo-300 w-full left-0 absolute bottom-0 h-2 -z-10;
 }
 
-aside::before {
-    @apply content-[''] w-full absolute h-2 bg-geo-100 top-6 -z-20
+.underlineThick::before {
+    @apply content-[''] w-full absolute h-2 bg-geo-100 top-6 -z-20;
 }
 
 main {
