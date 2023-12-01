@@ -30,13 +30,13 @@ const getVideo = async () => {
         thumbDalsiVideo.value = await import(`@/obrazky/videonahledy/${Videa[videoIndex.value + 1].url}-min.webp`).then(res => res.default)
     thumbTotoVideo.value = await import(`@/obrazky/videonahledy/${Videa[videoIndex.value].url}-max.webp`).then(res => res.default)
 }
-getVideo()
 
 const videoStarted = ref(false)
 const playbackTime = ref(0)
 const parsedDuration = ref("0:00")
 const parsedElapsedTime = ref("0:00")
 onMounted(() => {
+    getVideo()
     video.value?.addEventListener("timeupdate", () => {
         parsedDuration.value = parseTime(video.value?.duration)
         playbackTime.value = video.value?.currentTime / video.value?.duration
@@ -118,7 +118,7 @@ const noteSaved = (allNotes: any[]) => {
 </script>
 
 <template>
-    <main class="mx-auto">
+    <main class="mx-auto w-full">
         <div class="relative max-w-[60rem] px-2 mx-auto">
             <Teleport to="html" :disabled="!isFullscreened">
                 <video
@@ -162,7 +162,7 @@ const noteSaved = (allNotes: any[]) => {
 
             </Teleport>
         </div>
-        <nav class="flex relative justify-between items-center mt-8 h-10">
+        <nav class="flex relative justify-between items-center mt-8 w-full h-10">
             <h2 class="px-6 text-2xl font-bold">{{ Videa[videoIndex].nazev }}</h2>
             <button class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 bg-ext-fia" @click="showNotePanel">
                 <EditIkona class="w-6 h-6 skew-x-12" />
@@ -190,7 +190,7 @@ const noteSaved = (allNotes: any[]) => {
             </RouterLink>
         </section>
 
-        <section class="flex flex-col gap-5 px-2 mt-8 ml-1">
+        <section class="flex flex-col gap-5 px-2 mt-8 ml-1 w-full">
             <Sekce nadpis="Poznámky" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
             <Sekce nadpis="Popis" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
             <Sekce nadpis="Zdroje" v-if="Videa[videoIndex].zdroje" :text="Videa[videoIndex].zdroje" />

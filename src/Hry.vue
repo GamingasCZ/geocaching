@@ -1,15 +1,6 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
 import thumb from '@/obrazky/hrynahledy/menuBG2.webp'
-
-const hry = [
-    {
-        nazev: "Krabka vs. Svět",
-        popis: "Dokážeš svou kešku ubránit před vlnami nemilosrdných mudlů? ",
-        nahled: "",
-        url: "krabka-vs-svet"
-    }
-]
+import hry from './assety/hry';
 
 </script>
 

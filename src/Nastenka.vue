@@ -6,6 +6,7 @@ import Keska from './komponenty/nastenka/Keska.vue'
 
 import EditIkona from "@/ikony/edit.svg"
 import PridatIkona from "@/ikony/plus.svg"
+import VybratIkona from "@/ikony/check.svg"
 import NastaveniIkona from "@/ikony/gear.svg"
 import NapovedaIkona from "@/ikony/napoveda.svg"
 import ImportIkona from "@/ikony/import.svg"
@@ -62,15 +63,15 @@ const filtrovaneKesky = (index: number) => {
             <span class="max-sm:hidden">Přidat kešky</span>
         </button>
         <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold navButton">
-            <PridatIkona class="scale-75" />
+            <VybratIkona class="scale-75" />
             <span class="max-sm:hidden">Vybrat</span>
         </button>
     </div>
     <div class="flex gap-1 mr-6 h-full">
         <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton">
             <ImportIkona class="scale-75" />
-            <span class="max-sm:hidden">Import</span>
         </button>
+        <span class="max-sm:hidden">Import</span>
         <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton">
             <ExportIkona class="scale-75" />
             <span class="max-sm:hidden">Export</span>

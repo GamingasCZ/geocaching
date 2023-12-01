@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import DomovskaStranka from './Domov.vue'
 import Videa from './Videa.vue'
 import Videoprehravac from './komponenty/Videoprehravac.vue'
+import Hroprehravac from './komponenty/Hroprehravac.vue'
 import Hry from './Hry.vue'
 import Nastenka from './Nastenka.vue'
 
@@ -27,6 +28,11 @@ const router = createRouter({
       path: '/hry',
       name: 'hry',
       component: Hry
+    },
+    {
+      path: '/hry/:hra',
+      name: 'hra',
+      component: Hroprehravac
     },
     {
       path: '/nastenka',
