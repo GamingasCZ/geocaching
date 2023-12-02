@@ -48,6 +48,7 @@ const filtrovaneKesky = (index: number) => {
 
 <template>
 <main class="mx-auto w-full">
+    <Notifikace />
  <!-- <div class="relative p-1 m-4 mx-auto w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
      <p>Přetáhněte, nebo vyberte .gpx soubor</p>
     </div> -->
