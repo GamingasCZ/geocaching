@@ -2,7 +2,6 @@
 import hry from '@/assety/hry';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import hra from "@/hry/krabka-vs-svet/index.vue";
 
 
 const hraIndex = computed(() => {
