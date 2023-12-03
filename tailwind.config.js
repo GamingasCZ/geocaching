@@ -16,7 +16,10 @@ module.exports = {
         },
         'ext': {
           fia: 'var(--fialova)'
-        }
+        },
+      },
+      dropShadow: {
+          sharp: "4px 4px 0px var(--tmavy)"
       }
     },
   },

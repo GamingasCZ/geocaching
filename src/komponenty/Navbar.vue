@@ -3,7 +3,6 @@ import IkonaVidea from "../ikony/videa.svg"
 import IkonaHry from "../ikony/hry.svg"
 import IkonaNastenka from "../ikony/nastenka.svg"
 import Logo from "../ikony/logo.svg"
-import Notifikace from "@/komponenty/ostatni/notifikace.vue"
 import { ref } from "vue";
 
 const tlacitka = [

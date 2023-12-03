@@ -3,6 +3,7 @@ import { ref, onMounted} from 'vue';
 import { hasLocalStorage, handleDrop, refreshList } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
+import Notifikace from "@/komponenty/ostatni/notifikace.vue"
 
 import EditIkona from "@/ikony/edit.svg"
 import PridatIkona from "@/ikony/plus.svg"
@@ -71,8 +72,8 @@ const filtrovaneKesky = (index: number) => {
     <div class="flex gap-1 mr-6 h-full">
         <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton">
             <ImportIkona class="scale-75" />
+            <span class="max-sm:hidden">Import</span>
         </button>
-        <span class="max-sm:hidden">Import</span>
         <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton">
             <ExportIkona class="scale-75" />
             <span class="max-sm:hidden">Export</span>
