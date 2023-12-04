@@ -15,7 +15,7 @@ import Pozadi from "./obrazky/pozadi2.svg";
             <div class="absolute top-0 right-0 w-96 h-full bg-gradient-to-r from-transparent to-geo-50"></div>
         </div> -->
 
-        <div class="my-36 ml-auto w-max text-right">
+        <div class="my-36 mr-4 ml-auto w-max text-right">
             <h1 class="text-[min(6rem,15vw)] font-black leading-snug text-transparent bg-clip-text bg-gradient-to-br to-geo-400 from-geo-600">Geocaching</h1>
             <p class="w-full max-w-[min(39rem,90vw)] text-lg font-medium text-right text-white max-sm:text-sm">
                 je celosvětová hra o hledání pokladů, skrytých všude okolo nás!

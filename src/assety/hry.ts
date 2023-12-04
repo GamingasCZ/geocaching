@@ -1,7 +1,7 @@
 export default [
     {
-        nazev: "Keška vs. Svět",
-        url: "keska-vs-svet",
+        nazev: "Krabka vs. Svět",
+        url: "krabka-vs-svet",
         popis: "Dokážeš svou kešku ubránit před vlnami nemilosrdných mudlů?",
         zdroje: "",
     }
