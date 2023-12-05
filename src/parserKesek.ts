@@ -1,5 +1,6 @@
 import { XMLParser } from "fast-xml-parser";
 import Barvy from "./assety/barvyKesek";
+import summonNotif from "./komponenty/ostatni/summonNotif";
 
 export interface IntKeska {
     sekce: 0 | 1 | 2;
@@ -57,7 +58,14 @@ export async function handleDrop(gpxData: string) {
     if (!hasLocalStorage()) return
     
     let parser = new XMLParser()
-    let parsedCache = parser.parse(gpxData)
+    let parsedCache;
+    try {
+        parsedCache = parser.parse(gpxData)
+        if (parsedCache.gpx == undefined) throw new Error("Neni keska");
+    } catch (e) {
+        summonNotif("Některý ze souborů není keška!")
+        return
+    }
     
     let kesData
     if (parsedCache.gpx.wpt.length > 1) kesData = parsedCache.gpx.wpt[0]
@@ -89,7 +97,7 @@ export async function handleDrop(gpxData: string) {
         barva: Barvy[typKese],
     }
     
-    let platnaKeska = !Object.values(keska).includes(undefined)
+    let platnaKeska = Object.values(keska).includes(undefined)
     if (!platnaKeska) return false;
 
     let allCaches = JSON.parse(localStorage.getItem("nastenka")!) ?? []

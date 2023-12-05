@@ -51,14 +51,14 @@
      inkscape:groupmode="layer"
      id="layer1">
     <ellipse
-       style="fill:none;stroke:#000000;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:2.3;stroke-dasharray:none;stroke-opacity:1"
+       style="fill:none;stroke:inherit;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:2.3;stroke-dasharray:none;stroke-opacity:1"
        id="path1"
        cx="15.998617"
        cy="16.003424"
        rx="9.9994555"
        ry="9.9997988" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:3.94923;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:2.3;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
+       style="fill:none;stroke:inherit;stroke-width:3.94923;stroke-linecap:square;stroke-linejoin:round;stroke-miterlimit:2.3;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1"
        id="path1-2"
        inkscape:path-effect="#path-effect1"
        sodipodi:type="arc"

@@ -6,10 +6,10 @@ import Poznamky from './komponenty/videa/sidebar.vue'
 </script>
 
 <template>
-    <main class="flex justify-between mx-auto">
-        <section class="flex flex-wrap gap-4 mx-4 max-w-4xl nahledVidea">
+    <main class="box-border flex justify-between px-3 mx-auto">
+        <section class="flex flex-wrap gap-4 mx-4 mb-8 max-w-4xl overflow-x-clip nahledVidea">
             <Nahled v-for="video in Videa" v-bind="video" />
         </section>
-            <Poznamky class=""/>
+        <Poznamky class="max-sm:hidden"/>
     </main>
 </template>

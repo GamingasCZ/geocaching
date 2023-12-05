@@ -10,11 +10,13 @@ import EditIkona from "@/ikony/edit.svg"
 import { useRouter } from 'vue-router';
 import EditorPoznamky from './videa/editorPoznamky.vue';
 import { hasLocalStorage } from '@/parserKesek';
+import summonNotif from './ostatni/summonNotif';
 
 const video = ref<HTMLVideoElement>()
 
+const router = useRouter()
 const videoIndex = computed(() => {
-    let param = useRouter().currentRoute.value.params.video
+    let param = router.currentRoute.value.params.video
     return Videa.findIndex(x => x.url == param)
 })
 
@@ -45,6 +47,10 @@ onMounted(() => {
     video.value?.addEventListener("ended", () => {
         isPlaying.value = false
     })
+    video.value?.addEventListener("error", () => {
+        summonNotif("Nepodařilo se načíst video!")
+    })
+
     document.addEventListener("fullscreenchange", e => {
         console.log(document.fullscreenElement)
     })
@@ -80,10 +86,14 @@ const playpauseVideo = () => {
 
 const fullscreen = () => {
     isFullscreened.value = !isFullscreened.value
-    if (isFullscreened.value)
+    if (isFullscreened.value) {
         document.documentElement?.requestFullscreen()
-    else
+        document.body.classList.add("clip")
+    }
+    else {
+        document.body.classList.remove("clip")
         document.exitFullscreen()
+    }
 }
 
 const controlsVisible = ref(false)
@@ -115,11 +125,27 @@ const noteSaved = (allNotes: any[]) => {
     notePanelShown.value = false
     NOTES.value = allNotes
 }
+
+const progressbar = ref<HTMLProgressElement>()
+const pbarHovering = ref(false)
+const pbarHelpLeftOffset = ref(0)
+const progressbarTime = ref("0:00")
+const changeHoverTime = (e: MouseEvent) => {
+    pbarHovering.value = true
+    let timeRatio = e.layerX/(e.target as HTMLProgressElement).clientWidth
+    pbarHelpLeftOffset.value = Math.round(timeRatio*100)
+    progressbarTime.value = parseTime(video.value?.duration! * timeRatio)
+}
+const scrubVideo = (click: MouseEvent) => {
+    let skipToTime = Math.round(video.value?.duration! * click.layerX / click.target.clientWidth)
+    video.value.currentTime = skipToTime
+}
+
 </script>
 
 <template>
     <main class="mx-auto w-full">
-        <div class="relative max-w-[60rem] px-2 mx-auto">
+        <div class="relative max-w-[60rem] mx-auto border-geo-400 drop-shadow-sharp">
             <Teleport to="html" :disabled="!isFullscreened">
                 <video
                     ref="video"
@@ -130,7 +156,7 @@ const noteSaved = (allNotes: any[]) => {
                     @dblclick="fullscreen"
                     @contextmenu.prevent=""
                     class="bg-black w-[60rem]"
-                    :class="{'!w-full top-0 left-0 h-full absolute z-40': isFullscreened}"
+                    :class="{'!w-full top-0 left-0 h-full absolute z-40': isFullscreened, 'cursor-none': !controlsVisible}"
                     :src="videoLink"
                     @mousemove="controlsHover"
                 ></video>
@@ -142,36 +168,45 @@ const noteSaved = (allNotes: any[]) => {
 
                 <!-- Ovládání videa -->
                 <div 
-                    class="flex absolute bottom-0 gap-4 justify-between items-center p-1 w-full bg-opacity-40 bg-gradient-to-t from-black to-transparent"
+                    class="flex absolute bottom-0 gap-4 justify-between items-center p-2 pl-1 w-full bg-opacity-40 bg-gradient-to-t from-black to-transparent"
                     :class="{'z-50': isFullscreened}"
-                    v-if="controlsVisible"
-                    v-show="videoStarted"
+                    v-show="controlsVisible"
+                    v-if="videoStarted"
                 >
-                    <button @click="playpauseVideo" class="p-1 w-8 h-8 bg-white">
-                        <Pause v-if="isPlaying" class="w-8 h-8"  />
-                        <Play v-else="isPlaying" class="w-8 h-8"  />
+                    <button @click="playpauseVideo" class="w-8 h-8 bg-geo-400 drop-shadow-sharp">
+                        <Pause v-if="isPlaying" class="scale-75"/>
+                        <Play v-else="isPlaying" class="scale-75"  />
                     </button>
-                    <div class="flex flex-col w-full grow">
-                        <progress :value="playbackTime" class="w-full h-3 transition-transform -skew-x-12 bg-geo-400 hover:scale-y-125"></progress>
-                        <span class="text-xs text-white">{{ parsedElapsedTime }} / {{ parsedDuration }}</span>
+                    <div class="flex relative flex-col w-full grow">
+                        <div v-if="pbarHovering" :style="{left: `${pbarHelpLeftOffset}%`}" class="absolute -top-6 px-2 w-max text-sm text-white bg-black bg-opacity-80 rounded-md -translate-x-1/2 pointer-events-none">{{ progressbarTime }}</div>
+                        <progress
+                            ref="progressbar"
+                            @click="scrubVideo"
+                            :value="playbackTime"
+                            @mousemove="changeHoverTime"
+                            @mouseleave="pbarHovering = false"
+                            class="w-full h-3 transition-transform -skew-x-12 cursor-pointer hover:scale-y-125"
+                        ></progress>
+                        <span class="text-xs text-white pointer-events-none">{{ parsedElapsedTime }} / {{ parsedDuration }}</span>
                     </div>
-                    <button @click="fullscreen" class="p-1 w-8 h-8 bg-white">
-                        <Fullscreen class="w-8 h-8"  />
+                    <button @click="fullscreen" class="w-8 h-8 bg-geo-400 drop-shadow-sharp">
+                        <Fullscreen class="scale-75"  />
                     </button>
                 </div>
 
             </Teleport>
         </div>
-        <nav class="flex relative justify-between items-center mt-8 w-full h-10">
+
+        <nav class="flex relative justify-between items-center mt-8 w-full h-10 max-sm:flex-col">
             <h2 class="px-6 text-2xl font-bold">{{ Videa[videoIndex].nazev }}</h2>
-            <button class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 bg-ext-fia" @click="showNotePanel">
+            <button class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 max-sm:py-2 bg-ext-fia" @click="showNotePanel">
                 <EditIkona class="w-6 h-6 skew-x-12" />
                 <span class="skew-x-12">Zapsat poznámku</span>
             </button>
         </nav>
         <EditorPoznamky @cancel="notePanelShown = false" @saved="noteSaved" v-if="notePanelShown" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
 
-        <section class="flex flex-wrap justify-between pr-6 mt-2 ml-3 w-full">
+        <section class="flex flex-wrap justify-between pr-6 mt-2 ml-3 w-full max-sm:mt-16">
             <RouterLink class="grid grid-cols-[max-content_1fr] p-2 w-full max-w-lg bg-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">
                 <img :src="thumbPredVideo" class="w-44" :alt="Videa[videoIndex - 1].nazev">
                 <div class="flex flex-col p-2">

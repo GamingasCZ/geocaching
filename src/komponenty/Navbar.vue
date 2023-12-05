@@ -7,8 +7,8 @@ import { ref } from "vue";
 
 const tlacitka = [
     {na: '/videa', ikona: IkonaVidea, text: 'Videa'},
-    {na: 'hry', ikona: IkonaHry, text: 'Hry'},
-    {na: 'nastenka', ikona: IkonaNastenka, text: 'Nástěnka'},
+    {na: '/hry', ikona: IkonaHry, text: 'Hry'},
+    {na: '/nastenka', ikona: IkonaNastenka, text: 'Nástěnka'},
 ]
 
 const vybranaStranka = ref(-1)
@@ -17,7 +17,7 @@ const vybranaStranka = ref(-1)
 
 <template>
     <nav
-        class="flex sticky z-40 m-4 mx-auto w-auto max-w-[90rem] h-12 top-0 w-full"
+        class="flex sticky z-40 m-4 mx-auto max-w-[90rem] h-12 top-0 w-full"
     >
         <!-- Logo -->
         <RouterLink class="flex ml-4" to="/" @click="vybranaStranka = -1">

@@ -1,37 +1,87 @@
 <script setup lang="ts">
 import type { IntKeska } from '@/parserKesek';
+import { ref } from 'vue';
+import MapaIkona from "@/ikony/mapa.svg"
+import OdkazIkona from "@/ikony/odkaz.svg"
+import SmazatIkona from "@/ikony/smazat.svg"
 
 
-defineProps<IntKeska>()
+interface Extra {
+    index: number;
+    selectMode: boolean;
+    currentlyDragging: boolean;
+}
+
+const props = defineProps<IntKeska & Extra>()
+
+const emit = defineEmits<{
+    (e: "removeCache", index: number): void;
+    (e: "startedDragging"): void;
+    (e: "endedDragging"): void;
+}>()
+
+const smazatKesku = () => emit('removeCache', props.index)
+const otevritNaGC = () => window.open(props.url)
+
+
 
 const moznosti = [
     {
         jmeno: "Zobrazit na mapě",
-        ikona: "",
+        ikona: MapaIkona,
         akce: ""
     },
     {
         jmeno: "Zobrazit na Geocaching.com",
-        ikona: "",
-        akce: ""
+        ikona: OdkazIkona,
+        akce: otevritNaGC
     },
     {
         jmeno: "Smazat",
-        ikona: "",
-        akce: ""
+        ikona: SmazatIkona,
+        akce: smazatKesku
     },
 ]
+
+const dragging = () => {
+    emit("startedDragging")
+}
+const draggedOverDragger = ref(false)
+const moveCache = (e: DragEvent) => {
+    if (draggedOverDragger.value) {
+        console.log(e)
+    }
+    emit('endedDragging')
+}
 
 </script>
 
 <template>
-<section class="p-1 m-1 bg-white border-l-4" :style="{borderColor: barva}">
-    <h2>{{ jmeno }}</h2>
-    <div class="flex space-between">
-        <button v-for="moznost in moznosti" :title="moznost.ikona">
-            <img class="w-8" :src="moznost.ikona">
-        </button>
+    <div class="flex flex-col">
+        <hr v-if="currentlyDragging" class="mx-4 h-2 border-none" :class="{'bg-blue-100': !draggedOverDragger, 'bg-blue-800': draggedOverDragger}" @dragover="draggedOverDragger = true" @dragleave="draggedOverDragger = false">
+        <section class="p-1 m-1 bg-white border-l-4" :style="{borderColor: barva}" @dragstart="emit('startedDragging')" @dragend="moveCache" draggable="true" :data-index="index">
+            <input type="checkbox" name="" id=""  class="inline relative mr-2 w-5 h-5 border-2 appearance-none border-geo-400 bg-geo-50" v-if="selectMode">
+            <h2 class="inline text-lg font-bold">{{ jmeno }}</h2>
+            <ul class="flex gap-4 pl-4 text-sm opacity-60">
+              <li>{{ druh.slice(0,1).toUpperCase() + druh.slice(1) }}</li>  
+              <li>D{{ obtiznost }}</li>  
+              <li>T{{ teren }}</li>  
+            </ul>
+            <div class="flex justify-around w-full">
+                <button v-for="moznost in moznosti" class="scale-75" :title="moznost.jmeno" @click="moznost.akce">
+                    <component :is="moznost.ikona" :style="{stroke: barva, fill: barva}" />
+                </button>
+            </div>
+        </section>
     </div>
-</section>
 
 </template>
+
+<style>
+li {
+    @apply relative;
+}
+li::before {
+    @apply content-[""] top-1/2 -translate-y-1/2 -left-2 rounded-full w-1 h-1 bg-black absolute
+}
+</style>

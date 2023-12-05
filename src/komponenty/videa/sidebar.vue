@@ -12,7 +12,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <aside class="w-72 max-h-[80svh] sticky top-16 underlineThick">
+    <aside class="min-w-[18rem] max-h-[80svh] sticky top-16 underlineThick">
         <header>Poznámky</header>
         <ul class="box-border flex flex-col gap-2 items-center p-2 w-full h-full bg-geo-200">
             <Poznamka v-for="note in notes" :nazev="note[0]" :text="note[1]" :cas="note[2]" :url="note[3]" />            
