@@ -69,6 +69,12 @@ progress::-moz-progress-bar {
     @apply bg-geo-400;
 }
 
-input[ŧype="checkbox"]:checked::after {
-    @apply absolute content-[''] w-5/6 h-5/6 bg-geo-400 left-0 top-0
+input[ŧype="checkbox"] {
+    @apply inline relative p-1 mr-2 w-5 h-5 appearance-none border-geo-400 bg-geo-50;
 }
+/* input[ŧype="checkbox"]::after {
+    @apply absolute content-[''] w-5/6 h-5/6 bg-geo-400 left-0 top-0;
+}
+input[ŧype="checkbox"]:checked::after {
+    @apply absolute content-[''] w-5/6 h-5/6 bg-geo-400 left-0 top-0;
+} */

@@ -48,8 +48,8 @@ const dragging = () => {
 }
 const draggedOverDragger = ref(false)
 const moveCache = (e: DragEvent) => {
+    console.log(e)
     if (draggedOverDragger.value) {
-        console.log(e)
     }
     emit('endedDragging')
 }
@@ -60,7 +60,7 @@ const moveCache = (e: DragEvent) => {
     <div class="flex flex-col">
         <hr v-if="currentlyDragging" class="mx-4 h-2 border-none" :class="{'bg-blue-100': !draggedOverDragger, 'bg-blue-800': draggedOverDragger}" @dragover="draggedOverDragger = true" @dragleave="draggedOverDragger = false">
         <section class="p-1 m-1 bg-white border-l-4" :style="{borderColor: barva}" @dragstart="emit('startedDragging')" @dragend="moveCache" draggable="true" :data-index="index">
-            <input type="checkbox" name="" id=""  class="inline relative mr-2 w-5 h-5 border-2 appearance-none border-geo-400 bg-geo-50" v-if="selectMode">
+            <input type="checkbox" name="" id=""  class="" v-if="selectMode">
             <h2 class="inline text-lg font-bold">{{ jmeno }}</h2>
             <ul class="flex gap-4 pl-4 text-sm opacity-60">
               <li>{{ druh.slice(0,1).toUpperCase() + druh.slice(1) }}</li>  
