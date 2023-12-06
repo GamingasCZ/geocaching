@@ -13,6 +13,7 @@ export interface IntKeska {
     pocetWaypointu: number;
     latitude: number;
     longtitude: number;
+    napoveda: string;
     barva: string;
     url: string;
     datumVlozeni: number;
@@ -57,7 +58,7 @@ export const refreshList = () => {
 export async function handleDrop(gpxData: string) {
     if (!hasLocalStorage()) return
     
-    let parser = new XMLParser()
+    let parser = new XMLParser({ignoreAttributes: false})
     let parsedCache;
     try {
         parsedCache = parser.parse(gpxData)
@@ -92,10 +93,12 @@ export async function handleDrop(gpxData: string) {
         datumVlozeni: Date.now(),
         url: kesData.url,
         pocetWaypointu: parsedCache.gpx.wpt.length,
-        latitude: 0.1,
-        longtitude: 0.1,
+        napoveda: kesData['groundspeak:cache']['groundspeak:encoded_hints'],
+        latitude: parseFloat(kesData['@_lat']),
+        longtitude: parseFloat(kesData['@_lon']),
         barva: Barvy[typKese],
     }
+    console.log(keska)
     
     let platnaKeska = Object.values(keska).includes(undefined)
     if (!platnaKeska) return false;

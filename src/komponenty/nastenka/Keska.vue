@@ -16,12 +16,14 @@ const props = defineProps<IntKeska & Extra>()
 
 const emit = defineEmits<{
     (e: "removeCache", index: number): void;
+    (e: "showOnMap", index: number): void;
     (e: "startedDragging"): void;
     (e: "endedDragging"): void;
 }>()
 
 const smazatKesku = () => emit('removeCache', props.index)
 const otevritNaGC = () => window.open(props.url)
+const otevritNaMape = () => emit('showOnMap', props.index)
 
 
 
@@ -29,7 +31,7 @@ const moznosti = [
     {
         jmeno: "Zobrazit na mapě",
         ikona: MapaIkona,
-        akce: ""
+        akce: otevritNaMape
     },
     {
         jmeno: "Zobrazit na Geocaching.com",

@@ -4,6 +4,7 @@ import { hasLocalStorage, handleDrop, refreshList } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
 import summonNotif from "@/komponenty/ostatni/summonNotif"
+import Mapa from "./komponenty/nastenka/mapa.vue"
 
 import NavrchIkona from "@/ikony/navrch.svg"
 import MoveIkona from "@/ikony/move.svg"
@@ -69,11 +70,26 @@ const removeCache = (index: number) => {
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
 }
 
+const zobrazenaNaMapeKeska = ref({
+    jmeno: "",
+    napoveda: "",
+    pozice: {latitude: 0, longtitude: 0}
+})
+
+const mapaOtevrena = ref(false)
+const otevritMapu = (index: number) => {
+    zobrazenaNaMapeKeska.value.jmeno = vsechnyKesky.value[index].jmeno
+    zobrazenaNaMapeKeska.value.napoveda = vsechnyKesky.value[index].napoveda
+    zobrazenaNaMapeKeska.value.pozice = {latitude: vsechnyKesky.value[index].latitude, longtitude: vsechnyKesky.value[index].longtitude}
+    mapaOtevrena.value = !mapaOtevrena.value
+}
+
 const selectMode = ref(false)
 const currentlyDragging = ref(false)
 </script>
 
 <template>
+<Mapa v-bind="zobrazenaNaMapeKeska" :open="mapaOtevrena" />
 <Napoveda :open="helpOpen" />
 <main class="mx-auto w-full" @dragover="pretahuje=true" @dragleave="pretahuje=false">
  <!-- <div class="relative p-1 m-4 mx-auto w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
@@ -141,6 +157,7 @@ const currentlyDragging = ref(false)
                 @started-dragging="currentlyDragging = true"
                 @ended-dragging="currentlyDragging = false"
                 @remove-cache="removeCache"
+                @show-on-map="otevritMapu"
             />
         </section>
     </div>
