@@ -84,8 +84,8 @@ export async function handleDrop(gpxData: string) {
     
     let keska: IntKeska = {
         sekce: 0,
+        zakladatel: kesData['groundspeak:cache']['groundspeak:owner']['#text'],
         jmeno: kesData['groundspeak:cache']['groundspeak:name'],
-        zakladatel: kesData['groundspeak:cache']['groundspeak:owner'],
         kod: kesData.name,
         druh: typKese,
         obtiznost: kesData['groundspeak:cache']['groundspeak:difficulty'], // DODělat
@@ -100,8 +100,8 @@ export async function handleDrop(gpxData: string) {
     }
     console.log(keska)
     
-    let platnaKeska = Object.values(keska).includes(undefined)
-    if (!platnaKeska) return false;
+    // let platnaKeska = Object.values(keska).includes(undefined)
+    // if (!platnaKeska) return false;
 
     let allCaches = JSON.parse(localStorage.getItem("nastenka")!) ?? []
     allCaches.push(keska)

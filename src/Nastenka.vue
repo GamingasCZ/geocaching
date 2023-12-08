@@ -73,7 +73,8 @@ const removeCache = (index: number) => {
 const zobrazenaNaMapeKeska = ref({
     jmeno: "",
     napoveda: "",
-    pozice: {latitude: 0, longtitude: 0}
+    pozice: {latitude: 0, longtitude: 0},
+    geokod: ""
 })
 
 const mapaOtevrena = ref(false)
@@ -81,11 +82,23 @@ const otevritMapu = (index: number) => {
     zobrazenaNaMapeKeska.value.jmeno = vsechnyKesky.value[index].jmeno
     zobrazenaNaMapeKeska.value.napoveda = vsechnyKesky.value[index].napoveda
     zobrazenaNaMapeKeska.value.pozice = {latitude: vsechnyKesky.value[index].latitude, longtitude: vsechnyKesky.value[index].longtitude}
+    zobrazenaNaMapeKeska.value.geokod = vsechnyKesky.value[index].kod
     mapaOtevrena.value = !mapaOtevrena.value
 }
 
 const selectMode = ref(false)
-const currentlyDragging = ref(false)
+const cardBeingDraggedIndex = ref(-1)
+const hoveredOverCardIndex = ref(-1)
+const hoveringOverCardTop = ref(false)
+const moveCard = () => {
+    if (cardBeingDraggedIndex.value == hoveredOverCardIndex.value) return
+    let presouvanaKeska = vsechnyKesky.value[cardBeingDraggedIndex.value]
+    vsechnyKesky.value.splice(cardBeingDraggedIndex.value, 1)
+    vsechnyKesky.value.splice(hoveredOverCardIndex.value, 0, presouvanaKeska)
+    localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
+    cardBeingDraggedIndex.value = -1
+}
+
 </script>
 
 <template>
@@ -153,9 +166,10 @@ const currentlyDragging = ref(false)
                 v-bind="keska"
                 :index="ind"
                 :select-mode="selectMode"
-                :currently-dragging="currentlyDragging"
-                @started-dragging="currentlyDragging = true"
-                @ended-dragging="currentlyDragging = false"
+                :disable-child-dragover="cardBeingDraggedIndex > -1"
+                @started-dragging="cardBeingDraggedIndex = $event"
+                @dragged-over-card="hoveredOverCardIndex = $event.ind; hoveringOverCardTop = $event.draggingOverTop"
+                @ended-dragging="moveCard"
                 @remove-cache="removeCache"
                 @show-on-map="otevritMapu"
             />

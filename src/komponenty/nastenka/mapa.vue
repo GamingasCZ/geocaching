@@ -11,39 +11,58 @@ import MapaIkona from "@/ikony/mapa.svg"
 import ZavritIkona from "@/ikony/zavrit.svg"
 import OdkazIkona from "@/ikony/odkaz.svg"
 import KompasIkona from "@/ikony/kompas.svg"
-import { fromLonLat } from "ol/proj";
+import { fromLonLat, transform } from "ol/proj";
 import Vzdalenost from "node-geo-distance";
+import VectorLayer from 'ol/layer/Vector';
+import VectorSource from 'ol/source/Vector';
+import { Feature } from 'ol';
+import { Point } from 'ol/geom';
 
 const props = defineProps<{
     jmeno: string;
     napoveda: string;
     pozice: {latitude: number, longtitude: number}
     open: boolean;
+    geokod: string;
 }>()
 
 const map = ref()
 
+let bod = new Point(fromLonLat([16.6034506, 49.2162547]))
+let m;
 onMounted(() => {
-    let m = new Map({
+    m = new Map({
       target: map.value,
       layers: [
         new TileLayer({
           source: new OSM(),
         }),
+        new VectorLayer({
+            source: new VectorSource({
+                features: [new Feature(bod)]
+            }),
+            style: {
+                "circle-radius": 9,
+                "circle-fill-color": getComputedStyle(document.documentElement).getPropertyValue('--svetly')
+            }
+        })
       ],
-      view: new View({
-        center: fromLonLat([49.2162547, 16.6034506]),
-        zoom: 2,
-        enableRotation: false
-      }),
     });
 })
 
+function myZoom() {
+    let myView = new View({
+        center: transform(fromLonLat([props.pozice.longtitude, props.pozice.latitude]), m.getView().getProjection(), m.getView().getProjection()), zoom: 16 });
+    m.setView(myView);
+}
 
 
 const dialog = ref<HTMLDialogElement>()
 watch(props, () => {
     dialog.value?.showModal()
+    if (props.pozice.latitude == 0) {
+        myZoom()
+    }
     ziskatPozici()
 })
 
@@ -63,22 +82,27 @@ function ziskatPozici() {
             let nyniPoloha = {latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude}
             let polohaKesky = {latitude: props.pozice.latitude, longitude: props.pozice.longtitude}
             let vzdalenost = parseFloat(Vzdalenost.vincentySync(nyniPoloha, polohaKesky))
+            // let a = Math.log( Math.tan( polohaKesky.latitude / 2 + Math.PI / 4 ) / Math.tan( nyniPoloha.latitude / 2 + Math.PI / 4) )
+            // let b = Math.abs( nyniPoloha.longitude - nyniPoloha.longitude )
+            // let az = Math.atan2(a, b)
+            let az = Math.atan((nyniPoloha.longitude-polohaKesky.longitude) / (nyniPoloha.latitude-polohaKesky.latitude));
+            let a = az+Math.PI/2
+            if (a < 0) a += 2*Math.PI
+            let b = az*180.0/Math.PI
+            if (b < 0) b += 360
 
-            let a = Math.log( Math.tan( polohaKesky.latitude / 2 + Math.PI / 4 ) / Math.tan( nyniPoloha.latitude / 2 + Math.PI / 4) )
-            let b = Math.abs( nyniPoloha.longitude - nyniPoloha.longitude )
-            let az = Math.atan2(a, b)
-            azimutRadian.value = az+Math.PI/2
-            azimut.value = az*180.0/Math.PI
+            azimutRadian.value = (a).toFixed(0);
+            azimut.value = (b).toFixed(0);
 
             switch (true) {
                 case vzdalenost >= 1000:
                     vzdalMetry.value = `${(vzdalenost/1000).toFixed(1)}km`; break;
                 case vzdalenost >= 100:
-                    vzdalMetry.value = `${vzdalenost.toFixed(0)}km`; break;
+                    vzdalMetry.value = `${vzdalenost.toFixed(0)}m`; break;
                 case vzdalenost >= 10:
-                    vzdalMetry.value = `${vzdalenost.toFixed(1)}km`; break;
+                    vzdalMetry.value = `${vzdalenost.toFixed(1)}m`; break;
                 case vzdalenost < 10:
-                    vzdalMetry.value = `${vzdalenost.toFixed(2)}km`; break;
+                    vzdalMetry.value = `${vzdalenost.toFixed(2)}m`; break;
                 default:
                     break;
             }
@@ -101,7 +125,7 @@ function ziskatPozici() {
     
             <!-- Ovládání -->
             <div class="flex flex-col items-center">
-                <KompasIkona class="my-4 scale-75" :style="{transform: `rotate(${azimutRadian}rad)`}" />
+                <KompasIkona class="my-4 scale-75" :style="{transform: `rotate(${azimut}deg)`}" />
                 <h2 class="text-xl font-bold">{{ jmeno }}</h2>
                 <h3 class="text-xl font-bold">{{ vzdalMetry+azimut }}°</h3>
                 <div class="flex flex-col gap-3">
@@ -111,8 +135,12 @@ function ziskatPozici() {
                     </div>
                     <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><MapaIkona stroke="black" class="scale-75" />Body trasy<ViceIkona class="ml-auto scale-50" /></button>
                     <div class="py-3"></div>
-                    <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Geocaching.com</button>
-                    <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Mapách.cz</button>
+                    <a :href="`https://www.geocaching.com/geocache/${geokod}`" target="_blank">
+                        <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Geocaching.com</button>
+                    </a>
+                    <a :href="`https://mapy.cz/zakladni?source=coor&id=${pozice.longtitude}%2C${pozice.latitude}&x=${pozice.longtitude}&y=${pozice.latitude}&z=16`" target="_blank">
+                        <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Mapách.cz</button>
+                    </a>
                     <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Google Mapách</button>
                     <div class="py-3"></div>
                     <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30" @click="close"><ZavritIkona stroke="black" class="scale-75" />Zavřít</button>
