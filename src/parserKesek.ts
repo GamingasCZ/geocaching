@@ -78,6 +78,14 @@ export async function handleDrop(gpxData: string) {
             typKese = "tradicni"; break;
         case "Geocache|Multi-cache":
             typKese = "multi"; break;
+        case "Geocache|Unknown Cache":
+            typKese = "mystery"; break;
+        case "Geocache|Earthcache":
+            typKese = "earth"; break;
+        case "Geocache|Virtual Cache":
+            typKese = "virtual"; break;
+        case "Geocache|Event Cache":
+            typKese = "event"; break;
         default:
             typKese = "jina"; break;
     }
