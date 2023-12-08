@@ -5,7 +5,10 @@ import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
 import summonNotif from "@/komponenty/ostatni/summonNotif"
 import Mapa from "./komponenty/nastenka/mapa.vue"
+import Nastaveni from './komponenty/nastenka/nastaveni.vue';
 
+import RazeniIkona from "@/ikony/razeni.svg"
+import HledatIkona from "@/ikony/hledat.svg"
 import NavrchIkona from "@/ikony/navrch.svg"
 import MoveIkona from "@/ikony/move.svg"
 import SmazatIkona from "@/ikony/smazat.svg"
@@ -99,11 +102,13 @@ const moveCard = () => {
     cardBeingDraggedIndex.value = -1
 }
 
+const settingsOpen = ref(false)
 </script>
 
 <template>
 <Mapa v-bind="zobrazenaNaMapeKeska" :open="mapaOtevrena" />
 <Napoveda :open="helpOpen" />
+
 <main class="mx-auto w-full" @dragover="pretahuje=true" @dragleave="pretahuje=false">
  <!-- <div class="relative p-1 m-4 mx-auto w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
      <p>Přetáhněte, nebo vyberte .gpx soubor</p>
@@ -113,7 +118,9 @@ const moveCard = () => {
  <input ref="input" type="file" accept=".gpx" name="" id="" multiple class="hidden absolute inset-0 z-50 w-screen h-screen opacity-0" @input="dropped">
 
  <nav class="flex relative justify-between h-10" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
-     <div class="flex gap-1 mr-6 h-full">
+    <Nastaveni :open="settingsOpen" />
+
+    <div class="flex gap-1 mr-6 h-full">
         <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold navButton" v-if="!selectMode">
             <PridatIkona class="scale-75" />
             <span class="max-sm:hidden">Přidat kešky</span>
@@ -133,7 +140,7 @@ const moveCard = () => {
             <ExportIkona class="scale-75" />
             <span class="max-sm:hidden">Export</span>
         </button>
-        <button class="flex relative items-center pl-4 font-bold navButton"><NastaveniIkona class="scale-75 stroke-black" /></button>
+        <button class="flex relative items-center pl-4 font-bold navButton" @click="settingsOpen = !settingsOpen"><NastaveniIkona class="scale-75 stroke-black" /></button>
         <button class="flex relative items-center pl-4 font-bold navButton" @click="helpOpen = !helpOpen"><NapovedaIkona class="scale-75" /></button>
     </div>
     <div class="flex gap-1 mr-6 h-full" v-else>
@@ -161,6 +168,16 @@ const moveCard = () => {
            <EditIkona v-if="editaceJmena" class="w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
         <section class="flex overflow-y-auto flex-col w-full h-full bg-geo-300">
+            <div class="flex sticky top-0 bottom-1 z-10 justify-around" :style="{background: sekce.barva}">
+                <div class="flex gap-1 items-center font-bold" >
+                    <RazeniIkona class="scale-75" />
+                    <span>Řazení</span>
+                </div>
+                <div class="flex gap-1 items-center font-bold" >
+                    <HledatIkona class="scale-75" />
+                    <span>Hledat</span>
+                </div>
+            </div>
             <Keska
                 v-for="(keska, ind) in filtrovaneKesky(index)"
                 v-bind="keska"
