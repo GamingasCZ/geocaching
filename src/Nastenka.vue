@@ -81,21 +81,25 @@ const zobrazenaNaMapeKeska = ref({
 })
 
 const mapaOtevrena = ref(false)
-const otevritMapu = (index: number) => {
-    zobrazenaNaMapeKeska.value.jmeno = vsechnyKesky.value[index].jmeno
-    zobrazenaNaMapeKeska.value.napoveda = vsechnyKesky.value[index].napoveda
-    zobrazenaNaMapeKeska.value.pozice = {latitude: vsechnyKesky.value[index].latitude, longtitude: vsechnyKesky.value[index].longtitude}
-    zobrazenaNaMapeKeska.value.geokod = vsechnyKesky.value[index].kod
+const otevritMapu = (index: number, sekce: number) => {
+    let filtr = filtrovaneKesky(sekce)
+    let keska = vsechnyKesky.value[filtr]
+    zobrazenaNaMapeKeska.value.jmeno = keska.jmeno
+    zobrazenaNaMapeKeska.value.napoveda = keska.napoveda
+    zobrazenaNaMapeKeska.value.pozice = {latitude: keska.latitude, longtitude: keska.longtitude}
+    zobrazenaNaMapeKeska.value.geokod = keska.kod
     mapaOtevrena.value = !mapaOtevrena.value
 }
 
 const selectMode = ref(false)
 const cardBeingDraggedIndex = ref(-1)
 const hoveredOverCardIndex = ref(-1)
+const draggingOverSection = ref(0)
 const hoveringOverCardTop = ref(false)
 const moveCard = () => {
     if (cardBeingDraggedIndex.value == hoveredOverCardIndex.value) return
     let presouvanaKeska = vsechnyKesky.value[cardBeingDraggedIndex.value]
+    presouvanaKeska.sekce = draggingOverSection.value
     vsechnyKesky.value.splice(cardBeingDraggedIndex.value, 1)
     vsechnyKesky.value.splice(hoveredOverCardIndex.value, 0, presouvanaKeska)
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
@@ -160,7 +164,7 @@ const settingsOpen = ref(false)
  </nav>
 
  <div class="flex gap-5 justify-center mt-3" v-if="hasLS">
-     <div class="w-96 h-[60rem] max-h-[70vh]" v-for="(sekce, index) in vsechnySekce">
+     <div class="w-96 h-[60rem] max-h-[70vh]" v-for="(sekce, index) in vsechnySekce" @dragover="draggingOverSection = index">
         <div :style="{background: sekce.barva}" @click="editaceJmena = index" class="flex justify-between items-center pr-2 text-xl font-extrabold text-white cursor-pointer group">
            <input v-if="editaceJmena == index" type="text" autocomplete="off" autofocus class="p-1.5 bg-black bg-opacity-30 outline-none" v-model="sekce.jmeno">
            <h2 class="p-1.5" v-else>{{ sekce.jmeno }}</h2>
@@ -188,7 +192,7 @@ const settingsOpen = ref(false)
                 @dragged-over-card="hoveredOverCardIndex = $event.ind; hoveringOverCardTop = $event.draggingOverTop"
                 @ended-dragging="moveCard"
                 @remove-cache="removeCache"
-                @show-on-map="otevritMapu"
+                @show-on-map="otevritMapu($event, index)"
             />
         </section>
     </div>
