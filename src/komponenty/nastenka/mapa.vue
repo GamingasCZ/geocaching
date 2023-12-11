@@ -28,6 +28,13 @@ const props = defineProps<{
 
 const map = ref()
 
+function myZoom() {
+    let myView = new View({
+        center: transform(fromLonLat([props.pozice.longtitude, props.pozice.latitude]), m.getView().getProjection(), m.getView().getProjection()), zoom: 16 });
+    m.setView(myView);
+}
+
+
 let bod = new Point(fromLonLat([16.6034506, 49.2162547]))
 let m;
 onMounted(() => {
@@ -48,21 +55,15 @@ onMounted(() => {
         })
       ],
     });
+    myZoom()
 })
-
-function myZoom() {
-    let myView = new View({
-        center: transform(fromLonLat([props.pozice.longtitude, props.pozice.latitude]), m.getView().getProjection(), m.getView().getProjection()), zoom: 16 });
-    m.setView(myView);
-}
-
 
 const dialog = ref<HTMLDialogElement>()
 watch(props, () => {
     dialog.value?.showModal()
-    if (props.pozice.latitude == 0) {
-        myZoom()
-    }
+    // if (props.pozice.latitude == 0) {
+    //     myZoom()
+    // }
     ziskatPozici()
 })
 

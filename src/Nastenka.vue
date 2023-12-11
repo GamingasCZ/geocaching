@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted} from 'vue';
+import { ref, onMounted, nextTick} from 'vue';
 import { hasLocalStorage, handleDrop, refreshList } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
@@ -7,6 +7,8 @@ import summonNotif from "@/komponenty/ostatni/summonNotif"
 import Mapa from "./komponenty/nastenka/mapa.vue"
 import Nastaveni from './komponenty/nastenka/nastaveni.vue';
 
+import PotvrditIkona from "@/ikony/potvrdit.svg"
+import NicIkona from "@/ikony/nic.svg"
 import RazeniIkona from "@/ikony/razeni.svg"
 import HledatIkona from "@/ikony/hledat.svg"
 import NavrchIkona from "@/ikony/navrch.svg"
@@ -20,10 +22,11 @@ import NapovedaIkona from "@/ikony/napoveda.svg"
 import ImportIkona from "@/ikony/import.svg"
 import ExportIkona from "@/ikony/export.svg"
 import Napoveda from './komponenty/nastenka/napoveda.vue';
+import barvyKesek from './assety/barvyKesek';
 
 const pretahuje = ref(false)
 
-const vsechnyKesky = ref<IntKeska[]>([])
+const vsechnyKesky = ref<Array<IntKeska[]>>([[], []])
 const vsechnySekce = ref<Sekce[]>([])
 
 const editaceJmena = ref(-1)
@@ -38,19 +41,15 @@ onMounted(() => {
 
 async function dropped(e: Event) {
     
-    let text = await input.value?.files?.[0].text()
+    let text = input.value?.files
     if (text == undefined) return
     
-    let parsed = await handleDrop(text)
-    console.log(parsed)
+    let parsed = await handleDrop(text, draggingOverSection.value)
     
     pretahuje.value = false;
     [vsechnyKesky.value, vsechnySekce.value] = refreshList()
 }
 
-const filtrovaneKesky = (index: number) => {
-    return vsechnyKesky.value.filter(x => x.sekce == index)
-}
 const helpOpen = ref(false)
 
 const exportData = () => {
@@ -68,8 +67,8 @@ const exportData = () => {
     summonNotif('Export byl stažen!')
 }
 
-const removeCache = (index: number) => {
-    vsechnyKesky.value.splice(index, 1)
+const removeCache = (index: number, sekce: number) => {
+    vsechnyKesky.value[sekce].splice(index, 1)
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
 }
 
@@ -82,8 +81,7 @@ const zobrazenaNaMapeKeska = ref({
 
 const mapaOtevrena = ref(false)
 const otevritMapu = (index: number, sekce: number) => {
-    let filtr = filtrovaneKesky(sekce)
-    let keska = vsechnyKesky.value[filtr]
+    let keska = vsechnyKesky.value[sekce][index]
     zobrazenaNaMapeKeska.value.jmeno = keska.jmeno
     zobrazenaNaMapeKeska.value.napoveda = keska.napoveda
     zobrazenaNaMapeKeska.value.pozice = {latitude: keska.latitude, longtitude: keska.longtitude}
@@ -91,19 +89,41 @@ const otevritMapu = (index: number, sekce: number) => {
     mapaOtevrena.value = !mapaOtevrena.value
 }
 
+const compactMode = ref(true)
 const selectMode = ref(false)
 const cardBeingDraggedIndex = ref(-1)
+const cardBeingDraggedSection = ref(0)
 const hoveredOverCardIndex = ref(-1)
 const draggingOverSection = ref(0)
 const hoveringOverCardTop = ref(false)
 const moveCard = () => {
-    if (cardBeingDraggedIndex.value == hoveredOverCardIndex.value) return
-    let presouvanaKeska = vsechnyKesky.value[cardBeingDraggedIndex.value]
-    presouvanaKeska.sekce = draggingOverSection.value
-    vsechnyKesky.value.splice(cardBeingDraggedIndex.value, 1)
-    vsechnyKesky.value.splice(hoveredOverCardIndex.value, 0, presouvanaKeska)
+    if (cardBeingDraggedIndex.value == hoveredOverCardIndex.value && cardBeingDraggedSection.value == draggingOverSection.value) return
+    let presouvanaKeska = vsechnyKesky.value[cardBeingDraggedSection.value][cardBeingDraggedIndex.value]
+    vsechnyKesky.value[cardBeingDraggedSection.value].splice(cardBeingDraggedIndex.value, 1)
+
+    vsechnyKesky.value[draggingOverSection.value].splice(hoveredOverCardIndex.value == -1 ? vsechnyKesky.value[draggingOverSection.value].length : hoveredOverCardIndex.value, 0, presouvanaKeska)
+    
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
     cardBeingDraggedIndex.value = -1
+}
+
+const leaveArea = () => {
+    setTimeout(() => (hoveredOverCardIndex.value = -1), 5) // AAAAAAAA!!!!!
+}
+
+const filtrZobrazen = ref(-1)
+const filtrAktivni = ref(-1)
+const hledatKesky = (e: SubmitEvent, sekce: index) => {
+    [vsechnyKesky.value] = refreshList()
+    let searchText = (e.target as HTMLFormElement).elements[0].value.toLowerCase()
+    filtrAktivni.value = sekce
+    let filtrovaneKesky = vsechnyKesky.value[sekce].filter(keska => keska.jmeno.toLowerCase().includes(searchText))
+    vsechnyKesky.value[sekce] = filtrovaneKesky
+}
+
+const zmenitSekci = () => {
+    editaceJmena.value = -1
+    localStorage.setItem("sekce", JSON.stringify(vsechnySekce.value)!)
 }
 
 const settingsOpen = ref(false)
@@ -164,35 +184,69 @@ const settingsOpen = ref(false)
  </nav>
 
  <div class="flex gap-5 justify-center mt-3" v-if="hasLS">
-     <div class="w-96 h-[60rem] max-h-[70vh]" v-for="(sekce, index) in vsechnySekce" @dragover="draggingOverSection = index">
-        <div :style="{background: sekce.barva}" @click="editaceJmena = index" class="flex justify-between items-center pr-2 text-xl font-extrabold text-white cursor-pointer group">
-           <input v-if="editaceJmena == index" type="text" autocomplete="off" autofocus class="p-1.5 bg-black bg-opacity-30 outline-none" v-model="sekce.jmeno">
-           <h2 class="p-1.5" v-else>{{ sekce.jmeno }}</h2>
-           
-           <EditIkona v-if="editaceJmena" class="w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
+     <div class="w-96 h-[60rem] max-h-[70vh]" v-for="(sekce, indexSekce) in vsechnySekce" @dragover="draggingOverSection = indexSekce">
+
+        <!-- Jméno sekce -->
+        <div :style="{background: sekce.barva}" @click="editaceJmena = indexSekce" class="flex justify-between items-center text-xl font-extrabold text-white cursor-pointer group">
+           <div class="w-full">
+                <form @submit.prevent="zmenitSekci" class="w-full grid grid-cols-[1fr_max-content]" v-if="editaceJmena == indexSekce">
+                    <input type="text" maxlength="15" autocomplete="off" autofocus class="p-1.5 bg-black bg-opacity-30 outline-none" v-model="sekce.jmeno">
+                    <button type="submit" class="w-10 h-full bg-black bg-opacity-40">
+                        <PotvrditIkona class="mx-auto scale-75" stroke="white" />
+                    </button>
+                </form>
+                <h2 class="p-1.5 text-black" v-else>{{ sekce.jmeno }}</h2>
+           </div>
+
+           <EditIkona v-if="editaceJmena" class="mr-2 w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
-        <section class="flex overflow-y-auto flex-col w-full h-full bg-geo-300">
-            <div class="flex sticky top-0 bottom-1 z-10 justify-around" :style="{background: sekce.barva}">
-                <div class="flex gap-1 items-center font-bold" >
+        
+        <section class="flex overflow-y-auto relative flex-col w-full h-full bg-geo-300" :style="{accentColor: sekce.barva, scrollbarColor: `${sekce.barva} var(--normal)`}">
+            <!-- Hledani -->
+            <form class="w-full grid grid-cols-[1fr_max-content] box-border" :style="{background: sekce.barva}" @submit.prevent="hledatKesky($event, indexSekce)" v-if="filtrZobrazen == indexSekce">
+                <input type="text" placeholder="Hledat..." autocomplete="off" autofocus autocorrect="off" class="px-0.5 m-1 text-sm text-white bg-black bg-opacity-30 placeholder:text-white">
+                <button type="submit" class="scale-75">
+                    <HledatIkona />
+                </button>
+            </form>
+
+            <!-- Barvy -->
+            <div class="flex pb-2 w-full h-8 bg-black bg-opacity-10" :style="{background: sekce.barva}" v-else-if="editaceJmena == indexSekce">
+                <button v-for="barva in barvyKesek" class="box-border p-0.5 w-full h-6 border-black scale-75 -skew-x-12 drop-shadow-sharp" @click="sekce.barva = barva" :class="{'border-4': sekce.barva == barva}" :style="{background: barva}"></button>
+            </div>
+
+            <!-- Toolbar -->
+            <div class="flex sticky top-0 bottom-1 z-10 justify-around" :style="{background: sekce.barva}" v-else>
+                <button class="flex gap-1 items-center font-bold" >
                     <RazeniIkona class="scale-75" />
                     <span>Řazení</span>
-                </div>
-                <div class="flex gap-1 items-center font-bold" >
+                </button>
+                <button class="flex gap-1 items-center font-bold" @click="filtrZobrazen = indexSekce">
                     <HledatIkona class="scale-75" />
                     <span>Hledat</span>
-                </div>
+                </button>
             </div>
+
+            <!-- Napoveda -->
+            <div class="flex absolute top-1/2 left-1/2 flex-col items-center w-max text-center opacity-70 -translate-x-1/2 -translate-y-1/2 pointer-events-none" v-if="!vsechnyKesky[indexSekce].length">
+                <NicIkona />
+                <h3 class="text-xl font-medium">Nic tu není...</h3>
+                <p>Přetáhněte sem nějaké kešky</p>
+            </div>
+
             <Keska
-                v-for="(keska, ind) in filtrovaneKesky(index)"
+                v-for="(keska, ind) in vsechnyKesky[indexSekce]"
                 v-bind="keska"
                 :index="ind"
                 :select-mode="selectMode"
+                :compact-mode="compactMode"
                 :disable-child-dragover="cardBeingDraggedIndex > -1"
-                @started-dragging="cardBeingDraggedIndex = $event"
+                @started-dragging="cardBeingDraggedIndex = $event; cardBeingDraggedSection = indexSekce"
                 @dragged-over-card="hoveredOverCardIndex = $event.ind; hoveringOverCardTop = $event.draggingOverTop"
+                @left-drag-area="leaveArea"
                 @ended-dragging="moveCard"
-                @remove-cache="removeCache"
-                @show-on-map="otevritMapu($event, index)"
+                @remove-cache="removeCache($event, indexSekce)"
+                @show-on-map="otevritMapu($event, indexSekce)"
             />
         </section>
     </div>

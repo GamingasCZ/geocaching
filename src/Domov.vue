@@ -17,16 +17,15 @@ import Pozadi from "./obrazky/pozadi2.svg";
         </div> -->
 
         <div class="flex flex-col justify-center items-end pr-4 w-full h-full text-right">
-            <h1 class="text-[min(6rem,15vw)] font-black leading-snug text-transparent bg-clip-text bg-gradient-to-br to-geo-400 from-geo-600">Geocaching</h1>
-            <p class="w-full max-w-[min(39rem,95vw)] text-lg font-medium text-right text-white max-sm:text-sm">
-                je celosvětová hra o hledání pokladů, skrytých všude okolo nás!<br />
-                Od nejvyšších vrcholků, po nejhlubší lesy, i pod vašimi okny.<br />
-                Kešky jsou skryty všude a jen čekají na to, než je ulovíte!</p>
-            <div class="flex gap-12 justify-around mx-auto mt-10 mr-5 max-sm:w-80 max-sm:flex-col">
+            <h1 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text bg-gradient-to-br to-geo-400 from-geo-600">Geocaching</h1>
+            <p class="w-full max-w-[min(40rem,95vw)] max-sm:text-xl text-xl font-medium text-right text-white max-sm:text-center">
+                je celosvětová hra o hledání pokladů, skrytých po celém světě!
+            </p>
+            <div class="grid grid-rows-2 gap-6 justify-center px-6 mx-auto mt-10 mr-0 w-max">
                 <button class="px-12 py-2 text-xl bg-geo-400 skewButton">
                     Jak začít
                 </button>
-                <RouterLink to="videa/co-je-geocaching">
+                <RouterLink to="videa/co-je-geocaching" class="w-full">
                     <button class="px-12 py-2 w-max text-xl bg-geo-400 skewButton">
                         O Geocachingu
                     </button>
