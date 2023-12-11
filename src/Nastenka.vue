@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted, nextTick} from 'vue';
-import { hasLocalStorage, handleDrop, refreshList } from './parserKesek'
+import { ref, onMounted} from 'vue';
+import { hasLocalStorage, handleDrop, refreshList, makeSectionArray } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
 import summonNotif from "@/komponenty/ostatni/summonNotif"
 import Mapa from "./komponenty/nastenka/mapa.vue"
+import { Nastaveni as nastaveniNastenky } from './komponenty/nastenka/nastaveniNastenky';
 import Nastaveni from './komponenty/nastenka/nastaveni.vue';
 
 import PotvrditIkona from "@/ikony/potvrdit.svg"
@@ -26,7 +27,7 @@ import barvyKesek from './assety/barvyKesek';
 
 const pretahuje = ref(false)
 
-const vsechnyKesky = ref<Array<IntKeska[]>>([[], []])
+const vsechnyKesky = ref<Array<IntKeska[]>>(makeSectionArray())
 const vsechnySekce = ref<Sekce[]>([])
 
 const editaceJmena = ref(-1)
@@ -69,6 +70,20 @@ const exportData = () => {
 
 const removeCache = (index: number, sekce: number) => {
     vsechnyKesky.value[sekce].splice(index, 1)
+    localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
+}
+const removeSelectedCaches = (selectedArray: [number, number][]) => {
+    selectedArray.forEach(keska => {
+        vsechnyKesky.value[keska[1]][keska[0]] = 0
+    });
+    
+    let i = 0
+    vsechnyKesky.value.forEach(keska => {
+        vsechnyKesky.value[i] = keska.filter(x => x != 0)
+        i += 1
+    })
+    selectMode.value = false
+    selectedCaches.value = []
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
 }
 
@@ -126,6 +141,36 @@ const zmenitSekci = () => {
     localStorage.setItem("sekce", JSON.stringify(vsechnySekce.value)!)
 }
 
+const selectedCaches = ref<[number, number][]>([])
+const modifySelections = (index: number, sekce: number, shiftSelection: boolean = false) => {
+    if (!selectMode.value) selectMode.value = true
+    
+    // Vybírání shiftem
+    // if (shiftSelection) {
+    //     let lastSelected = selectedCaches.value.slice(selectedCaches.value.length-1)[0] ?? [0, sekce]
+    //     if (lastSelected[1] != sekce) return // Jde vybírat jen mezi stejnýma sekcema
+    //     let range = [lastSelected[0], index].sort()
+    //     for (let i = range[0]; i < range[1]; i++) {
+    //         selectedCaches.value.push([i, sekce])
+    //         test.value[i].select()
+    //     }
+    // }
+    // else {
+        let findIndex = selectedCaches.value.map(x => x[0] == index && x[1] == sekce ? 1 : 0)
+        if (findIndex.includes(1))
+        selectedCaches.value.splice(findIndex.indexOf(1), 1)
+        else
+        selectedCaches.value.push([index, sekce])
+    
+    // }
+    
+    if (selectedCaches.value.length == 0) {
+        selectMode.value = false
+    }
+
+}
+
+const test = ref()
 const settingsOpen = ref(false)
 </script>
 
@@ -168,7 +213,7 @@ const settingsOpen = ref(false)
         <button class="flex relative items-center pl-4 font-bold navButton" @click="helpOpen = !helpOpen"><NapovedaIkona class="scale-75" /></button>
     </div>
     <div class="flex gap-1 mr-6 h-full" v-else>
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="importBackup?.click()">
+        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="removeSelectedCaches(selectedCaches)">
             <SmazatIkona class="scale-75" stroke="black"/>
             <span class="max-sm:hidden">Smazat</span>
         </button>
@@ -189,16 +234,19 @@ const settingsOpen = ref(false)
         <!-- Jméno sekce -->
         <div :style="{background: sekce.barva}" @click="editaceJmena = indexSekce" class="flex justify-between items-center text-xl font-extrabold text-white cursor-pointer group">
            <div class="w-full">
-                <form @submit.prevent="zmenitSekci" class="w-full grid grid-cols-[1fr_max-content]" v-if="editaceJmena == indexSekce">
-                    <input type="text" maxlength="15" autocomplete="off" autofocus class="p-1.5 bg-black bg-opacity-30 outline-none" v-model="sekce.jmeno">
-                    <button type="submit" class="w-10 h-full bg-black bg-opacity-40">
+                <form @submit.prevent="zmenitSekci" class="flex w-full h-max" v-if="editaceJmena == indexSekce">
+                    <input type="text" maxlength="15" autocomplete="off" autofocus class="p-1.5 bg-black bg-opacity-30 outline-none grow" v-model="sekce.jmeno">
+                    <button type="submit" class="w-10 min-h-full bg-black bg-opacity-40">
                         <PotvrditIkona class="mx-auto scale-75" stroke="white" />
+                    </button>
+                    <button type="button" class="w-10 min-h-full bg-black bg-opacity-40">
+                        <SmazatIkona class="mx-auto scale-75" stroke="white" />
                     </button>
                 </form>
                 <h2 class="p-1.5 text-black" v-else>{{ sekce.jmeno }}</h2>
            </div>
 
-           <EditIkona v-if="editaceJmena" class="mr-2 w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
+           <EditIkona v-if="editaceJmena != indexSekce" class="mr-2 w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
         
         <section class="flex overflow-y-auto relative flex-col w-full h-full bg-geo-300" :style="{accentColor: sekce.barva, scrollbarColor: `${sekce.barva} var(--normal)`}">
@@ -237,10 +285,12 @@ const settingsOpen = ref(false)
             <Keska
                 v-for="(keska, ind) in vsechnyKesky[indexSekce]"
                 v-bind="keska"
+                ref="test"
                 :index="ind"
                 :select-mode="selectMode"
-                :compact-mode="compactMode"
+                :compact-mode="nastaveniNastenky.zobrazeni"
                 :disable-child-dragover="cardBeingDraggedIndex > -1"
+                @modify-selections="modifySelections($event.index, indexSekce, $event.shiftSelection)"
                 @started-dragging="cardBeingDraggedIndex = $event; cardBeingDraggedSection = indexSekce"
                 @dragged-over-card="hoveredOverCardIndex = $event.ind; hoveringOverCardTop = $event.draggingOverTop"
                 @left-drag-area="leaveArea"
@@ -250,7 +300,6 @@ const settingsOpen = ref(false)
             />
         </section>
     </div>
-    <hr class="w-1.5 h-full bg-white border-none">
  </div>
  <div v-else class="flex flex-col justify-center items-center px-2 mt-7 w-full text-2xl font-light text-center text-white opacity-70">
      <p>K fungování nástěnky je potřeba lokální úložiště/cookies.</p>

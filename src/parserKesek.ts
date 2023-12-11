@@ -23,7 +23,7 @@ export interface Sekce {
     barva: string;
 }
 
-const VYCHOZI_SEKCE = [
+export const VYCHOZI_SEKCE = [
     {
         jmeno: "Nenalezené",
         barva: Barvy.tradicni
@@ -33,6 +33,12 @@ const VYCHOZI_SEKCE = [
         barva: Barvy.multi
     }
 ]
+
+export const makeSectionArray = () => {
+    let arr: Sekce[] = []
+    for (let i = 0; i < VYCHOZI_SEKCE.length; i++) arr.push([])
+    return arr
+}
 
 export const hasLocalStorage = () => {
     try {
@@ -47,18 +53,18 @@ export const hasLocalStorage = () => {
 export const refreshList = () => {
     if (hasLocalStorage()) {
         return [
-            JSON.parse(localStorage.getItem("nastenka")!) ?? [[],[]],
+            JSON.parse(localStorage.getItem("nastenka")!) ?? makeSectionArray(),
             JSON.parse(localStorage.getItem("sekce")!) ?? VYCHOZI_SEKCE
         ]
     }
-    else return [[[],[]], []]
+    else return [makeSectionArray(), []]
 }
 
 export async function handleDrop(gpxData: FileList, sekce: number) {
     if (!hasLocalStorage()) return
     
     let parser = new XMLParser({ignoreAttributes: false})
-    let allCaches = JSON.parse(localStorage.getItem("nastenka")!) ?? [[], []]
+    let allCaches = JSON.parse(localStorage.getItem("nastenka")!) ?? makeSectionArray()
 
     for (let i = 0; i < gpxData.length; i++) {
         let parsedCache;
