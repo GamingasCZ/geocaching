@@ -50,7 +50,9 @@ onMounted(() => {
             }),
             style: {
                 "circle-radius": 9,
-                "circle-fill-color": getComputedStyle(document.documentElement).getPropertyValue('--svetly')
+                "circle-fill-color": getComputedStyle(document.documentElement).getPropertyValue('--svetly'),
+                "circle-stroke-color": 'black',
+                "stroke-width": 3
             }
         })
       ],
@@ -118,17 +120,21 @@ function ziskatPozici() {
 
 <template>
     <dialog ref="dialog" class="backdrop:bg-black backdrop:bg-opacity-80">
-        <section class="grid grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full h-[45rem] max-h-screen">
+        <section class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full h-[45rem] max-h-screen max-sm:grid-rows-[17rem_1fr]">
             <!-- Mapa -->
             <div ref="map" class="relative h-full border-4 border-r-0 skewButton border-geo-400">
+                <button class="absolute top-1/2 left-1/2 z-10 p-2 text-xl font-medium border-2 -translate-x-1/2 -translate-y-1/2 border-geo-400">Zobrazit mapu</button>
                 <div class="absolute top-0 -right-3 w-16 h-full bg-gradient-to-l to-transparent -z-10 from-geo-400"></div>
             </div>
     
             <!-- Ovládání -->
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center h-full">
                 <KompasIkona class="my-4 scale-75" :style="{transform: `rotate(${azimut}deg)`}" />
                 <h2 class="text-xl font-bold">{{ jmeno }}</h2>
-                <h3 class="text-xl font-bold">{{ vzdalMetry+azimut }}°</h3>
+                <h3 class="flex justify-around my-2 w-full text-xl font-bold">
+                    <span>{{vzdalMetry}}</span>
+                    <span>{{azimut}}°</span>
+                </h3>
                 <div class="flex flex-col gap-3">
                     <div>
                         <button @click="napovedaShown = !napovedaShown" class="flex gap-2 items-center w-full hover:bg-black hover:bg-opacity-30"><NapovedaIkona stroke="black" class="scale-75" />Nápověda<ViceIkona class="ml-auto scale-50" :class="{'rotate-180': napovedaShown}" /></button>
@@ -144,7 +150,7 @@ function ziskatPozici() {
                     </a>
                     <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Google Mapách</button>
                     <div class="py-3"></div>
-                    <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30" @click="close"><ZavritIkona stroke="black" class="scale-75" />Zavřít</button>
+                    <button class="flex gap-2 items-center w-full hover:bg-black hover:bg-opacity-30" @click="close"><ZavritIkona stroke="black" class="scale-75" />Zavřít</button>
                 </div>
             </div>
         </section>

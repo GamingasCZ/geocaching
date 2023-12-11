@@ -24,6 +24,7 @@ import ImportIkona from "@/ikony/import.svg"
 import ExportIkona from "@/ikony/export.svg"
 import Napoveda from './komponenty/nastenka/napoveda.vue';
 import barvyKesek from './assety/barvyKesek';
+import ImportDialog from './komponenty/nastenka/importDialog.vue';
 
 const pretahuje = ref(false)
 
@@ -175,6 +176,7 @@ const settingsOpen = ref(false)
 </script>
 
 <template>
+<ImportDialog :open="true" :zaloha="{}" />
 <Mapa v-bind="zobrazenaNaMapeKeska" :open="mapaOtevrena" />
 <Napoveda :open="helpOpen" />
 
