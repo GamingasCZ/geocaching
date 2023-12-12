@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted} from 'vue';
+import { ref, onMounted, nextTick} from 'vue';
 import { hasLocalStorage, handleDrop, refreshList, makeSectionArray } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
@@ -221,6 +221,26 @@ const dragDropFiles = async (e: DragEvent) => {
 
 const test = ref()
 const settingsOpen = ref(false)
+
+const moveDropdownOpen = ref(false)
+const moveDropdownElement = ref<HTMLDivElement>()
+const openMoveDropdown = () => {
+    moveDropdownOpen.value = !moveDropdownOpen.value
+    nextTick(() => {
+        document.body.addEventListener("click", (e: MouseEvent) => {
+            moveDropdownOpen.value = false
+        }, {once: true, capture: true})
+    })
+}
+const moveSelectedCaches = (doSekce: number) => {
+    let zJinychSekci = selectedCaches.value.filter(x => x[1] != doSekce)
+    zJinychSekci.forEach(vyb => {
+        vsechnyKesky.value[doSekce].splice(0, 0, vsechnyKesky.value[vyb[1]][vyb[0]])
+    })
+    removeSelectedCaches(zJinychSekci)
+}
+
+
 </script>
 
 <template>
@@ -267,9 +287,16 @@ const settingsOpen = ref(false)
             <SmazatIkona class="scale-75" stroke="black"/>
             <span class="max-sm:hidden">Smazat</span>
         </button>
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="exportData">
-            <MoveIkona class="scale-75" />
-            <span class="max-sm:hidden">Přesunout</span>
+        <button class="relative font-bold">
+            <div class="flex gap-2 items-center pr-1 pl-2 navButton" @click="openMoveDropdown">
+                <MoveIkona class="scale-75" />
+                <span class="max-sm:hidden">Přesunout</span>
+            </div>
+
+            <!-- Dropdown -->
+            <div class="flex absolute right-0 top-10 z-40 flex-col w-48 font-normal bg-geo-300" v-show="moveDropdownOpen" ref="moveDropdownElement">
+                <button v-for="(sekce, sInd) in vsechnySekce" class="px-1 py-2 text-left border-b-2 border-opacity-50 border-b-black hover:bg-black hover:bg-opacity-20" @click="moveSelectedCaches(sInd)">{{ sekce.jmeno }}</button>
+            </div>
         </button>
         <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="exportData">
             <NavrchIkona class="scale-75" />
