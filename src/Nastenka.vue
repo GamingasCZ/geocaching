@@ -239,6 +239,25 @@ const moveSelectedCaches = (doSekce: number) => {
     })
     removeSelectedCaches(zJinychSekci)
 }
+const moveSelectedToTop = () => {
+    let kSerazeni = [[],[],[]]
+    selectedCaches.value.forEach(vyb => {
+        let kes = vsechnyKesky.value[vyb[1]][vyb[0]]
+        kSerazeni[vyb[1]].push(kes)
+        vsechnyKesky.value[vyb[1]][vyb[0]] = 0
+    })
+
+    let i = 0
+    vsechnyKesky.value.forEach(_ => {
+        vsechnyKesky.value[i] = vsechnyKesky.value[i].filter(y => y != 0)
+        vsechnyKesky.value[i] = kSerazeni[i].concat(vsechnyKesky.value[i])
+        i += 1
+    })
+    console.log(vsechnyKesky.value)
+    selectMode.value = false
+    selectedCaches.value = []
+    localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
+}
 
 
 </script>
@@ -298,7 +317,7 @@ const moveSelectedCaches = (doSekce: number) => {
                 <button v-for="(sekce, sInd) in vsechnySekce" class="px-1 py-2 text-left border-b-2 border-opacity-50 border-b-black hover:bg-black hover:bg-opacity-20" @click="moveSelectedCaches(sInd)">{{ sekce.jmeno }}</button>
             </div>
         </button>
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="exportData">
+        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="moveSelectedToTop">
             <NavrchIkona class="scale-75" />
             <span class="max-sm:hidden">Na vrch</span>
         </button>
