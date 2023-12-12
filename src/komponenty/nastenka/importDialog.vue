@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue';
+import type { IntKeska } from "@/parserKesek"
 
 const props = defineProps<{
     open: boolean;
     zaloha: any;
 }>()
 const emit = defineEmits<{
-    (e: "close"): void
+    (e: "close"): void,
+    (e: "updateCaches", noveKesky: IntKeska[]): void
 }>()
 
 
@@ -20,6 +22,13 @@ const close = () => {
 }
 dialog.value?.addEventListener("close", close)
 
+const pouzitZalohu = () => {
+    console.log(props.zaloha.data)
+    localStorage.setItem("nastenka", JSON.stringify(props.zaloha.data))
+    emit("updateCaches", props.zaloha.data)
+    close()
+}
+
 </script>
 
 <template>
@@ -31,7 +40,7 @@ dialog.value?.addEventListener("close", close)
             <div class="flex flex-col gap-3">
                 <div class="mb-12">
                     <h2 class="text-2xl font-medium">Načítáte zálohu...</h2>
-                    <h3>z 9.3.71</h3>
+                    <h3>{{zaloha.datum}}</h3>
                 </div>
     
                 <h3>Jakým způsobem by se měla načíst?</h3>
@@ -44,15 +53,15 @@ dialog.value?.addEventListener("close", close)
                     <label for="">Použít jen nové</label>
                 </div>
                 <footer class="grid grid-cols-2 gap-4">
-                    <button class="border-2 border-black">Zrušit</button>
-                    <button class="bg-geo-400">Použít</button>
+                    <button class="border-2 border-black" @click="close">Zrušit</button>
+                    <button class="bg-geo-400" @click="pouzitZalohu">Použít</button>
                 </footer>
             </div>
             <div class="grid grid-cols-2 w-48">
                 <span>Jméno</span>
                 <span>Sekce</span>
-                <div>
-
+                <div v-for="keska in zaloha.data">
+                    <span>{{ keska.jmeno }}</span>
                 </div>
             </div>
         </div>
@@ -62,10 +71,10 @@ dialog.value?.addEventListener("close", close)
 <style>
 
 input[name='importType'] {
-    @apply bg-geo-50 relative appearance-none w-5 h-5 border-geo-400 border-2
+    @apply rounded-full bg-geo-50 relative appearance-none w-5 h-5 border-geo-400 border-2
 }
 input[name='importType']:checked::after {
-    @apply content-[''] absolute bg-geo-400 w-3 h-3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+    @apply content-[''] absolute rounded-full bg-geo-400 w-3 h-3 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
 }
 
 </style>

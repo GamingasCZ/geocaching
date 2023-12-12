@@ -57,8 +57,7 @@ const helpOpen = ref(false)
 const exportData = () => {
     let data = localStorage.getItem("nastenka")
 
-
-    var blob = new Blob([], {type: " application/json"});
+    var blob = new Blob([data], {type: " application/json"});
     var downloadUrl = window.URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = downloadUrl;
@@ -171,13 +170,37 @@ const modifySelections = (index: number, sekce: number, shiftSelection: boolean 
 
 }
 
+const importExtra = ref({
+    open: false,
+    data: [],
+    datum: ""
+})
+const importCache = async (e: Event) => {
+    let file = await e.target.files.item(0).text()
+    let name = e.target.files.item(0).name
+    let datum = new Date(parseInt(name.split("-")[1].split(".")[0]))
+    
+    let importData;
+    try {
+        importData = JSON.parse(file)
+        if (importData == null) throw new Error("Neni import")
+    }
+    catch (e) {
+        summonNotif("Soubor není platný import!")
+        return
+    }
+    importExtra.value.datum = `${datum.getDay()}.${datum.getMonth()}.${datum.getFullYear()}`
+    importExtra.value.open = !importExtra.value.open
+    importExtra.value.data = importData
+}
+
 const test = ref()
 const settingsOpen = ref(false)
 </script>
 
 <template>
-<ImportDialog :open="true" :zaloha="{}" />
 <Mapa v-bind="zobrazenaNaMapeKeska" :open="mapaOtevrena" />
+<ImportDialog :open="importExtra.open" :zaloha="importExtra" @update-caches="vsechnyKesky = $event"/>
 <Napoveda :open="helpOpen" />
 
 <main class="mx-auto w-full" @dragover="pretahuje=true" @dragleave="pretahuje=false">
@@ -185,7 +208,7 @@ const settingsOpen = ref(false)
      <p>Přetáhněte, nebo vyberte .gpx soubor</p>
     </div> -->
     <!-- To pak přepni!! -->
- <input ref="importBackup" type="file" accept=".json" name="" id="" class="hidden" @input="dropped">
+ <input ref="importBackup" type="file" accept=".json" name="" id="" class="hidden" @input="importCache">
  <input ref="input" type="file" accept=".gpx" name="" id="" multiple class="hidden absolute inset-0 z-50 w-screen h-screen opacity-0" @input="dropped">
 
  <nav class="flex relative justify-between h-10" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
