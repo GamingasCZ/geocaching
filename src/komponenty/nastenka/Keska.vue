@@ -5,6 +5,7 @@ import MapaIkona from "@/ikony/mapa.svg"
 import OdkazIkona from "@/ikony/odkaz.svg"
 import SmazatIkona from "@/ikony/smazat.svg"
 import ViceIkona from "@/ikony/more.svg"
+import { Nastaveni } from './nastaveniNastenky';
 
 interface Extra {
     index: number;
@@ -89,15 +90,15 @@ watch(props, () => {
 </script>
 
 <template>
-    <section class="m-1 bg-white drop-shadow-sharp group" @click="clickCard" :class="{'border-l-4': compact, 'border-l-8 cursor-pointer': compactMode}" :style="{borderColor: barva}" @dragexit="emit('leftDragArea')" @dragstart="emit('startedDragging', index)" @dragend="moveCache" draggable="true" :data-index="index" @dragover="draggedOverCard">
-        <div :class="{'pointer-events-none': disableChildDragover}">
+    <section class="m-1 bg-white drop-shadow-sharp group" @click="clickCard" :class="{'border-l-4': compact, 'border-l-8 cursor-pointer': compactMode}" :style="{borderColor: barva}" @dragexit="emit('leftDragArea')" @dragstart="emit('startedDragging', index)" @dragend="moveCache" :draggable="!Nastaveni.zakazatPretahovani && !selectMode" :data-index="index" @dragover="draggedOverCard">
+        <div :class="{'pointer-events-none': disableChildDragover && !Nastaveni.zakazatPretahovani}">
             <div class="relative p-1" :class="{'pozadi': selected}">
                 <h2 class="flex relative justify-between items-center text-lg font-bold">
                     <div>
                         <input type="checkbox" name="" id=""  class="mr-1 align-middle" v-if="selectMode" v-model="selected" @click.stop="select">
                         <span class="isolate align-middle">{{ jmeno }}</span>
                     </div>
-                    <ViceIkona class="opacity-0 transition-opacity scale-50 group-hover:opacity-100" :class="{'rotate-180': compactUnrolled}" />
+                    <ViceIkona class="opacity-0 transition-opacity scale-50 group-hover:opacity-100" v-if="Nastaveni.zobrazeni == 1" :class="{'rotate-180': compactUnrolled}" />
                 </h2>
                 <ul class="flex gap-4 pl-4 text-sm opacity-60" v-if="compact">
                     <li>{{ druh.slice(0,1).toUpperCase() + druh.slice(1) }}</li>  

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 import type { IntKeska } from "@/parserKesek"
 
 const props = defineProps<{
@@ -8,12 +8,12 @@ const props = defineProps<{
 }>()
 const emit = defineEmits<{
     (e: "close"): void,
-    (e: "updateCaches", noveKesky: IntKeska[]): void
+    (e: "updateCaches", noveKesky: Array<IntKeska[]>): void
 }>()
 
 
 const dialog = ref<HTMLDialogElement>()
-watch(props, () => {
+watch(() => props.open, () => {
     dialog.value?.showModal()
 })
 
@@ -23,47 +23,81 @@ const close = () => {
 dialog.value?.addEventListener("close", close)
 
 const pouzitZalohu = () => {
-    console.log(props.zaloha.data)
-    localStorage.setItem("nastenka", JSON.stringify(props.zaloha.data))
-    emit("updateCaches", props.zaloha.data)
+    if (metodaImportu.value == 1) { // Použít jen nové
+        localStorage.setItem("nastenka", JSON.stringify(props.zaloha.data[0]))
+        localStorage.setItem("sekce", JSON.stringify(props.zaloha.data[1]))
+        emit("updateCaches", props.zaloha.data[0])
+    }
+    else { // Sloučit dohromady
+        let currentKesky = JSON.parse(localStorage.getItem("nastenka")!)
+        let givenKesky = props.zaloha.data[0]
+        let celkemKesky: Array<IntKeska[]> = []
+
+        for (let i = 0; i < props.zaloha.data[1].length; i++)
+            celkemKesky.push(Array.from(new Set(currentKesky[i].concat(givenKesky[i]))))
+
+        emit("updateCaches", celkemKesky)
+    }
     close()
 }
+
+const rozlozeneKesky = computed(() => {
+    for (let i = 0; i < props.zaloha.data[0].length; i++) {
+        let j = 0
+        props.zaloha.data[0][i].forEach(_ => {
+            props.zaloha.data[0][i][j].sekce = i
+            j += 1
+        })
+    }
+    return [].concat(...props.zaloha.data[0])
+})
+
+const metodaImportu = ref(-1)
 
 </script>
 
 <template>
-    <dialog ref="dialog" class="max-w-5xl leading-relaxed text-black bg-transparent underlineThick backdrop:bg-black backdrop:bg-opacity-70 drop-shadow-sharp">
+    <dialog ref="dialog" class="max-w-5xl leading-relaxed text-black bg-transparent outline-none underlineThick backdrop:bg-black backdrop:bg-opacity-70 drop-shadow-sharp">
         <div class="flex justify-between">
             <header>Import</header>
         </div>
-        <div class="flex gap-3 p-8 bg-geo-300">
-            <div class="flex flex-col gap-3">
-                <div class="mb-12">
-                    <h2 class="text-2xl font-medium">Načítáte zálohu...</h2>
-                    <h3>{{zaloha.datum}}</h3>
+        <div class="flex flex-wrap gap-5 p-8 bg-geo-300">
+            <div class="flex flex-wrap gap-3 justify-between w-full">
+                <div class="flex flex-col gap-3">
+                    <div class="sm:mb-12">
+                        <h2 class="text-2xl font-medium">Načítáte zálohu...</h2>
+                        <h3 v-if="zaloha.datum != -1">{{zaloha.datum}}</h3>
+                    </div>
+        
+                    <h3>Jakým způsobem by se měla načíst?</h3>
+                    <div class="flex gap-3 items-center text-xl">
+                        <input type="radio" name="importType" id="sloucit" v-model="metodaImportu" value="0">
+                        <label for="sloucit">Sloučit dohromady</label>
+                    </div>
+                    <div class="flex gap-3 items-center text-xl">
+                        <input type="radio" name="importType" id="jenNove" v-model="metodaImportu" value="1">
+                        <label for="jenNove">Použít jen nové</label>
+                    </div>
                 </div>
-    
-                <h3>Jakým způsobem by se měla načíst?</h3>
-                <div class="flex gap-3 items-center text-xl">
-                    <input type="radio" name="importType" id="">
-                    <label for="">Sloučit dohromady</label>
+                <div class="overflow-y-auto pr-1 max-h-[min(16.5rem,30vh)]">
+                    <table class="inline-table w-full text-xs" cellspacing="2">
+                        <tr class="sticky top-0 w-80 bg-geo-400">
+                            <th>Jméno</th>
+                            <th>Sekce</th>
+                        </tr>
+                        <tbody class="w-full">
+                            <tr v-for="(keska, index) in rozlozeneKesky" class="odd:bg-black odd:bg-opacity-30 even:bg-black even:bg-opacity-10">
+                                <td>{{ keska.jmeno }}</td>
+                                <td>{{ zaloha.data[1][keska.sekce].jmeno }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <div class="flex gap-3 items-center text-xl">
-                    <input type="radio" name="importType" id="">
-                    <label for="">Použít jen nové</label>
-                </div>
-                <footer class="grid grid-cols-2 gap-4">
-                    <button class="border-2 border-black" @click="close">Zrušit</button>
-                    <button class="bg-geo-400" @click="pouzitZalohu">Použít</button>
-                </footer>
             </div>
-            <div class="grid grid-cols-2 w-48">
-                <span>Jméno</span>
-                <span>Sekce</span>
-                <div v-for="keska in zaloha.data">
-                    <span>{{ keska.jmeno }}</span>
-                </div>
-            </div>
+            <footer class="grid grid-cols-2 gap-4 min-w-[6rem] w-6/12">
+                <button class="border-2 border-black" @click="close">Zrušit</button>
+                <button class="bg-geo-400 disabled:grayscale disabled:opacity-70" @click="pouzitZalohu" :disabled="metodaImportu == -1">Použít</button>
+            </footer>
         </div>
     </dialog>
 </template>

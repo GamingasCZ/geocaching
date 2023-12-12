@@ -10,6 +10,7 @@ import Nastaveni from './komponenty/nastenka/nastaveni.vue';
 
 import PotvrditIkona from "@/ikony/potvrdit.svg"
 import NicIkona from "@/ikony/nic.svg"
+import SouboryIkona from "@/ikony/soubory.svg"
 import RazeniIkona from "@/ikony/razeni.svg"
 import HledatIkona from "@/ikony/hledat.svg"
 import NavrchIkona from "@/ikony/navrch.svg"
@@ -55,9 +56,11 @@ async function dropped(e: Event) {
 const helpOpen = ref(false)
 
 const exportData = () => {
-    let data = localStorage.getItem("nastenka")
+    let dataKesky = localStorage.getItem("nastenka") ?? []
+    let dataSekce = localStorage.getItem("sekce") ?? makeSectionArray()
+    let hash = dataKesky.length + dataSekce.length
 
-    var blob = new Blob([data], {type: " application/json"});
+    var blob = new Blob([JSON.stringify([dataKesky, dataSekce, hash])], {type: " application/json"});
     var downloadUrl = window.URL.createObjectURL(blob);
     var a = document.createElement("a");
     a.href = downloadUrl;
@@ -104,7 +107,6 @@ const otevritMapu = (index: number, sekce: number) => {
     mapaOtevrena.value = !mapaOtevrena.value
 }
 
-const compactMode = ref(true)
 const selectMode = ref(false)
 const cardBeingDraggedIndex = ref(-1)
 const cardBeingDraggedSection = ref(0)
@@ -112,13 +114,18 @@ const hoveredOverCardIndex = ref(-1)
 const draggingOverSection = ref(0)
 const hoveringOverCardTop = ref(false)
 const moveCard = () => {
-    if (cardBeingDraggedIndex.value == hoveredOverCardIndex.value && cardBeingDraggedSection.value == draggingOverSection.value) return
+    if (cardBeingDraggedIndex.value == hoveredOverCardIndex.value && cardBeingDraggedSection.value == draggingOverSection.value) {
+        hoveredOverCardIndex.value = -1
+        cardBeingDraggedIndex.value = -1
+        return
+    }
     let presouvanaKeska = vsechnyKesky.value[cardBeingDraggedSection.value][cardBeingDraggedIndex.value]
     vsechnyKesky.value[cardBeingDraggedSection.value].splice(cardBeingDraggedIndex.value, 1)
-
+    
     vsechnyKesky.value[draggingOverSection.value].splice(hoveredOverCardIndex.value == -1 ? vsechnyKesky.value[draggingOverSection.value].length : hoveredOverCardIndex.value, 0, presouvanaKeska)
     
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
+    hoveredOverCardIndex.value = -1
     cardBeingDraggedIndex.value = -1
 }
 
@@ -172,26 +179,44 @@ const modifySelections = (index: number, sekce: number, shiftSelection: boolean 
 
 const importExtra = ref({
     open: false,
-    data: [],
+    data: [[],[],0],
     datum: ""
 })
 const importCache = async (e: Event) => {
-    let file = await e.target.files.item(0).text()
-    let name = e.target.files.item(0).name
-    let datum = new Date(parseInt(name.split("-")[1].split(".")[0]))
+    let file = await e.target?.files.item(0).text()
+    let name = (e.target as HTMLInputElement).files!.item(0).name
+    let datum = new Date(parseInt(name.split("-")?.[1]?.split(".")?.[0]))
     
     let importData;
     try {
         importData = JSON.parse(file)
         if (importData == null) throw new Error("Neni import")
+        if (importData[0].length + importData[1].length != importData[2]) throw new Error("Blbej import")
     }
     catch (e) {
         summonNotif("Soubor není platný import!")
         return
     }
-    importExtra.value.datum = `${datum.getDay()}.${datum.getMonth()}.${datum.getFullYear()}`
+    importExtra.value.datum = `${datum.getDate()}.${datum.getMonth()+1}.${datum.getFullYear()}`
+    if (datum as any == 'Invalid Date') importExtra.value.datum = -1 as any
     importExtra.value.open = !importExtra.value.open
-    importExtra.value.data = importData
+    importExtra.value.data = [JSON.parse(importData[0]),JSON.parse(importData[1]), importData[2]];
+    (e.target as HTMLInputElement).value = ''
+}
+
+const draggingWithFile = ref(-1)
+const hoverWithFiles = (sekce: number) => {
+    if (cardBeingDraggedIndex.value == -1) {
+        draggingWithFile.value = sekce
+    }
+}
+
+const dragDropFiles = async (e: DragEvent) => {
+    let files = e.dataTransfer?.files!
+    await handleDrop(files, draggingWithFile.value);
+    [vsechnyKesky.value, vsechnySekce.value] = refreshList()
+
+    draggingWithFile.value = -1
 }
 
 const test = ref()
@@ -203,7 +228,7 @@ const settingsOpen = ref(false)
 <ImportDialog :open="importExtra.open" :zaloha="importExtra" @update-caches="vsechnyKesky = $event"/>
 <Napoveda :open="helpOpen" />
 
-<main class="mx-auto w-full" @dragover="pretahuje=true" @dragleave="pretahuje=false">
+<main class="mx-auto w-full">
  <!-- <div class="relative p-1 m-4 mx-auto w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
      <p>Přetáhněte, nebo vyberte .gpx soubor</p>
     </div> -->
@@ -274,7 +299,7 @@ const settingsOpen = ref(false)
            <EditIkona v-if="editaceJmena != indexSekce" class="mr-2 w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
         </div>
         
-        <section class="flex overflow-y-auto relative flex-col w-full h-full bg-geo-300" :style="{accentColor: sekce.barva, scrollbarColor: `${sekce.barva} var(--normal)`}">
+        <section @dragover.prevent="hoverWithFiles(indexSekce)" @dragleave="draggingWithFile = -1" @drop.prevent="dragDropFiles" :class="{'cursor-copy': draggingWithFile == indexSekce}" class="flex overflow-y-auto relative flex-col w-full h-full bg-geo-300" :style="{accentColor: sekce.barva, scrollbarColor: `${sekce.barva} var(--normal)`}">
             <!-- Hledani -->
             <form class="w-full grid grid-cols-[1fr_max-content] box-border" :style="{background: sekce.barva}" @submit.prevent="hledatKesky($event, indexSekce)" v-if="filtrZobrazen == indexSekce">
                 <input type="text" placeholder="Hledat..." autocomplete="off" autofocus autocorrect="off" class="px-0.5 m-1 text-sm text-white bg-black bg-opacity-30 placeholder:text-white">
@@ -301,10 +326,17 @@ const settingsOpen = ref(false)
             </div>
 
             <!-- Napoveda -->
-            <div class="flex absolute top-1/2 left-1/2 flex-col items-center w-max text-center opacity-70 -translate-x-1/2 -translate-y-1/2 pointer-events-none" v-if="!vsechnyKesky[indexSekce].length">
+            <div class="flex absolute top-1/2 left-1/2 flex-col items-center w-max text-center opacity-70 -translate-x-1/2 -translate-y-1/2 pointer-events-none" v-if="!vsechnyKesky[indexSekce].length && draggingWithFile != indexSekce">
                 <NicIkona />
                 <h3 class="text-xl font-medium">Nic tu není...</h3>
                 <p>Přetáhněte sem nějaké kešky</p>
+            </div>
+
+            <!-- Upustit -->
+            <div class="flex absolute top-1/2 left-1/2 flex-col items-center w-max text-center opacity-70 -translate-x-1/2 -translate-y-1/2 pointer-events-none" v-if="!vsechnyKesky[indexSekce].length && draggingWithFile == indexSekce">
+                <SouboryIkona />
+                <h3 class="text-xl font-medium">Upusťte soubory</h3>
+                <p>Přidají se do této sekce</p>
             </div>
 
             <Keska
@@ -313,7 +345,7 @@ const settingsOpen = ref(false)
                 ref="test"
                 :index="ind"
                 :select-mode="selectMode"
-                :compact-mode="nastaveniNastenky.zobrazeni"
+                :compact-mode="Boolean(nastaveniNastenky.zobrazeni)"
                 :disable-child-dragover="cardBeingDraggedIndex > -1"
                 @modify-selections="modifySelections($event.index, indexSekce, $event.shiftSelection)"
                 @started-dragging="cardBeingDraggedIndex = $event; cardBeingDraggedSection = indexSekce"
