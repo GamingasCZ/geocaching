@@ -9,13 +9,20 @@ export interface IntKeska {
     druh: string;
     obtiznost: number;
     teren: number;
-    pocetWaypointu: number;
+    waypointy: Waypoint[];
     latitude: number;
     longtitude: number;
     napoveda: string;
     barva: string;
     url: string;
     datumVlozeni: number;
+    vzdalenost?: string;
+}
+
+export interface Waypoint {
+    jmeno: string;
+    latitude: number;
+    longitude: number;
 }
 
 export interface Sekce {
@@ -34,8 +41,8 @@ export const VYCHOZI_SEKCE = [
     }
 ]
 
-export const makeSectionArray = () => {
-    let arr: Sekce[] = []
+export const makeSectionArray = (): IntKeska[][] => {
+    let arr: IntKeska[][] = []
     for (let i = 0; i < VYCHOZI_SEKCE.length; i++) arr.push([])
     return arr
 }
@@ -76,8 +83,18 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
             return
         }
         
-        let kesData
-        if (parsedCache.gpx.wpt.length > 1) kesData = parsedCache.gpx.wpt[0]
+        let kesData;
+        let waypointy: Waypoint[] = []
+        if (parsedCache.gpx.wpt.length > 1) {
+            kesData = parsedCache.gpx.wpt[0]
+            parsedCache.gpx.wpt.slice(1).forEach(waypoint => {
+                waypointy.push({
+                    jmeno: waypoint.cmt,
+                    latitude: waypoint["@_lat"],
+                    longitude: waypoint["@_lon"]
+                })
+            });
+        }
         else kesData = parsedCache.gpx.wpt
         
         let typKese: string
@@ -97,7 +114,7 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
             default:
                 typKese = "jina"; break;
         }
-        
+
         let keska: IntKeska = {
             zakladatel: kesData['groundspeak:cache']['groundspeak:owner']['#text'],
             jmeno: kesData['groundspeak:cache']['groundspeak:name'],
@@ -107,7 +124,7 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
             teren: kesData['groundspeak:cache']['groundspeak:terrain'], // DODělat
             datumVlozeni: Date.now(),
             url: kesData.url,
-            pocetWaypointu: parsedCache.gpx.wpt.length,
+            waypointy: waypointy,
             napoveda: kesData['groundspeak:cache']['groundspeak:encoded_hints'],
             latitude: parseFloat(kesData['@_lat']),
             longtitude: parseFloat(kesData['@_lon']),
@@ -119,4 +136,19 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
         allCaches[sekce].push(keska)
     }
     localStorage.setItem("nastenka", JSON.stringify(allCaches))
+}
+
+export const parseDistance = (distMeters: number) => {
+    switch (true) {
+        case distMeters >= 1000:
+            return `${(distMeters/1000).toFixed(1)}km`; break;
+        case distMeters >= 100:
+            return `${distMeters.toFixed(0)}m`; break;
+        case distMeters >= 10:
+            return `${distMeters.toFixed(1)}m`; break;
+        case distMeters < 10:
+            return `${distMeters.toFixed(2)}m`; break;
+        default:
+            return `${distMeters.toFixed(0)}m`; break;
+    }
 }

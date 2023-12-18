@@ -17,7 +17,7 @@ const vybranaStranka = ref(-1)
 
 <template>
     <nav
-        class="flex sticky z-40 m-4 mx-auto max-w-[90rem] h-12 top-0 w-full"
+        class="flex sticky z-40 m-4 mx-auto max-w-[90rem] h-12 top-2 w-full"
     >
         <!-- Logo -->
         <RouterLink class="flex ml-4" to="/" @click="vybranaStranka = -1">

@@ -42,7 +42,7 @@ export default [
         zdroje: "",
     },
     {
-        nazev: "Necyklopedie",
+        nazev: "Vtipy o kačerech",
         url: "necyklopedie",
         popis: "Odpočiňme si od neus",
         zdroje: "",

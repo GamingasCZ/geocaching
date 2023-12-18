@@ -16,14 +16,15 @@
     --svetlejsi: #57BA3E;
     --vyrazny: #b2d63b;
     --fialova: #5f1771;
+    --cervena: #d83434;
 }
 
 * {
-    @apply font-[Rubik,_sans-serif];
+    @apply font-[Rubik,system-ui,sans-serif];
 }
 
 body {
-    @apply flex relative flex-col h-screen bg-geo-50;
+    @apply flex relative flex-col h-[100svh] bg-geo-50 overflow-x-clip;
 }
 .clip {
     @apply overflow-clip

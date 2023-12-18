@@ -4,12 +4,14 @@ import { hasLocalStorage } from '@/parserKesek';
 const props = defineProps<{
     maxTime: string;
     time: string;
-    currUrl: string
+    currUrl: string;
+    timeRatio: number;
 }>()
 
 const emit = defineEmits<{
     (e: "cancel"): void
     (e: "saved", allNotes: any[]): void
+    (e: "changedNoteTime", allNotes: any[]): void
 }>()
 
 const saveNote = (form: Event) => {
@@ -20,7 +22,8 @@ const saveNote = (form: Event) => {
         formData.elements[0].value,
         formData.elements[1].value,
         formData.elements[2].value,
-        props.currUrl
+        props.currUrl,
+        props.timeRatio
     ])
     localStorage.setItem("poznamky", JSON.stringify(notes))
     emit("saved", notes)

@@ -11,6 +11,7 @@ import { useRouter } from 'vue-router';
 import EditorPoznamky from './videa/editorPoznamky.vue';
 import { hasLocalStorage } from '@/parserKesek';
 import summonNotif from './ostatni/summonNotif';
+import PrehravacPoznamka from './videa/prehravacPoznamka.vue';
 
 const video = ref<HTMLVideoElement>()
 
@@ -23,6 +24,7 @@ const videoIndex = computed(() => {
 const thumbPredVideo = ref("")
 const thumbTotoVideo = ref("")
 const thumbDalsiVideo = ref("")
+const poznamkyProVideo = ref("")
 const videoLink = ref()
 const getVideo = async () => {
     videoLink.value = await import(`@/videa/${Videa[videoIndex.value].url}.webm`).then(res => res.default)
@@ -31,6 +33,10 @@ const getVideo = async () => {
     if (videoIndex.value < Videa.length - 1)
         thumbDalsiVideo.value = await import(`@/obrazky/videonahledy/${Videa[videoIndex.value + 1].url}-min.webp`).then(res => res.default)
     thumbTotoVideo.value = await import(`@/obrazky/videonahledy/${Videa[videoIndex.value].url}-max.webp`).then(res => res.default)
+    if (hasLocalStorage()) {
+        let pozn = JSON.parse(localStorage.getItem("poznamky")!) ?? []
+        poznamkyProVideo.value = pozn.filter(x => x[3] == Videa[videoIndex.value].url)
+    }
 }
 
 const videoStarted = ref(false)
@@ -55,8 +61,9 @@ onMounted(() => {
         console.log(document.fullscreenElement)
     })
 
-    watch(videoIndex, () => {
+    watch(videoIndex, async () => {
         videoStarted.value = false
+        await getVideo()
     })
 
     if (hasLocalStorage()) {
@@ -73,6 +80,7 @@ const parseTime = (secs: number) => {
 
 const isFullscreened = ref(false)
 const isPlaying = ref(false)
+const videoRatio = ref(0)
 
 const playpauseVideo = () => {
     if (!videoStarted.value) videoStarted.value = true
@@ -116,6 +124,7 @@ const showNotePanel = () => {
     isPlaying.value = false
     controlsHover()
     noteTimestamp.value = parsedElapsedTime.value
+    videoRatio.value = video.value?.currentTime / video.value?.duration
 
     notePanelShown.value = true
 }
@@ -124,6 +133,8 @@ const NOTES = ref([])
 const noteSaved = (allNotes: any[]) => {
     notePanelShown.value = false
     NOTES.value = allNotes
+    let pozn = JSON.parse(localStorage.getItem("poznamky")!) ?? []
+    poznamkyProVideo.value = pozn.filter(x => x[3] == Videa[videoIndex.value].url)
 }
 
 const progressbar = ref<HTMLProgressElement>()
@@ -141,11 +152,13 @@ const scrubVideo = (click: MouseEvent) => {
     video.value.currentTime = skipToTime
 }
 
+const changedNoteTime = () => videoRatio.value = video.value?.currentTime / video.value?.duration
+
 </script>
 
 <template>
     <main class="mx-auto w-full">
-        <div class="relative max-w-[60rem] mx-auto border-geo-400 drop-shadow-sharp">
+        <div class="relative max-w-[60rem] mx-auto border-geo-400">
             <Teleport to="html" :disabled="!isFullscreened">
                 <video
                     ref="video"
@@ -179,6 +192,7 @@ const scrubVideo = (click: MouseEvent) => {
                     </button>
                     <div class="flex relative flex-col w-full grow">
                         <div v-if="pbarHovering" :style="{left: `${pbarHelpLeftOffset}%`}" class="absolute -top-6 px-2 w-max text-sm text-white bg-black bg-opacity-80 rounded-md -translate-x-1/2 pointer-events-none">{{ progressbarTime }}</div>
+                        <span v-for="p in poznamkyProVideo" :style="{left: `${p[4]*100}%`}" class="absolute -top-1 z-10 w-2 h-3/4 -translate-x-1/2 -skew-x-12 bg-ext-fia"></span>
                         <progress
                             ref="progressbar"
                             @click="scrubVideo"
@@ -204,11 +218,11 @@ const scrubVideo = (click: MouseEvent) => {
                 <span class="skew-x-12">Zapsat poznámku</span>
             </button>
         </nav>
-        <EditorPoznamky @cancel="notePanelShown = false" @saved="noteSaved" v-if="notePanelShown" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
+        <EditorPoznamky @cancel="notePanelShown = false" @changedNoteTime="changedNoteTime" @saved="noteSaved" v-if="notePanelShown" :time-ratio="videoRatio" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
 
-        <section class="flex flex-wrap justify-between pr-6 mt-2 ml-3 w-full max-sm:mt-16">
+        <section class="flex flex-wrap gap-y-4 justify-between pr-6 mt-2 ml-3 w-full max-sm:mt-16">
             <RouterLink class="grid grid-cols-[max-content_1fr] p-2 w-full max-w-lg bg-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">
-                <img :src="thumbPredVideo" class="w-44" :alt="Videa[videoIndex - 1].nazev">
+                <img :src="thumbPredVideo" class="w-44 max-w-[30vw]" :alt="Videa[videoIndex - 1].nazev">
                 <div class="flex flex-col p-2">
                     <h2 class="mb-5 text-xl font-extrabold">Předchozí video</h2>
                     <span>{{ Videa[videoIndex - 1].nazev }}</span>
@@ -216,8 +230,8 @@ const scrubVideo = (click: MouseEvent) => {
             </RouterLink>
             <div v-else></div>
 
-            <RouterLink class="grid grid-cols-[max-content_1fr] p-2 w-full max-w-lg bg-white" :to="Videa[videoIndex + 1].url" v-if="videoIndex < Videa.length - 1">
-                <img :src="thumbDalsiVideo" class="w-44" :alt="Videa[videoIndex + 1].nazev">
+            <RouterLink class="grid grid-cols-[max-content_1fr] ml-auto p-2 w-full max-w-lg bg-white" :to="Videa[videoIndex + 1].url" v-if="videoIndex < Videa.length - 1">
+                <img :src="thumbDalsiVideo" class="w-44 max-w-[30vw]" :alt="Videa[videoIndex + 1].nazev">
                 <div class="flex flex-col p-2">
                     <h2 class="mb-5 text-xl font-extrabold">Další video</h2>
                     <span>{{ Videa[videoIndex + 1].nazev }}</span>
@@ -226,7 +240,7 @@ const scrubVideo = (click: MouseEvent) => {
         </section>
 
         <section class="flex flex-col gap-5 px-2 mt-8 ml-1 w-full">
-            <Sekce nadpis="Poznámky" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
+            <Sekce nadpis="Poznámky" :add-component="PrehravacPoznamka" :comp-props="[{text: 'sex'}]" />
             <Sekce nadpis="Popis" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
             <Sekce nadpis="Zdroje" v-if="Videa[videoIndex].zdroje" :text="Videa[videoIndex].zdroje" />
         </section>

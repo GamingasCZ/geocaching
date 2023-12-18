@@ -25,7 +25,7 @@ dialog.value?.addEventListener("close", close)
     <dialog ref="dialog" class="max-w-5xl leading-relaxed text-black bg-transparent underlineThick backdrop:bg-black backdrop:bg-opacity-70 drop-shadow-sharp">
         <div class="flex justify-between">
             <header>Nápověda</header>
-            <button class="px-2 text-2xl text-black bg-red-500" @click="close">X</button>
+            <button class="px-2 text-2xl text-black bg-ext-red" @click="close">X</button>
         </div>
         <div class="p-2 bg-geo-300">
             <h2 class="mt-2 text-2xl font-bold">K čemu je nástěnka</h2>

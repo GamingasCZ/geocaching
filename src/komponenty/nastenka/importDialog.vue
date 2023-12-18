@@ -35,6 +35,7 @@ const pouzitZalohu = () => {
 
         for (let i = 0; i < props.zaloha.data[1].length; i++)
             celkemKesky.push(Array.from(new Set(currentKesky[i].concat(givenKesky[i]))))
+        
 
         emit("updateCaches", celkemKesky)
     }
@@ -87,8 +88,8 @@ const metodaImportu = ref(-1)
                         </tr>
                         <tbody class="w-full">
                             <tr v-for="(keska, index) in rozlozeneKesky" class="odd:bg-black odd:bg-opacity-30 even:bg-black even:bg-opacity-10">
-                                <td>{{ keska.jmeno }}</td>
-                                <td>{{ zaloha.data[1][keska.sekce].jmeno }}</td>
+                                <td class="pl-2">{{ keska.jmeno }}</td>
+                                <td class="pr-2">{{ zaloha.data[1][keska.sekce].jmeno }}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -11,13 +11,13 @@ defineProps<{
 
 <template>
     <RouterLink :to="`/videa/${url}`" class="min-w-full">
-        <li class="relative p-1 pl-2 text-white border-b-4 bg-geo-50 border-b-ext-fia noteFooter">
+        <div class="relative p-1 pl-2 text-white border-b-4 bg-geo-50 border-b-ext-fia noteFooter">
             <h1 class="font-bold font-lg">{{ nazev }}</h1>
             <p class="text-xs">{{ text }}</p>
             <footer class="m-0.5">
                 <span class="p-1 text-sm bg-black rounded-md">{{ cas }}</span>
             </footer>
-        </li>
+        </div>
     </RouterLink>
 </template>
 

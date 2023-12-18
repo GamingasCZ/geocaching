@@ -5,6 +5,8 @@ import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
 import { onMounted, ref, watch } from 'vue';
 
+import BodTrasy from './bodTrasy.vue';
+import PridatIkona from "@/ikony/plus.svg"
 import NapovedaIkona from "@/ikony/zarovka.svg"
 import ViceIkona from "@/ikony/more.svg"
 import MapaIkona from "@/ikony/mapa.svg"
@@ -17,6 +19,10 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
+import Style from 'ol/style/Style';
+import Fill from 'ol/style/Fill';
+import { parseDistance, type Waypoint } from '@/parserKesek';
+import type { FeatureObject } from 'ol/format/Feature';
 
 const props = defineProps<{
     jmeno: string;
@@ -24,71 +30,88 @@ const props = defineProps<{
     pozice: {latitude: number, longtitude: number}
     open: boolean;
     geokod: string;
+    waypointy: Waypoint[];
 }>()
 
 const map = ref()
 
-function myZoom() {
+function mapGoto(lon: number, lat: number) {
     let myView = new View({
-        center: transform(fromLonLat([props.pozice.longtitude, props.pozice.latitude]), m.getView().getProjection(), m.getView().getProjection()), zoom: 16 });
+        center: transform(fromLonLat([lon, lat], 'EPSG:3857'), m.getView().getProjection(), m.getView().getProjection()), zoom: 16 });
     m.setView(myView);
 }
 
 
-let bod = new Point(fromLonLat([16.6034506, 49.2162547]))
 let m;
-onMounted(() => {
+let VecLayer = new VectorLayer({
+    source: new VectorSource({
+        features: []
+    }),
+    style: {
+        "circle-radius": 9,
+        "circle-fill-color": getComputedStyle(document.documentElement).getPropertyValue('--svetly'),
+        "circle-stroke-color": 'black',
+        "stroke-width": 3,
+    }
+})
+const spawnMapy = () => {
     m = new Map({
       target: map.value,
       layers: [
         new TileLayer({
           source: new OSM(),
         }),
-        new VectorLayer({
-            source: new VectorSource({
-                features: [new Feature(bod)]
-            }),
-            style: {
-                "circle-radius": 9,
-                "circle-fill-color": getComputedStyle(document.documentElement).getPropertyValue('--svetly'),
-                "circle-stroke-color": 'black',
-                "stroke-width": 3
-            }
-        })
+        VecLayer
       ],
     });
-    myZoom()
-})
+
+    addPointToMap(props.pozice.longtitude, props.pozice.latitude)
+    props.waypointy.forEach(wp => addPointToMap(wp.longitude, wp.latitude))
+    mapGoto(props.pozice.longtitude, props.pozice.latitude)
+}
+
+const addPointToMap = (lon: number, lat: number) => {
+    let bod = new Feature(new Point(fromLonLat([lon, lat])))
+    VecLayer.getSource()?.addFeature(bod)
+}
 
 const dialog = ref<HTMLDialogElement>()
 watch(props, () => {
     dialog.value?.showModal()
-    // if (props.pozice.latitude == 0) {
-    //     myZoom()
-    // }
+    spawnMapy()
     ziskatPozici()
 })
 
 const close = () => {
     dialog.value?.close()
+    VecLayer.getSource()?.getFeatures().forEach((feat) => {
+        feat.dispose()
+    })
 }
 dialog.value?.addEventListener("close", close)
 
 const napovedaShown = ref(false)
+const mapFullscreen = ref(false)
 
 const vzdalMetry = ref("0m")
-const azimut = ref(0)
-const azimutRadian = ref(0)
+const azimut = ref("0")
+const azimutRadian = ref("0")
+const nyniPoloha = ref({latitude: 0, longitude: 0})
+const polohaZakazana = ref(false)
+
+watch(nyniPoloha, () => {
+    addPointToMap(nyniPoloha.value.longitude, nyniPoloha.value.latitude)
+})
+
+const nacitaniPolohy = ref(false)
 function ziskatPozici() {
     if ("geolocation" in navigator) {
+        nacitaniPolohy.value = true
         navigator.geolocation.getCurrentPosition((nyniPozice) => {
-            let nyniPoloha = {latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude}
+            nyniPoloha.value = {latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude}
             let polohaKesky = {latitude: props.pozice.latitude, longitude: props.pozice.longtitude}
-            let vzdalenost = parseFloat(Vzdalenost.vincentySync(nyniPoloha, polohaKesky))
-            // let a = Math.log( Math.tan( polohaKesky.latitude / 2 + Math.PI / 4 ) / Math.tan( nyniPoloha.latitude / 2 + Math.PI / 4) )
-            // let b = Math.abs( nyniPoloha.longitude - nyniPoloha.longitude )
-            // let az = Math.atan2(a, b)
-            let az = Math.atan((nyniPoloha.longitude-polohaKesky.longitude) / (nyniPoloha.latitude-polohaKesky.latitude));
+            let vzdalenost = parseFloat(Vzdalenost.vincentySync(nyniPoloha.value, polohaKesky))
+            let az = Math.atan((nyniPoloha.value.longitude-polohaKesky.longitude) / (nyniPoloha.value.latitude-polohaKesky.latitude));
             let a = az+Math.PI/2
             if (a < 0) a += 2*Math.PI
             let b = az*180.0/Math.PI
@@ -96,61 +119,63 @@ function ziskatPozici() {
 
             azimutRadian.value = (a).toFixed(0);
             azimut.value = (b).toFixed(0);
-
-            switch (true) {
-                case vzdalenost >= 1000:
-                    vzdalMetry.value = `${(vzdalenost/1000).toFixed(1)}km`; break;
-                case vzdalenost >= 100:
-                    vzdalMetry.value = `${vzdalenost.toFixed(0)}m`; break;
-                case vzdalenost >= 10:
-                    vzdalMetry.value = `${vzdalenost.toFixed(1)}m`; break;
-                case vzdalenost < 10:
-                    vzdalMetry.value = `${vzdalenost.toFixed(2)}m`; break;
-                default:
-                    break;
-            }
-
+            vzdalMetry.value = parseDistance(vzdalenost)
+            nacitaniPolohy.value = false
         }, (chyba) => {
-            console.log("kurva")
-        })
+            polohaZakazana.value = true
+            nacitaniPolohy.value = false
+        }, {enableHighAccuracy: true})
     }
 }
 
+const bodyTrasyShown = ref(false)
 </script>
 
 <template>
     <dialog ref="dialog" class="backdrop:bg-black backdrop:bg-opacity-80">
-        <section class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full h-[45rem] max-h-screen max-sm:grid-rows-[17rem_1fr]">
+        <section class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full h-[45rem] overflow-y-auto max-h-screen relative" :class="{'max-sm:grid-rows-[10rem_1fr]': !mapFullscreen, 'flex': mapFullscreen}">
             <!-- Mapa -->
-            <div ref="map" class="relative h-full border-4 border-r-0 skewButton border-geo-400">
-                <button class="absolute top-1/2 left-1/2 z-10 p-2 text-xl font-medium border-2 -translate-x-1/2 -translate-y-1/2 border-geo-400">Zobrazit mapu</button>
-                <div class="absolute top-0 -right-3 w-16 h-full bg-gradient-to-l to-transparent -z-10 from-geo-400"></div>
+            <div ref="map" class="relative h-full border-4 border-r-0 border-geo-400 skewButton">
+                <button class="absolute top-1/2 left-1/2 z-10 p-2 text-lg font-medium border-2 border-black -translate-x-1/2 -translate-y-1/2 sm:hidden" v-if="!mapFullscreen" @click="mapFullscreen = true">Zobrazit mapu</button>
+                <div class="absolute top-2 left-2 w-max bg-geo-400 ol-zoom" v-if="mapFullscreen">
+                    <button @click="mapFullscreen = false" class="" >fs</button>
+                </div>
             </div>
     
             <!-- Ovládání -->
-            <div class="flex flex-col items-center h-full">
-                <KompasIkona class="my-4 scale-75" :style="{transform: `rotate(${azimut}deg)`}" />
-                <h2 class="text-xl font-bold">{{ jmeno }}</h2>
-                <h3 class="flex justify-around my-2 w-full text-xl font-bold">
+            <div class="flex absolute flex-col items-center w-[17rem] right-0 overflow-auto h-full max-sm:w-full" v-if="!mapFullscreen">
+                <KompasIkona class="overflow-visible my-4 scale-75" :style="{transform: `rotate(${azimut}deg)`}" />
+                <h2 class="text-xl font-bold text-center">{{ jmeno }}</h2>
+                <h3 class="flex justify-around my-2 w-full text-xl font-bold" v-if="!polohaZakazana">
                     <span>{{vzdalMetry}}</span>
                     <span>{{azimut}}°</span>
                 </h3>
-                <div class="flex flex-col gap-3">
+                <div v-if="!polohaZakazana && nacitaniPolohy" class="py-2 my-2 w-1/2 h-8 bg-black bg-opacity-40 rounded-md"></div>
+                <div class="flex flex-col w-full h-full">
                     <div>
-                        <button @click="napovedaShown = !napovedaShown" class="flex gap-2 items-center w-full hover:bg-black hover:bg-opacity-30"><NapovedaIkona stroke="black" class="scale-75" />Nápověda<ViceIkona class="ml-auto scale-50" :class="{'rotate-180': napovedaShown}" /></button>
-                        <p v-if="napovedaShown" class="p-1 w-full text-sm bg-black bg-opacity-20">{{ napoveda }}</p>
+                        <button @click="napovedaShown = !napovedaShown" :class="{'bg-black bg-opacity-20': napovedaShown}" :disabled="!napoveda" class="flex gap-2 items-center px-1 py-2 w-full disabled:pointer-events-none disabled:opacity-30 hover:bg-black hover:bg-opacity-30"><NapovedaIkona stroke="black" class="scale-75" />Nápověda<ViceIkona class="ml-auto scale-50" v-if="napoveda" :class="{'rotate-180': napovedaShown}" /></button>
+                        <p v-if="napovedaShown && napoveda" class="p-1 w-full text-sm bg-black bg-opacity-20">{{ napoveda }}</p>
                     </div>
-                    <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><MapaIkona stroke="black" class="scale-75" />Body trasy<ViceIkona class="ml-auto scale-50" /></button>
+                    <div>
+                        <button @click="bodyTrasyShown = !bodyTrasyShown" :class="{'bg-black bg-opacity-20': bodyTrasyShown}" class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30"><MapaIkona stroke="black" class="scale-75" />Body trasy<ViceIkona class="ml-auto scale-50" :class="{'rotate-180': bodyTrasyShown}" /></button>
+                        <div v-if="bodyTrasyShown" class="flex flex-col gap-2 px-4 py-1 w-full text-sm bg-black bg-opacity-20">
+                            <button class="flex gap-2 items-center pr-2 pl-1 mx-auto w-max font-medium border-2 border-black hover:bg-black hover:bg-opacity-20"><PridatIkona class="scale-75" />Přidat</button>
+                            <BodTrasy jmeno="Výchozí" :latitude="props.pozice.latitude" :longitude="props.pozice.longtitude" :def="true" @go-to-point="mapGoto($event.lon, $event.lat)" />
+                            <BodTrasy v-for="wpt in waypointy" v-bind="wpt" @go-to-point="mapGoto($event.lon, $event.lat)" />
+                        </div>
+                    </div>
                     <div class="py-3"></div>
                     <a :href="`https://www.geocaching.com/geocache/${geokod}`" target="_blank">
-                        <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Geocaching.com</button>
+                        <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Geocaching.com</button>
                     </a>
                     <a :href="`https://mapy.cz/zakladni?source=coor&id=${pozice.longtitude}%2C${pozice.latitude}&x=${pozice.longtitude}&y=${pozice.latitude}&z=16`" target="_blank">
-                        <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Mapách.cz</button>
+                        <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Mapách.cz</button>
                     </a>
-                    <button class="flex gap-2 items-center hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Google Mapách</button>
-                    <div class="py-3"></div>
-                    <button class="flex gap-2 items-center w-full hover:bg-black hover:bg-opacity-30" @click="close"><ZavritIkona stroke="black" class="scale-75" />Zavřít</button>
+                    <a :href="`https://www.google.com/maps/search/?api=1&query=${pozice.latitude}%2C${pozice.longtitude}`" target="_blank">
+                        <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30"><OdkazIkona stroke="black" class="scale-75" />Zobrazit na Google Mapách</button>
+                    </a>
+                    <div class="grow"></div>
+                    <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30" @click="close"><ZavritIkona stroke="black" class="scale-75" />Zavřít</button>
                 </div>
             </div>
         </section>

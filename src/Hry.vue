@@ -2,6 +2,8 @@
 import thumb from '@/obrazky/hrynahledy/menuBG2.webp'
 import hry from './assety/hry';
 
+import PlayIkona from "@/ikony/hraPlay.svg"
+
 </script>
 
 <template>
@@ -13,9 +15,12 @@ import hry from './assety/hry';
             :style="{backgroundImage: `url(${thumb})`}"
         >
             <div class="w-full h-1/2 bg-gradient-to-t to-transparent from-geo-400"></div>
-            <div class="absolute bottom-0 w-full leading-snug overflow-x-clip">
-                <h1 class="isolate text-4xl font-normal">{{ hra.nazev }}</h1>
-                <p class="isolate text-sm">{{ hra.popis }}</p>
+            <div class="flex absolute bottom-0 items-center w-full leading-snug overflow-x-clip">
+                <PlayIkona class="scale-75" />
+                <div>
+                    <h1 class="isolate text-4xl font-normal">{{ hra.nazev }}</h1>
+                    <p class="isolate text-sm">{{ hra.popis }}</p>
+                </div>
             </div>
         </RouterLink>
     </main>    

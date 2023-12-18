@@ -19,7 +19,7 @@ getNahled()
 <template>
     <RouterLink
         :to="`/videa/${url}`" 
-        class="border-2 bg-cover bg-top hover:bg-[center_10%] max-sm:min-w-full ease-in-out duration-100 transition-[background-position] border-geo-400 w-[max(20rem,30vw)] max-w-[24rem] pt-36 block" 
+        class="border-2 bg-cover bg-top hover:bg-[center_10%] max-sm:min-w-full ease-in-out duration-100 transition-[background-position] w-[20rem] border-geo-400 grow pt-36 block" 
         :style="{backgroundImage: `url(${nahled})`}
     ">
         <div class="relative p-0.5 leading-snug bg-opacity-70 backdrop-blur-sm overflow-x-clip bg-geo-400 videoBlur">

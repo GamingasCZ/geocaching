@@ -90,7 +90,7 @@ watch(props, () => {
 </script>
 
 <template>
-    <section class="m-1 bg-white drop-shadow-sharp group" @click="clickCard" :class="{'border-l-4': compact, 'border-l-8 cursor-pointer': compactMode}" :style="{borderColor: barva}" @dragexit="emit('leftDragArea')" @dragstart="emit('startedDragging', index)" @dragend="moveCache" :draggable="!Nastaveni.zakazatPretahovani && !selectMode" :data-index="index" @dragover="draggedOverCard">
+    <section class="m-1 bg-white drop-shadow-straight group" @click="clickCard" :class="{'border-l-4': compact, 'border-l-8 cursor-pointer': compactMode}" :style="{borderColor: barva}" @dragexit="emit('leftDragArea')" @dragstart="emit('startedDragging', index)" @dragend="moveCache" :draggable="!Nastaveni.zakazatPretahovani && !selectMode" :data-index="index" @dragover="draggedOverCard">
         <div :class="{'pointer-events-none': disableChildDragover && !Nastaveni.zakazatPretahovani}">
             <div class="relative p-1" :class="{'pozadi': selected}">
                 <h2 class="flex relative justify-between items-center text-lg font-bold">
@@ -100,10 +100,12 @@ watch(props, () => {
                     </div>
                     <ViceIkona class="opacity-0 transition-opacity scale-50 group-hover:opacity-100" v-if="Nastaveni.zobrazeni == 1" :class="{'rotate-180': compactUnrolled}" />
                 </h2>
-                <ul class="flex gap-4 pl-4 text-sm opacity-60" v-if="compact">
-                    <li>{{ druh.slice(0,1).toUpperCase() + druh.slice(1) }}</li>  
-                    <li>D{{ obtiznost }}</li>  
-                    <li>T{{ teren }}</li>  
+                <ul class="flex gap-4 text-sm" v-if="compact">
+                    <span v-if="vzdalenost">{{ vzdalenost }}</span>
+                    <li class="opacity-60" :class="{'ml-2': !vzdalenost}">{{ druh.slice(0,1).toUpperCase() + druh.slice(1) }}</li>  
+                    <li class="opacity-60">{{ kod }}</li>
+                    <li class="opacity-60">D{{ obtiznost }}</li>
+                    <li class="opacity-60">T{{ teren }}</li>
                 </ul>
             </div>
             <div class="flex relative justify-around w-full pozadi" v-if="compact">

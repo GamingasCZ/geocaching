@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick} from 'vue';
-import { hasLocalStorage, handleDrop, refreshList, makeSectionArray } from './parserKesek'
+import { hasLocalStorage, handleDrop, refreshList, makeSectionArray, parseDistance } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
 import summonNotif from "@/komponenty/ostatni/summonNotif"
 import Mapa from "./komponenty/nastenka/mapa.vue"
 import { Nastaveni as nastaveniNastenky } from './komponenty/nastenka/nastaveniNastenky';
 import Nastaveni from './komponenty/nastenka/nastaveni.vue';
+import Vzdalenost from "node-geo-distance";
+import barvyKesek from './assety/barvyKesek';
 
+import ZavritIkona from "@/ikony/zavrit.svg"
 import PotvrditIkona from "@/ikony/potvrdit.svg"
 import NicIkona from "@/ikony/nic.svg"
 import SouboryIkona from "@/ikony/soubory.svg"
@@ -24,12 +27,11 @@ import NapovedaIkona from "@/ikony/napoveda.svg"
 import ImportIkona from "@/ikony/import.svg"
 import ExportIkona from "@/ikony/export.svg"
 import Napoveda from './komponenty/nastenka/napoveda.vue';
-import barvyKesek from './assety/barvyKesek';
 import ImportDialog from './komponenty/nastenka/importDialog.vue';
 
 const pretahuje = ref(false)
 
-const vsechnyKesky = ref<Array<IntKeska[]>>(makeSectionArray())
+const vsechnyKesky = ref<IntKeska[][]>(makeSectionArray())
 const vsechnySekce = ref<Sekce[]>([])
 
 const editaceJmena = ref(-1)
@@ -40,6 +42,24 @@ const hasLS = hasLocalStorage()
 
 onMounted(() => {
     [vsechnyKesky.value, vsechnySekce.value] = refreshList()
+    if ("geolocation" in navigator) {
+        navigator.geolocation.getCurrentPosition((nyniPozice) => {
+            let tatoPoloha = {latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude}
+            for (let i = 0; i < vsechnySekce.value.length; i++) {
+                let j = 0
+                vsechnyKesky.value[i].forEach((keska: IntKeska) => {
+                    let polohaKesky = {latitude: keska.latitude, longitude: keska.longtitude}
+                    let vzdalenost = parseDistance(parseFloat(Vzdalenost.vincentySync(tatoPoloha, polohaKesky)))
+                    vsechnyKesky.value[i][j].vzdalenost = vzdalenost
+
+                    j += 1
+                })
+            }
+
+        }, (chyba) => {
+            console.log("kurva")
+        }, {enableHighAccuracy: true})
+    }
 })
 
 async function dropped(e: Event) {
@@ -94,7 +114,8 @@ const zobrazenaNaMapeKeska = ref({
     jmeno: "",
     napoveda: "",
     pozice: {latitude: 0, longtitude: 0},
-    geokod: ""
+    geokod: "",
+    waypointy: []
 })
 
 const mapaOtevrena = ref(false)
@@ -104,6 +125,7 @@ const otevritMapu = (index: number, sekce: number) => {
     zobrazenaNaMapeKeska.value.napoveda = keska.napoveda
     zobrazenaNaMapeKeska.value.pozice = {latitude: keska.latitude, longtitude: keska.longtitude}
     zobrazenaNaMapeKeska.value.geokod = keska.kod
+    zobrazenaNaMapeKeska.value.waypointy = keska.waypointy
     mapaOtevrena.value = !mapaOtevrena.value
 }
 
@@ -135,9 +157,9 @@ const leaveArea = () => {
 
 const filtrZobrazen = ref(-1)
 const filtrAktivni = ref(-1)
-const hledatKesky = (e: SubmitEvent, sekce: index) => {
+const hledatKesky = (e: Event | -1, sekce: index) => {
     [vsechnyKesky.value] = refreshList()
-    let searchText = (e.target as HTMLFormElement).elements[0].value.toLowerCase()
+    let searchText = e == -1 ? "" : (e.target as HTMLFormElement).elements[1].value.toLowerCase()
     filtrAktivni.value = sekce
     let filtrovaneKesky = vsechnyKesky.value[sekce].filter(keska => keska.jmeno.toLowerCase().includes(searchText))
     vsechnyKesky.value[sekce] = filtrovaneKesky
@@ -151,25 +173,11 @@ const zmenitSekci = () => {
 const selectedCaches = ref<[number, number][]>([])
 const modifySelections = (index: number, sekce: number, shiftSelection: boolean = false) => {
     if (!selectMode.value) selectMode.value = true
-    
-    // Vybírání shiftem
-    // if (shiftSelection) {
-    //     let lastSelected = selectedCaches.value.slice(selectedCaches.value.length-1)[0] ?? [0, sekce]
-    //     if (lastSelected[1] != sekce) return // Jde vybírat jen mezi stejnýma sekcema
-    //     let range = [lastSelected[0], index].sort()
-    //     for (let i = range[0]; i < range[1]; i++) {
-    //         selectedCaches.value.push([i, sekce])
-    //         test.value[i].select()
-    //     }
-    // }
-    // else {
         let findIndex = selectedCaches.value.map(x => x[0] == index && x[1] == sekce ? 1 : 0)
-        if (findIndex.includes(1))
+    if (findIndex.includes(1))
         selectedCaches.value.splice(findIndex.indexOf(1), 1)
-        else
+    else
         selectedCaches.value.push([index, sekce])
-    
-    // }
     
     if (selectedCaches.value.length == 0) {
         selectMode.value = false
@@ -222,13 +230,14 @@ const dragDropFiles = async (e: DragEvent) => {
 const test = ref()
 const settingsOpen = ref(false)
 
-const moveDropdownOpen = ref(false)
+const moveDropdownOpen = ref(-1)
 const moveDropdownElement = ref<HTMLDivElement>()
-const openMoveDropdown = () => {
-    moveDropdownOpen.value = !moveDropdownOpen.value
+const openDropdown = (which: any, indexSekce?: number) => {
+    let dropdowns = [moveDropdownOpen, sortDropdownOpen]
+    dropdowns[which].value = indexSekce == undefined ? 1 : indexSekce
     nextTick(() => {
         document.body.addEventListener("click", (e: MouseEvent) => {
-            moveDropdownOpen.value = false
+            dropdowns[which].value = -1
         }, {once: true, capture: true})
     })
 }
@@ -259,6 +268,72 @@ const moveSelectedToTop = () => {
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
 }
 
+const darkThemes = [1, 1, 0, 1, 1, 0, 0]
+const shouldBeDark = (sekce: Sekce) => darkThemes[Object.values(barvyKesek).indexOf(sekce.barva)]
+
+const podleAbecedy = (arr: IntKeska[]) => arr.sort((a, b) => a.jmeno[0].toLowerCase() > b.jmeno[0].toLowerCase())
+const podleVzdalenosti = (arr: IntKeska[]) => arr.sort((a, b) => a)
+const podleDruhu = (arr: IntKeska[]) => arr.sort((a, b) => a.druh > b.druh)
+const podleObtiznosti = (arr: IntKeska[]) => arr.sort((a, b) => a.obtiznost > b.obtiznost)
+const podleData = (arr: IntKeska[]) => arr.sort((a, b) => a.datumVlozeni > b.datumVlozeni)
+
+const sortDropdownOpen = ref(-1)
+const vybraneRazeni = ref(0)
+const razeniAktivni = ref(-1)
+const zpusobyRazeni = [
+    {
+        nazev: "vzdálenosti",
+        fun: podleVzdalenosti
+    },
+    {
+        nazev: "druhu",
+        fun: podleDruhu
+    },
+    {
+        nazev: "obtížnosti",
+        fun: podleObtiznosti
+    },
+    {
+        nazev: "data přidání",
+        fun: podleData
+    },
+    {
+        nazev: "abecedy",
+        fun: podleAbecedy
+    },
+]
+
+const sortCaches = (natrvalo: boolean, sekceIndex: number) => {
+    vsechnyKesky.value[sekceIndex] = zpusobyRazeni[vybraneRazeni.value].fun(vsechnyKesky.value[sekceIndex])
+    if (natrvalo) localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value)!)
+    else razeniAktivni.value = sekceIndex
+}
+const zrusitDocasnySort = () => {
+    vsechnyKesky.value[razeniAktivni.value] = refreshList()[0][razeniAktivni.value]
+    razeniAktivni.value = -1
+}
+
+const pridatSekci = () => {
+    vsechnyKesky.value.splice(1, 0, [])
+    vsechnySekce.value.splice(1, 0, {jmeno: 'Rozpracované', 'barva': barvyKesek.mystery})
+    localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value))
+    localStorage.setItem("sekce", JSON.stringify(vsechnySekce.value))
+}
+
+const smazatSekci = (ind: number) => {
+    vsechnyKesky.value.splice(ind, 1)
+    vsechnySekce.value.splice(ind, 1)
+    localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value))
+    localStorage.setItem("sekce", JSON.stringify(vsechnySekce.value))
+}
+
+const smallScreen = ref(-1)
+const modifyWindow = () => {
+    smallScreen.value = window.outerWidth < 540 ? 0 : -1
+}
+window.addEventListener("resize", modifyWindow)
+modifyWindow()
+
 
 </script>
 
@@ -276,20 +351,20 @@ const moveSelectedToTop = () => {
  <input ref="input" type="file" accept=".gpx" name="" id="" multiple class="hidden absolute inset-0 z-50 w-screen h-screen opacity-0" @input="dropped">
 
  <nav class="flex relative justify-between h-10" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
-    <Nastaveni :open="settingsOpen" />
+    <Nastaveni :open="settingsOpen" :ma-treti-sekci="vsechnySekce.length == 3" @pridat-sekci="pridatSekci" />
 
     <div class="flex gap-1 mr-6 h-full">
         <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold navButton" v-if="!selectMode">
             <PridatIkona class="scale-75" />
             <span class="max-sm:hidden">Přidat kešky</span>
         </button>
-        <button @click="selectMode = !selectMode" class="flex relative gap-2 items-center pl-4 ml-2 font-bold navButton">
+        <button @click="selectMode = !selectMode" class="flex relative gap-2 items-center pl-4 font-bold navButton" :class="{'ml-2': selectMode}">
             <VybratIkona class="scale-75" />
             <span class="max-sm:hidden" v-if="!selectMode">Vybrat</span>
             <span class="max-sm:hidden" v-else>Zpět</span>
         </button>
     </div>
-    <div class="flex gap-1 mr-6 h-full" v-if="!selectMode">
+    <div class="flex mr-6 h-full" v-if="!selectMode">
         <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="importBackup?.click()">
             <ImportIkona class="scale-75" />
             <span class="max-sm:hidden">Import</span>
@@ -307,13 +382,13 @@ const moveSelectedToTop = () => {
             <span class="max-sm:hidden">Smazat</span>
         </button>
         <button class="relative font-bold">
-            <div class="flex gap-2 items-center pr-1 pl-2 navButton" @click="openMoveDropdown">
+            <div class="flex gap-2 items-center pr-1 pl-2 navButton" @click="openDropdown(0)">
                 <MoveIkona class="scale-75" />
                 <span class="max-sm:hidden">Přesunout</span>
             </div>
 
             <!-- Dropdown -->
-            <div class="flex absolute right-0 top-10 z-40 flex-col w-48 font-normal bg-geo-300" v-show="moveDropdownOpen" ref="moveDropdownElement">
+            <div class="flex absolute right-0 top-10 z-40 flex-col w-48 font-normal bg-geo-300" v-show="moveDropdownOpen > 0" ref="moveDropdownElement">
                 <button v-for="(sekce, sInd) in vsechnySekce" class="px-1 py-2 text-left border-b-2 border-opacity-50 border-b-black hover:bg-black hover:bg-opacity-20" @click="moveSelectedCaches(sInd)">{{ sekce.jmeno }}</button>
             </div>
         </button>
@@ -325,50 +400,72 @@ const moveSelectedToTop = () => {
  </nav>
 
  <div class="flex gap-5 justify-center mt-3" v-if="hasLS">
-     <div class="w-96 h-[60rem] max-h-[70vh]" v-for="(sekce, indexSekce) in vsechnySekce" @dragover="draggingOverSection = indexSekce">
+     <div class="w-96 h-[60rem] max-h-[70vh] px-3" v-for="(sekce, indexSekce) in vsechnySekce" v-show="smallScreen == -1 ? true : indexSekce == smallScreen" :key="sekce.barva" @dragover="draggingOverSection = indexSekce">
 
         <!-- Jméno sekce -->
         <div :style="{background: sekce.barva}" @click="editaceJmena = indexSekce" class="flex justify-between items-center text-xl font-extrabold text-white cursor-pointer group">
-           <div class="w-full">
+           <div class="flex w-full">
+                <button class="ml-2" @click.stop="smallScreen = (smallScreen + 1) % (vsechnySekce.length)" v-if="editaceJmena == -1 && smallScreen != -1"><MoveIkona /></button>
                 <form @submit.prevent="zmenitSekci" class="flex w-full h-max" v-if="editaceJmena == indexSekce">
                     <input type="text" maxlength="15" autocomplete="off" autofocus class="p-1.5 bg-black bg-opacity-30 outline-none grow" v-model="sekce.jmeno">
                     <button type="submit" class="w-10 min-h-full bg-black bg-opacity-40">
                         <PotvrditIkona class="mx-auto scale-75" stroke="white" />
                     </button>
-                    <button type="button" class="w-10 min-h-full bg-black bg-opacity-40">
+                    <button @click="smazatSekci(indexSekce)" type="button" class="w-10 min-h-full bg-black bg-opacity-40" v-if="vsechnySekce.length > 2">
                         <SmazatIkona class="mx-auto scale-75" stroke="white" />
                     </button>
                 </form>
-                <h2 class="p-1.5 text-black" v-else>{{ sekce.jmeno }}</h2>
+                <h2 class="p-1.5 text-white" :class="{'!text-black': shouldBeDark(sekce)}" v-else>{{ sekce.jmeno }}</h2>
            </div>
 
-           <EditIkona v-if="editaceJmena != indexSekce" class="mr-2 w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" />
+           <EditIkona v-if="editaceJmena != indexSekce" class="mr-2 w-5 h-5 opacity-0 transition-opacity group-hover:opacity-100" :class="{'invert': shouldBeDark(sekce)}" />
         </div>
         
         <section @dragover.prevent="hoverWithFiles(indexSekce)" @dragleave="draggingWithFile = -1" @drop.prevent="dragDropFiles" :class="{'cursor-copy': draggingWithFile == indexSekce}" class="flex overflow-y-auto relative flex-col w-full h-full bg-geo-300" :style="{accentColor: sekce.barva, scrollbarColor: `${sekce.barva} var(--normal)`}">
             <!-- Hledani -->
-            <form class="w-full grid grid-cols-[1fr_max-content] box-border" :style="{background: sekce.barva}" @submit.prevent="hledatKesky($event, indexSekce)" v-if="filtrZobrazen == indexSekce">
-                <input type="text" placeholder="Hledat..." autocomplete="off" autofocus autocorrect="off" class="px-0.5 m-1 text-sm text-white bg-black bg-opacity-30 placeholder:text-white">
-                <button type="submit" class="scale-75">
-                    <HledatIkona />
+            <form class="w-full grid grid-cols-[max-content_1fr_max-content] box-border" :style="{background: sekce.barva}" @submit.prevent="hledatKesky($event, indexSekce)" v-if="filtrZobrazen == indexSekce">
+                <button type="button" :class="{'invert': !shouldBeDark(sekce)}" class="scale-50" @click="filtrZobrazen = -1; hledatKesky(-1, indexSekce)">
+                    <ZavritIkona :stroke="shouldBeDark(sekce) ? 'black' : 'white'" />
                 </button>
+                <input type="text" @keyup.esc="filtrZobrazen = -1; hledatKesky(-1, indexSekce)" placeholder="Hledat..." autocomplete="off" autofocus autocorrect="off" class="px-0.5 m-1 text-sm text-white bg-black bg-opacity-30 placeholder:text-white">
+                <!-- <button type="submit" class="scale-75">
+                    <HledatIkona :stroke="shouldBeDark(sekce) ? 'black' : 'white'" />
+                </button> -->
             </form>
 
             <!-- Barvy -->
-            <div class="flex pb-2 w-full h-8 bg-black bg-opacity-10" :style="{background: sekce.barva}" v-else-if="editaceJmena == indexSekce">
+            <div class="flex sticky top-0 z-10 pb-2 w-full h-8 bg-black bg-opacity-10" :style="{background: sekce.barva}" v-else-if="editaceJmena == indexSekce">
                 <button v-for="barva in barvyKesek" class="box-border p-0.5 w-full h-6 border-black scale-75 -skew-x-12 drop-shadow-sharp" @click="sekce.barva = barva" :class="{'border-4': sekce.barva == barva}" :style="{background: barva}"></button>
             </div>
 
             <!-- Toolbar -->
-            <div class="flex sticky top-0 bottom-1 z-10 justify-around" :style="{background: sekce.barva}" v-else>
-                <button class="flex gap-1 items-center font-bold" >
-                    <RazeniIkona class="scale-75" />
+            <div class="flex sticky top-0 bottom-1 z-10 justify-around text-white" :class="{'!text-black': shouldBeDark(sekce)}" :style="{background: sekce.barva}" v-else>
+                <button class="flex relative gap-1 justify-center items-center font-bold hover:bg-black hover:bg-opacity-30 grow" @click="openDropdown(1, indexSekce)">
+                    <RazeniIkona class="scale-75" :stroke="shouldBeDark(sekce) ? 'black' : 'white'"/>
                     <span>Řazení</span>
+                    <button v-if="razeniAktivni == indexSekce" @click.stop="zrusitDocasnySort" class="absolute right-0" >
+                        <ZavritIkona :class="{'invert': !shouldBeDark(sekce)}" class="scale-50" />
+                    </button>
                 </button>
-                <button class="flex gap-1 items-center font-bold" @click="filtrZobrazen = indexSekce">
-                    <HledatIkona class="scale-75" />
+                <button class="flex gap-1 justify-center items-center font-bold grow hover:bg-black hover:bg-opacity-30" @click="filtrZobrazen = indexSekce; zrusitDocasnySort()">
+                    <HledatIkona class="scale-75" :stroke="shouldBeDark(sekce) ? 'black' : 'white'" />
                     <span>Hledat</span>
                 </button>
+            </div>
+
+            <!-- Řazeni dropdown -->
+            <div class="absolute left-0 top-8 z-10 py-1 w-48 text-left drop-shadow-sharp bg-geo-300" v-if="sortDropdownOpen == indexSekce">
+                <h3 class="px-2 py-2 border-b-2 border-opacity-40 border-b-black">Řadit podle...</h3>
+                <div class="flex flex-col w-full">
+                    <div v-for="(razeni, rInd) in zpusobyRazeni" class="flex w-full hover:bg-opacity-40 odd:bg-black odd:bg-opacity-10 even:bg-black even:bg-opacity-20" :class="{'!bg-geo-400': rInd == vybraneRazeni}">
+                        <input type="checkbox" class="pl-4 w-full text-left align-middle opacity-0" @click="vybraneRazeni = rInd; openDropdown(1, indexSekce)" :id="razeni.nazev">
+                        <label :for="razeni.nazev" class="cursor-pointer grow">{{ razeni.nazev }}</label>
+                    </div>
+                </div>
+                <div class="flex flex-col gap-3 justify-center px-6 mt-5 mb-4">
+                    <button class="p-1 border-2 border-black" @click="sortCaches(true, indexSekce)" >Seřadit natrvalo</button>
+                    <button class="p-1 border-2 border-black" @click="sortCaches(false, indexSekce)">Seřadit dočasně</button>
+                </div>
             </div>
 
             <!-- Napoveda -->

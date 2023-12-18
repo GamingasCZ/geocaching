@@ -14,17 +14,22 @@ module.exports = {
         600: 'var(--vyrazny)',
       },
       'ext': {
-        fia: 'var(--fialova)'
+        fia: 'var(--fialova)',
+        red: 'var(--cervena)'
       },
       black: '#000',
       white: '#fff',
       inherit: 'inherit',
       transparent: '#00000000',
-      },
-      dropShadow: {
-          sharp: "4px 4px 0px var(--tmavy)"
-      }
     },
-    plugins: [],
-  }
+    extend: {
+      dropShadow: {
+        sharp: "4px 4px 0px var(--tmavy)",
+        straight: "0px 0px 5px #0000006e"
+      }
+    }
+  },
+
+  plugins: [],
+}
 
