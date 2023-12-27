@@ -31,15 +31,19 @@ const pouzitZalohu = () => {
     else { // Sloučit dohromady
         let currentKesky: IntKeska[][] = (JSON.parse(localStorage.getItem("nastenka")!) ?? [])
         let givenKesky: IntKeska[][] = JSON.parse(JSON.stringify(props.zaloha.data[0]))
-        let celkemKesky: IntKeska[][] = currentKesky
+        let celkemKesky: IntKeska[][] = []
+        let stringKesky: string[][] = []
 
         for (var x = 0; x < givenKesky.length; x++) {
-            for (var y = 0; y < givenKesky[x].length; y++) {
-                console.table([x,y])
-                if (currentKesky?.[x]?.[y]?.datumVlozeni != givenKesky?.[x]?.[y]?.datumVlozeni)
-                    celkemKesky[x].push(givenKesky?.[x]?.[y])
-            }
+            let [stringCurrent, stringGiven]:string[][][] = [[], []]
+            stringCurrent[x] = (currentKesky?.[x] ?? []).map(y => JSON.stringify(y))
+            stringGiven[x] = givenKesky?.[x].map(y => JSON.stringify(y))
+
+            stringKesky.push(Array.from(new Set((stringCurrent?.[x] ?? []).concat(stringGiven[x]))))
         }
+
+        for (let i = 0; i < stringKesky.length; i++)
+            celkemKesky[i] = stringKesky[i].map(x => JSON.parse(x))
        
         localStorage.setItem("nastenka", JSON.stringify(celkemKesky))
         localStorage.setItem("sekce", JSON.stringify(props.zaloha.data[1]))
