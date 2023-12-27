@@ -7,7 +7,7 @@ import PlayIkona from "@/ikony/hraPlay.svg"
 </script>
 
 <template>
-    <main class="flex gap-6 p-6 mx-auto w-full h-full grow">
+    <main class="flex gap-6 p-6 mx-auto w-full h-screen grow">
         <RouterLink
             v-for="hra in hry"
             :to="`/hry/${hra.url}`" 

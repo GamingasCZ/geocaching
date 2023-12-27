@@ -3,7 +3,7 @@ import { onMounted, ref, watch } from "vue";
 
 export const Nastaveni = ref({
     zobrazeni: 0,
-    obnovovani: 3,
+    zakazatPolohu: false,
     zakazatPretahovani: false
 })
 

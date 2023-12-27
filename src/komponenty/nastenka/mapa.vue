@@ -3,7 +3,7 @@ import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
-import { onMounted, ref, watch } from 'vue';
+import { inject, ref, watch } from 'vue';
 
 import BodTrasy from './bodTrasy.vue';
 import PridatIkona from "@/ikony/plus.svg"
@@ -19,10 +19,14 @@ import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Feature } from 'ol';
 import { Point } from 'ol/geom';
-import Style from 'ol/style/Style';
-import Fill from 'ol/style/Fill';
-import { parseDistance, type Waypoint } from '@/parserKesek';
-import type { FeatureObject } from 'ol/format/Feature';
+import { parseDistance, type IntKeska, type Waypoint } from '@/parserKesek';
+// import kompas from "kompas";
+
+// kompas.watch()
+// const data = ref()
+// kompas.on("heading", x => {
+//     data.value = x
+// })
 
 const props = defineProps<{
     jmeno: string;
@@ -31,6 +35,7 @@ const props = defineProps<{
     open: boolean;
     geokod: string;
     waypointy: Waypoint[];
+    objekt: IntKeska;
 }>()
 
 const map = ref()
@@ -68,6 +73,8 @@ const spawnMapy = () => {
     addPointToMap(props.pozice.longtitude, props.pozice.latitude)
     props.waypointy.forEach(wp => addPointToMap(wp.longitude, wp.latitude))
     mapGoto(props.pozice.longtitude, props.pozice.latitude)
+
+    m.addChangeListener("click", x => console.log(x))
 }
 
 const addPointToMap = (lon: number, lat: number) => {
@@ -129,6 +136,14 @@ function ziskatPozici() {
 }
 
 const bodyTrasyShown = ref(false)
+
+const vsechnyKesky = inject<IntKeska[][]>("vsechnyKesky")
+const workingOnWaypoint = ref(false)
+const addWaypoint = () => {
+    props.objekt.waypointy.push({jmeno: "", latitude: 0, longitude: 0, editing: true})
+    workingOnWaypoint.value = true
+}
+
 </script>
 
 <template>
@@ -146,7 +161,7 @@ const bodyTrasyShown = ref(false)
             <div class="flex absolute flex-col items-center w-[17rem] right-0 overflow-auto h-full max-sm:w-full" v-if="!mapFullscreen">
                 <KompasIkona class="overflow-visible my-4 scale-75" :style="{transform: `rotate(${azimut}deg)`}" />
                 <h2 class="text-xl font-bold text-center">{{ jmeno }}</h2>
-                <h3 class="flex justify-around my-2 w-full text-xl font-bold" v-if="!polohaZakazana">
+                <h3 class="flex justify-around my-2 w-full text-xl font-bold" v-if="!polohaZakazana && !nacitaniPolohy">
                     <span>{{vzdalMetry}}</span>
                     <span>{{azimut}}°</span>
                 </h3>
@@ -159,9 +174,16 @@ const bodyTrasyShown = ref(false)
                     <div>
                         <button @click="bodyTrasyShown = !bodyTrasyShown" :class="{'bg-black bg-opacity-20': bodyTrasyShown}" class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30"><MapaIkona stroke="black" class="scale-75" />Body trasy<ViceIkona class="ml-auto scale-50" :class="{'rotate-180': bodyTrasyShown}" /></button>
                         <div v-if="bodyTrasyShown" class="flex flex-col gap-2 px-4 py-1 w-full text-sm bg-black bg-opacity-20">
-                            <button class="flex gap-2 items-center pr-2 pl-1 mx-auto w-max font-medium border-2 border-black hover:bg-black hover:bg-opacity-20"><PridatIkona class="scale-75" />Přidat</button>
+                            <button @click="addWaypoint" :disabled="workingOnWaypoint" class="flex gap-2 items-center pr-2 pl-1 mx-auto w-max font-medium border-2 border-black hover:bg-black hover:bg-opacity-20 disabled:pointer-events-none disabled:opacity-40"><PridatIkona class="scale-75" />Přidat</button>
                             <BodTrasy jmeno="Výchozí" :latitude="props.pozice.latitude" :longitude="props.pozice.longtitude" :def="true" @go-to-point="mapGoto($event.lon, $event.lat)" />
-                            <BodTrasy v-for="wpt in waypointy" v-bind="wpt" @go-to-point="mapGoto($event.lon, $event.lat)" />
+                            <BodTrasy
+                                v-for="(wpt, index) in waypointy"
+                                v-bind="wpt"
+                                :keska="objekt"
+                                @cancel="objekt.waypointy.splice(index, 1); workingOnWaypoint = false"
+                                @saved="objekt.waypointy[index].editing = false; workingOnWaypoint = false"
+                                @go-to-point="mapGoto($event.lon, $event.lat)"
+                            />
                         </div>
                     </div>
                     <div class="py-3"></div>

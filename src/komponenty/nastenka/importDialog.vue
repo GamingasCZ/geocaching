@@ -29,14 +29,20 @@ const pouzitZalohu = () => {
         emit("updateCaches", props.zaloha.data[0])
     }
     else { // Sloučit dohromady
-        let currentKesky = JSON.parse(localStorage.getItem("nastenka")!)
-        let givenKesky = props.zaloha.data[0]
-        let celkemKesky: Array<IntKeska[]> = []
+        let currentKesky: IntKeska[][] = (JSON.parse(localStorage.getItem("nastenka")!) ?? [])
+        let givenKesky: IntKeska[][] = JSON.parse(JSON.stringify(props.zaloha.data[0]))
+        let celkemKesky: IntKeska[][] = currentKesky
 
-        for (let i = 0; i < props.zaloha.data[1].length; i++)
-            celkemKesky.push(Array.from(new Set(currentKesky[i].concat(givenKesky[i]))))
-        
-
+        for (var x = 0; x < givenKesky.length; x++) {
+            for (var y = 0; y < givenKesky[x].length; y++) {
+                console.table([x,y])
+                if (currentKesky?.[x]?.[y]?.datumVlozeni != givenKesky?.[x]?.[y]?.datumVlozeni)
+                    celkemKesky[x].push(givenKesky?.[x]?.[y])
+            }
+        }
+       
+        localStorage.setItem("nastenka", JSON.stringify(celkemKesky))
+        localStorage.setItem("sekce", JSON.stringify(props.zaloha.data[1]))
         emit("updateCaches", celkemKesky)
     }
     close()

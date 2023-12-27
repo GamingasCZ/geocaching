@@ -10,7 +10,7 @@ import Pozadi from "./obrazky/pozadi2.svg";
         <div class="w-full bg-cover h-full bg-[url(@/obrazky/pozadi21.webp)] absolute will-change-transform"></div>
         <div class="absolute top-0 right-0 z-10 w-1/2 h-full bg-gradient-to-l to-transparent from-geo-50"></div>
     </div>
-    <main class="z-50 mx-auto w-screen max-w-[92rem] drop-shadow-sharp snap-y snap-mandatory">
+    <main class="mx-auto w-screen max-w-[92rem] drop-shadow-sharp snap-y snap-mandatory">
         <!-- Pozadi -->
         <!-- <div class="absolute top-0 left-0 w-screen h-screen -z-50 bg-cover bg-[url('@/obrazky/pozadi.svg')]">
             <div class="absolute top-0 right-0 w-96 h-full bg-gradient-to-r from-transparent to-geo-50"></div>

@@ -15,7 +15,8 @@ module.exports = {
       },
       'ext': {
         fia: 'var(--fialova)',
-        red: 'var(--cervena)'
+        red: 'var(--cervena)',
+        zlt: 'var(--zluta)'
       },
       black: '#000',
       white: '#fff',

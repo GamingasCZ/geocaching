@@ -33,8 +33,8 @@ const saveNote = (form: Event) => {
 
 <template>
     <form class="flex flex-col gap-2 p-3 m-3 bg-geo-400" @submit.prevent="saveNote">
-        <input name="name" type="text" required class="p-1 font-extrabold tracking-wide text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" autofocus autocomplete="off" placeholder="Název poznámky">
-        <textarea name="text" required class="p-1 text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" placeholder="Text poznámky"></textarea>
+        <input name="name" type="text" maxlength="25" required class="p-1 font-extrabold tracking-wide text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" autofocus autocomplete="off" placeholder="Název poznámky">
+        <textarea name="text" required maxlength="300" class="p-1 text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" placeholder="Text poznámky"></textarea>
         <footer class="flex justify-between items-center">
             <div>
                 <span class="mr-2 font-bold">Čas:</span>

@@ -17,6 +17,7 @@
     --vyrazny: #b2d63b;
     --fialova: #5f1771;
     --cervena: #d83434;
+    --zluta: #ECDD8C;
 }
 
 * {
@@ -24,7 +25,7 @@
 }
 
 body {
-    @apply flex relative flex-col h-[100svh] bg-geo-50 overflow-x-clip;
+    @apply flex relative flex-col min-h-[100svh] h-max bg-geo-50 overflow-x-clip;
 }
 .clip {
     @apply overflow-clip

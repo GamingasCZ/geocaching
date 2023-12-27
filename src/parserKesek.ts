@@ -23,6 +23,7 @@ export interface Waypoint {
     jmeno: string;
     latitude: number;
     longitude: number;
+    editing: boolean;
 }
 
 export interface Sekce {
@@ -91,7 +92,8 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
                 waypointy.push({
                     jmeno: waypoint.cmt,
                     latitude: waypoint["@_lat"],
-                    longitude: waypoint["@_lon"]
+                    longitude: waypoint["@_lon"],
+                    editing: false
                 })
             });
         }

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, provide, ref, watch } from 'vue';
 import Sekce from "@/komponenty/ostatni/textovaSekce.vue";
 import Videa from "@/assety/videa"
 
@@ -148,11 +148,25 @@ const changeHoverTime = (e: MouseEvent) => {
     progressbarTime.value = parseTime(video.value?.duration! * timeRatio)
 }
 const scrubVideo = (click: MouseEvent) => {
-    let skipToTime = Math.round(video.value?.duration! * click.layerX / click.target.clientWidth)
-    video.value.currentTime = skipToTime
+    let skipToTime = click.layerX / click.target.clientWidth
+    skocitNaCas(skipToTime)
+}
+const skocitNaCas = (podil: number) => {
+    video.value.currentTime = Math.round(video.value?.duration! * podil)
 }
 
+const smazatPoznamku = (ratio: number) => {
+    NOTES.value.splice(NOTES.value.findIndex(x => x[4] == ratio), 1)
+    localStorage.setItem("poznamky", JSON.stringify(NOTES.value))
+    poznamkyProVideo.value = NOTES.value.filter(x => x[3] == Videa[videoIndex.value].url)
+}
+
+provide("videoSkocitNaCas", skocitNaCas)
+provide("smazatPoznamku", smazatPoznamku)
+
+
 const changedNoteTime = () => videoRatio.value = video.value?.currentTime / video.value?.duration
+const hoveringOverNote = ref(-1)
 
 </script>
 
@@ -192,7 +206,13 @@ const changedNoteTime = () => videoRatio.value = video.value?.currentTime / vide
                     </button>
                     <div class="flex relative flex-col w-full grow">
                         <div v-if="pbarHovering" :style="{left: `${pbarHelpLeftOffset}%`}" class="absolute -top-6 px-2 w-max text-sm text-white bg-black bg-opacity-80 rounded-md -translate-x-1/2 pointer-events-none">{{ progressbarTime }}</div>
-                        <span v-for="p in poznamkyProVideo" :style="{left: `${p[4]*100}%`}" class="absolute -top-1 z-10 w-2 h-3/4 -translate-x-1/2 -skew-x-12 bg-ext-fia"></span>
+                        
+                        <!-- Body poznámky na časové ose -->
+                        <button v-for="(p, ind) in poznamkyProVideo" @mouseover="hoveringOverNote = ind" @mouseout="hoveringOverNote = -1" @click="skocitNaCas(p[4])" :style="{left: `${p[4]*100}%`}" class="absolute -top-1 z-10 w-2 h-3/4 -translate-x-1/2 -skew-x-12 bg-ext-fia"></button>
+                        
+                        <div v-if="hoveringOverNote > -1" :style="{left: `${poznamkyProVideo[hoveringOverNote][4]*100}%`}" class="absolute bottom-10 p-1 font-medium text-white bg-black bg-opacity-40 border-2 -translate-x-1/2 border-ext-fia">{{ poznamkyProVideo[hoveringOverNote][0] }}</div>
+
+
                         <progress
                             ref="progressbar"
                             @click="scrubVideo"
@@ -239,8 +259,8 @@ const changedNoteTime = () => videoRatio.value = video.value?.currentTime / vide
             </RouterLink>
         </section>
 
-        <section class="flex flex-col gap-5 px-2 mt-8 ml-1 w-full">
-            <Sekce nadpis="Poznámky" :add-component="PrehravacPoznamka" :comp-props="[{text: 'sex'}]" />
+        <section class="flex flex-col gap-5 px-2 my-8 ml-1 w-full">
+            <Sekce nadpis="Poznámky" v-if="poznamkyProVideo.length" :add-component="PrehravacPoznamka" :comp-props="{poznamky: poznamkyProVideo}" />
             <Sekce nadpis="Popis" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
             <Sekce nadpis="Zdroje" v-if="Videa[videoIndex].zdroje" :text="Videa[videoIndex].zdroje" />
         </section>
