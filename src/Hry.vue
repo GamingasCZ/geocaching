@@ -25,3 +25,4 @@ import PlayIkona from "@/ikony/hraPlay.svg"
         </RouterLink>
     </main>    
 </template>
+

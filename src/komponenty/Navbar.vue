@@ -13,11 +13,16 @@ const tlacitka = [
 
 const vybranaStranka = ref(-1)
 
+window.addEventListener("scroll", () => {
+    if (document.documentElement.scrollTop > 0) document.querySelector("nav")?.classList.add("!top-0")
+    else document.querySelector("nav")?.classList.remove("!top-0")
+})
+
 </script>
 
 <template>
     <nav
-        class="flex sticky z-40 m-4 mx-auto max-w-[90rem] h-12 top-0 w-full"
+    class="flex fixed z-40 mb-36 left-1/2 top-3 -translate-x-1/2 mx-auto max-w-[90rem] h-12 w-full transition-[top] ease-linear duration-[50ms]"
     >
         <!-- Logo -->
         <RouterLink class="flex ml-4" to="/" @click="vybranaStranka = -1">

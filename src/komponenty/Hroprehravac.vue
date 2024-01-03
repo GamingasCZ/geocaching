@@ -33,12 +33,3 @@ const pr = ref(import.meta.env.BASE_URL)
         <Sekce nadpis="Popis" v-if="hry[hraIndex].popis" :text="hry[hraIndex].popis" />
     </section>
 </template>
-
-<style>
-
-iframe canvas {
-    width: 100% !important;
-    height: 100% !important;
-}
-
-</style>

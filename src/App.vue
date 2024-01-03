@@ -7,7 +7,7 @@ import Notifikace from './komponenty/ostatni/notifikace.vue';
 
 <template>
   <Navbar />
-  <RouterView class="grow" />
+  <RouterView class="mt-20 grow" />
   <div id="NotificationStack" class="flex fixed z-50 flex-col gap-4 justify-end items-end p-8 w-screen h-screen pointer-events-none">
     <Notifikace v-for="notif in notificatons" :text="notif" />
   </div>

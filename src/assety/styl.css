@@ -24,8 +24,12 @@
     @apply font-[Rubik,system-ui,sans-serif];
 }
 
+html {
+    @apply snap-both snap-mandatory;
+}
+
 body {
-    @apply flex relative flex-col min-h-[100svh] h-max bg-geo-50 overflow-x-clip;
+    @apply flex relative flex-col min-h-[100svh] h-max bg-geo-50 overflow-x-clip overflow-y-auto;
 }
 .clip {
     @apply overflow-clip

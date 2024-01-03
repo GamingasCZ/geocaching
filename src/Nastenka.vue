@@ -350,14 +350,10 @@ provide("vsechnyKesky", vsechnyKesky)
 <Napoveda :open="helpOpen" />
 
 <main class="mx-auto w-full">
- <!-- <div class="relative p-1 m-4 mx-auto w-96 rounded-lg border-2 border-dashed border-geo-400 text-geo-400 file:bg-red-300" :class="{'bg-geo-300': pretahuje}">
-     <p>Přetáhněte, nebo vyberte .gpx soubor</p>
-    </div> -->
-    <!-- To pak přepni!! -->
  <input ref="importBackup" type="file" accept=".json" name="" id="" class="hidden" @input="importCache">
  <input ref="input" type="file" accept=".gpx" name="" id="" multiple class="hidden absolute inset-0 z-50 w-screen h-screen opacity-0" @input="dropped">
 
- <nav class="flex relative justify-between h-10" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
+ <nav class="flex relative justify-between mt-20 h-10" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
     <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" @pridat-sekci="pridatSekci" />
 
     <div class="flex gap-1 mr-6 h-full">

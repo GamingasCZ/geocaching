@@ -58,7 +58,10 @@ onMounted(() => {
     })
 
     document.addEventListener("fullscreenchange", e => {
-        console.log(document.fullscreenElement)
+        if (e == null) {
+            isFullscreened.value = false
+            document.body.classList.remove("clip")
+        }
     })
 
     watch(videoIndex, async () => {
