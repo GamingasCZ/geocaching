@@ -170,7 +170,7 @@ const addWaypoint = () => {
 <template>
     <dialog ref="dialog" class="backdrop:bg-black backdrop:bg-opacity-80">
         <section
-            class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full h-[45rem] overflow-y-auto max-h-screen relative"
+            class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full max-h-[45rem] h-[90vh] overflow-y-auto max-h-screen relative"
             :class="{ 'max-sm:grid-rows-[10rem_1fr]': !mapFullscreen, 'flex': mapFullscreen }">
             <!-- Mapa -->
             <div ref="map" class="relative h-full border-4 border-r-0 border-geo-400 skewButton">
