@@ -4,8 +4,6 @@ import { ref } from 'vue';
 
 const props = defineProps<{
     nazev: string;
-    kratkyPopis: string;
-    nahled: string;
     url: string;
 }>()
 
@@ -24,7 +22,6 @@ getNahled()
     ">
         <div class="relative p-0.5 leading-snug bg-opacity-70 backdrop-blur-sm overflow-x-clip bg-geo-400 videoBlur">
             <h1 class="isolate text-xl font-bold">{{ nazev }}</h1>
-            <p class="isolate text-xs">{{ kratkyPopis }}</p>
         </div>
     </RouterLink>
 </template>

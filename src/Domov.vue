@@ -1,9 +1,26 @@
 <script setup lang="ts">
+import { onUnmounted } from 'vue';
 import pozadi from './obrazky/pozadi2.svg?url'
-import pozadi2 from './obrazky/pozadi3.svg?url'
+import pozadi2 from './obrazky/pozadi4.svg?url'
 
 
-document.documentElement.addEventListener("scroll", e => console.log(e))
+// document.documentElement.addEventListener("wheel", e => {
+//     if (e.deltaY < 0) window.scrollTo({top: 0, behavior: 'smooth'})
+//     else window.scrollTo({top: 1600, behavior: 'smooth'})
+// })
+document.documentElement.addEventListener("touchmove", e => {
+    if (e.deltaY < 0) window.scrollTo({top: 0, behavior: 'smooth'})
+    else window.scrollTo({top: 1600, behavior: 'smooth'})
+})
+
+document.documentElement.onwheel = e => {
+    if (e.deltaY < 0) window.scrollTo({top: 0, behavior: 'smooth'})
+    else window.scrollTo({top: window.innerWidth, behavior: 'smooth'})
+}
+
+onUnmounted(() => {
+    document.documentElement.onwheel = null
+})
 
 </script>
 
@@ -13,8 +30,8 @@ document.documentElement.addEventListener("scroll", e => console.log(e))
         <div class="absolute top-[100vh] w-full h-full bg-cover will-change-transform" :style="{backgroundImage: `url(${pozadi2})`}"></div>
         <div class="absolute top-0 right-0 z-10 w-1/2 h-[200vh] bg-gradient-to-l to-transparent from-geo-50"></div>
     </div>
-    <main class="mx-auto w-screen max-w-[92rem] drop-shadow-sharp">
-        <!-- Pozadi -->
+    <!-- Pozadi -->
+    <main class="mx-auto w-screen max-w-[92rem] ">
         <!-- <div class="absolute top-0 left-0 w-screen h-screen -z-50 bg-cover bg-[url('@/obrazky/pozadi.svg')]">
             <div class="absolute top-0 right-0 w-96 h-full bg-gradient-to-r from-transparent to-geo-50"></div>
         </div> -->
@@ -42,12 +59,12 @@ document.documentElement.addEventListener("scroll", e => console.log(e))
                 stačí k tomu cokoliv s GPS přijímačem!
             </p>
             <div class="flex flex-wrap gap-y-6 gap-x-16 justify-end px-6 mx-auto mt-12 mr-0 w-full max-sm:justify-center">
-                <RouterLink to="videa/cim-hledat">
+                <RouterLink to="videa/hledani-kesky">
                     <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
-                        Video
+                        Hledání v akci
                     </button>
                 </RouterLink>
-                <a href="https://kesky.cz/aplikace/geocaching-na-mobilu/" target="_blank">
+                <a href="videa/cim-hledat" target="_blank">
                     <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
                         Mobilní aplikace
                     </button>

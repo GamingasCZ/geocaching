@@ -234,7 +234,7 @@ const hoveringOverNote = ref(-1)
             </Teleport>
         </div>
 
-        <nav class="flex relative justify-between items-center mt-8 w-full h-10 max-sm:flex-col">
+        <nav class="flex relative justify-between items-center mt-8 w-full h-10 after:-skew-x-12 max-sm:flex-col">
             <h2 class="px-6 text-2xl font-bold">{{ Videa[videoIndex].nazev }}</h2>
             <button class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 max-sm:py-2 bg-ext-fia" @click="showNotePanel">
                 <EditIkona class="w-6 h-6 skew-x-12" />
@@ -244,18 +244,20 @@ const hoveringOverNote = ref(-1)
         <EditorPoznamky @cancel="notePanelShown = false" @changedNoteTime="changedNoteTime" @saved="noteSaved" v-if="notePanelShown" :time-ratio="videoRatio" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
 
         <section class="flex flex-wrap gap-y-4 justify-between pr-6 mt-2 ml-3 w-full max-sm:mt-16">
-            <RouterLink class="grid grid-cols-[max-content_1fr] p-2 w-full max-w-lg bg-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">
-                <img :src="thumbPredVideo" class="w-44 max-w-[30vw]" :alt="Videa[videoIndex - 1].nazev">
-                <div class="flex flex-col p-2">
+            <RouterLink class="grid text-white grid-cols-[max-content_1fr] w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">
+                <img :src="thumbPredVideo" class="w-44 z-10 max-w-[30vw]" :alt="Videa[videoIndex - 1].nazev">
+                <img :src="thumbPredVideo" class="absolute w-full h-full blur-xl brightness-50" :alt="Videa[videoIndex - 1].nazev">
+                <div class="flex isolate flex-col p-2">
                     <h2 class="mb-5 text-xl font-extrabold">Předchozí video</h2>
                     <span>{{ Videa[videoIndex - 1].nazev }}</span>
                 </div>
             </RouterLink>
             <div v-else></div>
 
-            <RouterLink class="grid grid-cols-[max-content_1fr] ml-auto p-2 w-full max-w-lg bg-white" :to="Videa[videoIndex + 1].url" v-if="videoIndex < Videa.length - 1">
-                <img :src="thumbDalsiVideo" class="w-44 max-w-[30vw]" :alt="Videa[videoIndex + 1].nazev">
-                <div class="flex flex-col p-2">
+            <RouterLink class="grid text-white grid-cols-[max-content_1fr] ml-auto w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex + 1].url" v-if="videoIndex < Videa.length - 1">
+                <img :src="thumbDalsiVideo" class="w-44 z-10 max-w-[30vw]" :alt="Videa[videoIndex + 1].nazev">
+                <img :src="thumbDalsiVideo" class="absolute w-full h-full blur-xl brightness-50" :alt="Videa[videoIndex + 1].nazev">
+                <div class="flex isolate flex-col p-2">
                     <h2 class="mb-5 text-xl font-extrabold">Další video</h2>
                     <span>{{ Videa[videoIndex + 1].nazev }}</span>
                 </div>
