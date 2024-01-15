@@ -42,9 +42,11 @@ onUnmounted(() => {
                 je celosvětová hra o hledání pokladů, skrytých po celém světě!
             </p>
             <div class="flex flex-wrap gap-y-6 gap-x-16 justify-end px-6 mx-auto mt-12 mr-0 w-full max-sm:justify-center">
-                <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
-                    Jak začít
-                </button>
+                <RouterLink to="videa/hledani-kesky">
+                    <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
+                        Hledání v akci
+                    </button>
+                </RouterLink>
                 <RouterLink to="videa/co-je-geocaching">
                     <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
                         O Geocachingu
@@ -59,16 +61,16 @@ onUnmounted(() => {
                 stačí k tomu cokoliv s GPS přijímačem!
             </p>
             <div class="flex flex-wrap gap-y-6 gap-x-16 justify-end px-6 mx-auto mt-12 mr-0 w-full max-sm:justify-center">
-                <RouterLink to="videa/hledani-kesky">
+                <RouterLink to="nastenka">
                     <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
-                        Hledání v akci
+                        Nástěnka
                     </button>
                 </RouterLink>
-                <a href="videa/cim-hledat" target="_blank">
+                <RouterLink to="videa/cim-hledat">
                     <button class="py-2 w-48 text-xl bg-geo-400 skewButton">
                         Mobilní aplikace
                     </button>
-                </a>
+                </RouterLink>
             </div>
         </div>
     </main>

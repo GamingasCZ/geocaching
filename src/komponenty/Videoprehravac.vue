@@ -244,7 +244,7 @@ const hoveringOverNote = ref(-1)
         <EditorPoznamky @cancel="notePanelShown = false" @changedNoteTime="changedNoteTime" @saved="noteSaved" v-if="notePanelShown" :time-ratio="videoRatio" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
 
         <section class="flex flex-wrap gap-y-4 justify-between pr-6 mt-2 ml-3 w-full max-sm:mt-16">
-            <RouterLink class="grid text-white grid-cols-[max-content_1fr] w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">
+            <RouterLink class="vOdkaz grid text-white grid-cols-[max-content_1fr] w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">
                 <img :src="thumbPredVideo" class="w-44 z-10 max-w-[30vw]" :alt="Videa[videoIndex - 1].nazev">
                 <img :src="thumbPredVideo" class="absolute w-full h-full blur-xl brightness-50" :alt="Videa[videoIndex - 1].nazev">
                 <div class="flex isolate flex-col p-2">
@@ -254,7 +254,7 @@ const hoveringOverNote = ref(-1)
             </RouterLink>
             <div v-else></div>
 
-            <RouterLink class="grid text-white grid-cols-[max-content_1fr] ml-auto w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex + 1].url" v-if="videoIndex < Videa.length - 1">
+            <RouterLink class="vOdkaz grid text-white grid-cols-[max-content_1fr] ml-auto w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex + 1].url" v-if="videoIndex < Videa.length - 1">
                 <img :src="thumbDalsiVideo" class="w-44 z-10 max-w-[30vw]" :alt="Videa[videoIndex + 1].nazev">
                 <img :src="thumbDalsiVideo" class="absolute w-full h-full blur-xl brightness-50" :alt="Videa[videoIndex + 1].nazev">
                 <div class="flex isolate flex-col p-2">
