@@ -1,10 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import DomovskaStranka from './Domov.vue'
-import Videa from './Videa.vue'
-import Videoprehravac from './komponenty/Videoprehravac.vue'
-import Hroprehravac from './komponenty/Hroprehravac.vue'
-import Hry from './Hry.vue'
-import Nastenka from './Nastenka.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -12,32 +6,32 @@ const router = createRouter({
     {
       path: '/',
       name: 'domov',
-      component: DomovskaStranka
+      component: () => import('@/Domov.vue')
     },
     {
       path: '/videa',
       name: 'videa',
-      component: Videa
+      component: () => import('@/Videa.vue')
     },
     {
       path: '/videa/:video',
       name: 'video',
-      component: Videoprehravac,
+      component: () => import('@/komponenty/Videoprehravac.vue'),
     },
     {
       path: '/hry',
       name: 'hry',
-      component: Hry
+      component: () => import('@/Hry.vue')
     },
     {
       path: '/hry/:hra',
       name: 'hra',
-      component: Hroprehravac
+      component: () => import('@/komponenty/Hroprehravac.vue')
     },
     {
       path: '/nastenka',
       name: 'nastenka',
-      component: Nastenka
+      component: () => import('@/Nastenka.vue')
     },
   ]
 })
