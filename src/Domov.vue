@@ -3,27 +3,30 @@ import { onMounted, onUnmounted, ref } from 'vue';
 import pozadi from './obrazky/pozadi2.svg?url'
 import pozadi2 from './obrazky/pozadi4.svg?url'
 import pozadi3 from './obrazky/pozadi5.svg?url'
+import scrollDown from './ikony/scrollDown.svg'
 import Darek from './komponenty/Darek.vue';
 import DarekPad from './komponenty/DarekPad.vue';
 import Scrollbar from './komponenty/ostatni/Scrollbar.vue';
 
 const STRANKY = 4
 
-let dragStart = 0
+let dragY = 0
+let dragYStart = -1
 document.documentElement.ontouchmove = e => {
-    console.log(e)
-    e.preventDefault()
-    if (!isScrolling.value) {
+    if (dragYStart == -1) dragYStart = e.touches[0].clientY
+    if (Math.abs(dragYStart - e.touches[0].clientY) > 200 && !isScrolling.value) {
         isScrolling.value = true
         setTimeout(() => isScrolling.value = false, 250);
 
-        if (e.deltaY < 0) currScroll.value -= 1
+        if (dragYStart - e.touches[0].clientY < 0) currScroll.value -= 1
         else currScroll.value += 1
 
         window.scrollTo({ top: window.innerHeight * currScroll.value, behavior: 'smooth' })
+        dragYStart = -1
+        dragY = 0
     }
 }
-document.documentElement.ontouchend = () => dragStart = 0
+document.documentElement.ontouchend = () => { dragYStart = -1; dragY = 0 }
 
 window.onresize = () => reposition(false)
 
@@ -53,6 +56,7 @@ onUnmounted(() => {
     document.body.style.overflowY = "auto"
     document.documentElement.onwheel = null
     document.documentElement.ontouchmove = null
+    window.onresize = null
 })
 
 const dropDarek = ref(false)
@@ -125,7 +129,11 @@ const posunoutFotku = (kam: number) => {
         <div class="absolute top-0 right-0 z-10 w-1/2 h-[200vh] bg-gradient-to-l to-transparent from-geo-50"></div>
     </div>
 
-    <Scrollbar @goto="currScroll = $event; reposition(true)" />
+    <Scrollbar @goto="currScroll = $event; reposition(true)" class="max-sm:hidden" />
+    <button class="absolute z-50 w-full opacity-50" v-if="currScroll < STRANKY -1" :style="{top: `${100 * (currScroll+1)}vh`}" @click="currScroll = Math.min(currScroll + 1, STRANKY - 1); reposition(true)">
+        <scrollDown class="absolute bottom-2 left-1/2 animate-pulse -translate-x-1/2" />
+    </button>
+
 
     <DarekPad v-if="dropDarek" @open-gift="podlezani = true; dropDarek = false;" />
     <Darek @close="podlezani = false" v-if="podlezani" />
@@ -140,7 +148,7 @@ const posunoutFotku = (kam: number) => {
             <h1
                 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-geo-600">
                 Geocaching</h1>
-            <p class="w-full max-w-[min(40rem,95vw)] max-sm:text-xl text-xl font-medium text-white max-sm:text-center">
+            <p class="px-2 w-full text-xl font-medium text-white max-sm:text-xl max-sm:text-center">
                 je celosvětová hra o hledání pokladů, skrytých po celém světě!
             </p>
             <div class="flex flex-wrap gap-y-6 gap-x-16 justify-end px-6 mx-auto mt-12 mr-0 w-full max-sm:justify-center">
@@ -164,7 +172,7 @@ const posunoutFotku = (kam: number) => {
                 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-geo-600">
                 Jak začít?</h1>
             <p
-                class="w-full max-w-[min(40rem,95vw)] max-sm:text-xl text-xl font-medium text-right text-white max-sm:text-center">
+                class="px-2 w-full text-xl font-medium text-white max-sm:text-xl max-sm:text-center">
                 stačí k tomu cokoliv s GPS přijímačem!
             </p>
             <div class="flex flex-wrap gap-y-6 gap-x-16 justify-end px-6 mx-auto mt-12 mr-0 w-full max-sm:justify-center">
@@ -187,18 +195,22 @@ const posunoutFotku = (kam: number) => {
             <h1
                 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-ext-fia">
                 Užitečné odkazy</h1>
-            <div class="flex flex-wrap gap-y-6 gap-x-16 justify-end px-6 mx-auto mt-12 mr-0 w-full max-sm:justify-center">
-                <a href="https://geocaching.com" class="max-w-sm text-white bg-black bg-opacity-40" target="_blank">
-                    <img src="./obrazky/karusel/p1.webp" class="w-16" alt="">
-                    <p>Oficiální stránka Geocachingu</p>
+            <div class="flex flex-wrap gap-x-4 gap-y-6 justify-end mx-auto w-full text-center max-sm:px-2 max-sm:gap-y-2 max-sm:justify-center">
+                <a @focus="currScroll = 2; reposition()" href="https://geocaching.com" class="w-[11rem] max-sm:w-full rounded-md border-r-4 border-b-4 border-geo-400 sm:h-48 flex sm:flex-col sm:justify-center gap-3 items-center sm:p-2 max-sm:p-1 text-white bg-black bg-opacity-60" target="_blank">
+                    <img src="./ikony/odkazGC.webp" class="w-16 max-sm:w-10" alt="">
+                    <p class="sm:h-12">Oficiální stránka Geocachingu</p>
                 </a>
-                <a href="http://www.geocaching.cz/" class="max-w-sm text-white bg-black bg-opacity-40" target="_blank">
-                    <img src="./obrazky/karusel/p1.webp" class="w-16" alt="">
-                    <p>Neoficiální česká stránka</p>
+                <a @focus="currScroll = 2; reposition()" href="http://www.geocaching.cz/" class="w-[11rem] max-sm:w-full rounded-md border-r-4 border-b-4 border-geo-400 sm:h-48 flex sm:flex-col sm:justify-center gap-3 items-center sm:p-2 max-sm:p-1 text-white bg-black bg-opacity-60" target="_blank">
+                    <img src="./ikony/odkazKesky.webp" class="w-16 max-sm:w-10" alt="">
+                    <p class="sm:h-12">Neoficiální česká stránka</p>
                 </a>
-                <a href="https://kesky.cz" class="max-w-sm text-white bg-black bg-opacity-40" target="_blank">
-                    <img src="./obrazky/karusel/p1.webp" class="w-16" alt="">
-                    <p>Zajímavé články</p>
+                <a @focus="currScroll = 2; reposition()" href="https://kesky.cz" class="w-[11rem] max-sm:w-full rounded-md border-r-4 border-b-4 border-geo-400 sm:h-48 flex sm:flex-col sm:justify-center gap-3 items-center sm:p-2 max-sm:p-1 text-white bg-black bg-opacity-60" target="_blank">
+                    <img src="./ikony/odkazClanek.webp" class="w-16 max-sm:w-10" alt="">
+                    <p class="sm:h-12">Zajímavé články</p>
+                </a>
+                <a @focus="currScroll = 2; reposition()" href="https://kesky.cz" class="w-[11rem] max-sm:w-full rounded-md border-r-4 border-b-4 border-geo-400 sm:h-48 flex sm:flex-col sm:justify-center gap-3 items-center sm:p-2 max-sm:p-1 text-white bg-black bg-opacity-60" target="_blank">
+                    <img src="./ikony/odkazMobil.webp" class="w-16 max-sm:w-10" alt="">
+                    <p class="sm:h-12">Geocaching aplikace</p>
                 </a>
             </div>
         </div>
