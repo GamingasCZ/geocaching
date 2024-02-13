@@ -1,6 +1,7 @@
 import { XMLParser } from "fast-xml-parser";
 import Barvy from "./assety/barvyKesek";
 import summonNotif from "./komponenty/ostatni/summonNotif";
+import Vzdalenost from "node-geo-distance";
 
 export interface IntKeska {
     jmeno: string;
@@ -56,6 +57,11 @@ export const hasLocalStorage = () => {
     catch (e) {
         return false
     }
+}
+
+export const getVzdalenost = (currPoloha: object, lat: number, lon: number) => {
+    let polohaKesky = {latitude: lat, longitude: lon}
+    return parseDistance(parseFloat(Vzdalenost.vincentySync(currPoloha, polohaKesky)))
 }
 
 export const refreshList = () => {

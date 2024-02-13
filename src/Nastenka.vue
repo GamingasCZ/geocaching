@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import { ref, onMounted, nextTick, provide} from 'vue';
-import { hasLocalStorage, handleDrop, refreshList, makeSectionArray, parseDistance } from './parserKesek'
+import { hasLocalStorage, handleDrop, refreshList, makeSectionArray, parseDistance, getVzdalenost } from './parserKesek'
 import type { IntKeska, Sekce } from "./parserKesek";
 import Keska from './komponenty/nastenka/Keska.vue'
 import summonNotif from "@/komponenty/ostatni/summonNotif"
 import Mapa from "./komponenty/nastenka/mapa.vue"
 import { Nastaveni as nastaveniNastenky } from './komponenty/nastenka/nastaveniNastenky';
 import Nastaveni from './komponenty/nastenka/nastaveni.vue';
-import Vzdalenost from "node-geo-distance";
 import barvyKesek from './assety/barvyKesek';
 
 import ZavritIkona from "@/ikony/zavrit.svg"
@@ -46,16 +45,15 @@ onMounted(() => {
     if ("geolocation" in navigator) {
         navigator.geolocation.getCurrentPosition((nyniPozice) => {
             let tatoPoloha = {latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude}
+            nacitaniPolohy.value = true
             for (let i = 0; i < vsechnySekce.value.length; i++) {
                 let j = 0
                 vsechnyKesky.value[i].forEach((keska: IntKeska) => {
-                    let polohaKesky = {latitude: keska.latitude, longitude: keska.longtitude}
-                    let vzdalenost = parseDistance(parseFloat(Vzdalenost.vincentySync(tatoPoloha, polohaKesky)))
-                    vsechnyKesky.value[i][j].vzdalenost = vzdalenost
-
+                    vsechnyKesky.value[i][j].vzdalenost = getVzdalenost(tatoPoloha, keska.latitude, keska.longtitude)
                     j += 1
                 })
             }
+            nacitaniPolohy.value = false
 
         }, (chyba) => {
             console.log("kurva")
@@ -341,6 +339,22 @@ modifyWindow()
 /* Sdílení vsech kesek */
 provide("vsechnyKesky", vsechnyKesky)
 
+const nacitaniPolohy = ref(false)
+const obnovPolohy = () => {
+    nacitaniPolohy.value = true
+    navigator.geolocation.getCurrentPosition((nyniPozice) => {
+        let tatoPoloha = {latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude}
+        for (let i = 0; i < vsechnySekce.value.length; i++) {
+            let j = 0
+            vsechnyKesky.value[i].forEach((keska: IntKeska) => {
+                vsechnyKesky.value[i][j].vzdalenost = getVzdalenost(tatoPoloha, keska.latitude, keska.longtitude)
+                j += 1
+            })
+        }
+        nacitaniPolohy.value = false
+        settingsOpen.value = -1
+    }, () => nacitaniPolohy.value = false)
+}
 
 </script>
 
@@ -354,7 +368,7 @@ provide("vsechnyKesky", vsechnyKesky)
  <input ref="input" type="file" accept=".gpx" name="" id="" multiple class="hidden absolute inset-0 z-50 w-screen h-screen opacity-0" @input="dropped">
 
  <nav class="flex relative justify-between mt-20 h-10 after:-skew-x-12" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
-    <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" @pridat-sekci="pridatSekci" />
+    <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" :nacitani-polohy="nacitaniPolohy" @pridat-sekci="pridatSekci" @obnovit-polohy="obnovPolohy" />
 
     <div class="flex gap-1 mr-6 h-full">
         <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold navButton" v-if="!selectMode">
