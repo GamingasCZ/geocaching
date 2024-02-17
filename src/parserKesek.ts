@@ -151,7 +151,7 @@ export const parseDistance = (distMeters: number) => {
         case distMeters >= 10000:
             return `${(distMeters/1000).toFixed(1)}km`; break;
         case distMeters >= 1000:
-            return `${(distMeters/1000).toFixed(3)}km`; break;
+            return `${(distMeters/1000).toFixed(2)}km`; break;
         case distMeters >= 100:
             return `${distMeters.toFixed(0)}m`; break;
         case distMeters >= 10:

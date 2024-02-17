@@ -146,7 +146,7 @@ const posunoutFotku = (kam: number) => {
             <div class="absolute top-0 right-0 w-96 h-full bg-gradient-to-r from-transparent to-geo-50"></div>
         </div> -->
 
-        <div class="flex flex-col justify-center items-end w-full h-screen text-right sm:pr-4 scroll-smooth">
+        <div class="flex flex-col justify-center items-end w-full h-screen text-right sm:pr-4">
             <h1
                 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-geo-600">
                 Geocaching</h1>
@@ -169,7 +169,7 @@ const posunoutFotku = (kam: number) => {
             </div>
         </div>
 
-        <div class="flex flex-col justify-center items-end w-full h-screen text-right sm:pr-4 scroll-smooth">
+        <div class="flex flex-col justify-center items-end w-full h-screen text-right sm:pr-4">
             <h1
                 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-geo-600">
                 Jak začít?</h1>
@@ -193,7 +193,7 @@ const posunoutFotku = (kam: number) => {
             </div>
         </div>
 
-        <div class="flex flex-col justify-center items-start w-full h-screen text-right sm:pr-4 scroll-smooth">
+        <div class="flex flex-col justify-center items-start w-full h-screen text-right sm:pr-4">
             <h1
                 class="text-[min(7rem,15vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-ext-fia">
                 Užitečné odkazy</h1>
@@ -221,7 +221,7 @@ const posunoutFotku = (kam: number) => {
             </div>
         </div>
 
-        <div class="flex flex-col justify-center items-end w-full h-screen text-center sm:pr-4 scroll-smooth">
+        <div class="flex flex-col justify-center items-center w-full h-screen text-center sm:pr-4">
             <h1
                 class="text-[min(5rem,10vw)] font-black leading-snug text-transparent bg-clip-text max-sm:text-center w-full bg-gradient-to-br to-geo-400 from-geo-600">
                 Fotogalerie</h1>

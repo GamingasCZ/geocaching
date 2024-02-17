@@ -22,7 +22,7 @@ const pr = ref(import.meta.env.BASE_URL)
 </script>
 
 <template>
-    <main class="mx-auto w-screen max-w-[92rem] mt-20">
+    <main class="mx-auto w-screen max-w-[92rem] mt-4">
         <iframe ref="hra" class="mx-auto w-full max-w-5xl border-4 border-geo-400 aspect-video" :src="`${pr}/${hry[hraIndex].url}/index.html`"></iframe>
         <nav class="flex relative justify-between mt-8 w-full h-10 after:-skew-x-12">
             <h2 class="px-6 text-2xl font-bold">{{ hry[hraIndex].nazev }}</h2>

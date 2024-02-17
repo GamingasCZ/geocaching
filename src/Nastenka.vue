@@ -25,6 +25,7 @@ import NastaveniIkona from "@/ikony/gear.svg"
 import NapovedaIkona from "@/ikony/napoveda.svg"
 import ImportIkona from "@/ikony/import.svg"
 import ExportIkona from "@/ikony/export.svg"
+import PlayIkona from "@/ikony/play.svg"
 import Napoveda from './komponenty/nastenka/napoveda.vue';
 import ImportDialog from './komponenty/nastenka/importDialog.vue';
 
@@ -361,6 +362,7 @@ const obnovPolohy = () => {
         nacitaniPolohy.value = false
         settingsOpen.value = -1
     }, () => nacitaniPolohy.value = false)
+    ulozitKesky()
 }
 
 </script>
@@ -374,58 +376,61 @@ const obnovPolohy = () => {
  <input ref="importBackup" type="file" accept=".json" name="" id="" class="hidden" @input="importCache">
  <input ref="input" type="file" accept=".gpx" name="" id="" multiple class="hidden absolute inset-0 z-50 w-screen h-screen opacity-0" @input="dropped">
 
- <nav class="flex relative justify-between mt-20 h-10 after:-skew-x-12" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
-    <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" :nacitani-polohy="nacitaniPolohy" @pridat-sekci="pridatSekci" @obnovit-polohy="obnovPolohy" />
-
-    <div class="flex gap-1 mr-6 h-full">
-        <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold navButton" v-if="!selectMode">
-            <PridatIkona class="scale-75" />
-            <span class="max-sm:hidden">Přidat kešky</span>
-        </button>
-        <button @click="selectMode = !selectMode" class="flex relative gap-2 items-center pl-4 font-bold navButton" :class="{'ml-2': selectMode}">
-            <VybratIkona class="scale-75" v-if="!selectMode" />
-            <PotvrditIkona class="scale-75" v-else stroke="black" />
-            <span class="max-sm:hidden" v-if="!selectMode">Vybrat</span>
-            <span class="max-sm:hidden" v-else>Zpět</span>
-        </button>
-    </div>
-    <div class="flex mr-6 h-full" v-if="!selectMode">
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="importBackup?.click()">
-            <ImportIkona class="scale-75" />
-            <span class="max-sm:hidden">Import</span>
-        </button>
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="exportData">
-            <ExportIkona class="scale-75" />
-            <span class="max-sm:hidden">Export</span>
-        </button>
-        <button class="flex relative items-center pl-4 font-bold navButton" @click="openDropdown(2)"><NastaveniIkona class="scale-75 stroke-black" /></button>
-        <button class="flex relative items-center pl-4 font-bold navButton" @click="helpOpen = !helpOpen"><NapovedaIkona class="scale-75" /></button>
-    </div>
-    <div class="flex gap-1 mr-6 h-full" v-else>
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="removeSelectedCaches(selectedCaches)">
-            <SmazatIkona class="scale-75" stroke="black"/>
-            <span class="max-sm:hidden">Smazat</span>
-        </button>
-        <button class="relative font-bold">
-            <div class="flex gap-2 items-center pr-1 pl-2 navButton" @click="openDropdown(0)">
-                <MoveIkona class="scale-75" />
-                <span class="max-sm:hidden">Přesunout</span>
-            </div>
-
-            <!-- Dropdown -->
-            <div class="flex absolute right-0 top-10 z-40 flex-col w-48 font-normal bg-geo-300" v-show="moveDropdownOpen > 0" ref="moveDropdownElement">
-                <button v-for="(sekce, sInd) in vsechnySekce" class="px-1 py-2 text-left border-b-2 border-opacity-50 border-b-black hover:bg-black hover:bg-opacity-20" @click="moveSelectedCaches(sInd)">{{ sekce.jmeno }}</button>
-            </div>
-        </button>
-        <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold navButton" @click="moveSelectedToTop">
-            <NavrchIkona class="scale-75" />
-            <span class="max-sm:hidden">Na vrch</span>
-        </button>
-    </div>
- </nav>
+ <div class="flex justify-center items-center max-w-[94vw] mx-auto mt-4">
+     <RouterLink class="flex justify-center items-center h-10 bg-geo-400 aspect-square -scale-x-100" to="/"><PlayIkona /></RouterLink>
+     <nav class="flex relative justify-between h-10 grow" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
+        <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" :nacitani-polohy="nacitaniPolohy" @pridat-sekci="pridatSekci" @obnovit-polohy="obnovPolohy" />
+    
+        <div class="flex gap-1 h-full">
+            <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold after:!skew-x-0 navButton" v-if="!selectMode">
+                <PridatIkona class="scale-75" />
+                <span class="max-sm:hidden">Přidat kešky</span>
+            </button>
+            <button @click="selectMode = !selectMode" class="flex relative gap-2 items-center pl-4 font-bold after:!skew-x-0 navButton" :class="{'ml-2': selectMode}">
+                <VybratIkona class="scale-75" v-if="!selectMode" />
+                <PotvrditIkona class="scale-75" v-else stroke="black" />
+                <span class="max-sm:hidden" v-if="!selectMode">Vybrat</span>
+                <span class="max-sm:hidden" v-else>Zpět</span>
+            </button>
+        </div>
+        <div class="flex mr-6 h-full" v-if="!selectMode">
+            <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="importBackup?.click()">
+                <ImportIkona class="scale-75" />
+                <span class="max-sm:hidden">Import</span>
+            </button>
+            <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="exportData">
+                <ExportIkona class="scale-75" />
+                <span class="max-sm:hidden">Export</span>
+            </button>
+            <button class="flex relative items-center pl-4 font-bold after:!skew-x-0 navButton" @click="openDropdown(2)"><NastaveniIkona class="scale-75 stroke-black" /></button>
+            <button class="flex relative items-center pl-4 font-bold after:!skew-x-0 navButton max-sm:hidden" @click="helpOpen = !helpOpen"><NapovedaIkona class="scale-75" /></button>
+        </div>
+        <div class="flex gap-1 mr-6 h-full" v-else>
+            <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="removeSelectedCaches(selectedCaches)">
+                <SmazatIkona class="scale-75" stroke="black"/>
+                <span class="max-sm:hidden">Smazat</span>
+            </button>
+            <button class="relative font-bold">
+                <div class="flex gap-2 items-center pr-1 pl-2 after:!skew-x-0 navButton" @click="openDropdown(0)">
+                    <MoveIkona class="scale-75" />
+                    <span class="max-sm:hidden">Přesunout</span>
+                </div>
+    
+                <!-- Dropdown -->
+                <div class="flex absolute right-0 top-10 z-40 flex-col w-48 font-normal bg-geo-300" v-show="moveDropdownOpen > 0" ref="moveDropdownElement">
+                    <button v-for="(sekce, sInd) in vsechnySekce" class="px-1 py-2 text-left border-b-2 border-opacity-50 border-b-black hover:bg-black hover:bg-opacity-20" @click="moveSelectedCaches(sInd)">{{ sekce.jmeno }}</button>
+                </div>
+            </button>
+            <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="moveSelectedToTop">
+                <NavrchIkona class="scale-75" />
+                <span class="max-sm:hidden">Na vrch</span>
+            </button>
+        </div>
+     </nav>
+ </div>
 
  <div class="flex gap-5 justify-center mt-3" v-if="hasLS">
-     <div class="w-96 h-[60rem] max-h-[70vh] px-3" v-for="(sekce, indexSekce) in vsechnySekce" v-show="smallScreen == -1 ? true : indexSekce == smallScreen" :key="sekce.barva" @dragover="draggingOverSection = indexSekce">
+     <div class="w-96 h-[60rem] max-h-[80vh] px-3" v-for="(sekce, indexSekce) in vsechnySekce" v-show="smallScreen == -1 ? true : indexSekce == smallScreen" :key="sekce.barva" @dragover="draggingOverSection = indexSekce">
 
         <!-- Jméno sekce -->
         <div :style="{background: sekce.barva}" @click="editaceJmena = indexSekce" class="flex justify-between items-center text-xl font-extrabold text-white cursor-pointer group">

@@ -13,7 +13,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <aside class="min-w-[18rem] max-h-[80svh] sticky top-16 underlineThick">
+    <aside class="min-w-[18rem] max-h-[80svh] sticky top-4 underlineThick">
         <header>Poznámky</header>
         <div class="box-border flex relative flex-col gap-2 items-center p-2 w-full h-full bg-geo-200">
 
