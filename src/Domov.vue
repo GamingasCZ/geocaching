@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from 'vue';
+import { onMounted, onUnmounted, provide, ref } from 'vue';
 import pozadi from './obrazky/pozadi2.svg?url'
 import pozadi2 from './obrazky/pozadi4.svg?url'
 import pozadi3 from './obrazky/pozadi5.svg?url'
@@ -14,14 +14,14 @@ let dragY = 0
 let dragYStart = -1
 document.documentElement.ontouchmove = e => {
     if (dragYStart == -1) dragYStart = e.touches[0].clientY
-    if (Math.abs(dragYStart - e.touches[0].clientY) > 200 && !isScrolling.value) {
+    if (Math.abs(dragYStart - e.touches[0].clientY) > window.innerHeight/5 && !isScrolling.value) {
         isScrolling.value = true
         setTimeout(() => isScrolling.value = false, 250);
 
-        if (dragYStart - e.touches[0].clientY < 0) currScroll.value -= 1
-        else currScroll.value += 1
+        if (dragYStart - e.touches[0].clientY < 0) currScroll.value = Math.max(0, currScroll.value - 1)
+        else currScroll.value = Math.min(currScroll.value + 1, STRANKY - 1)
 
-        window.scrollTo({ top: window.innerHeight * currScroll.value, behavior: 'smooth' })
+        reposition(true)
         dragYStart = -1
         dragY = 0
     }
@@ -32,8 +32,10 @@ window.onresize = () => reposition(false)
 
 const isScrolling = ref(false)
 const currScroll = ref(0)
+provide("currScroll", currScroll)
 document.documentElement.onwheel = e => {
     e.preventDefault()
+    if (e.ctrlKey) return
     if (!isScrolling.value) {
         isScrolling.value = true
         setTimeout(() => isScrolling.value = false, 250);
@@ -41,12 +43,12 @@ document.documentElement.onwheel = e => {
         if (e.deltaY < 0) currScroll.value = Math.max(0, currScroll.value - 1)
         else currScroll.value = Math.min(currScroll.value + 1, STRANKY - 1)
 
-        window.scrollTo({ top: window.innerHeight * currScroll.value, behavior: 'smooth' })
+        reposition(true)
     }
 }
 
 const reposition = (smooth = false) => {
-    window.scrollTo({ top: window.innerHeight * currScroll.value, behavior: smooth ? 'smooth' : 'instant' })
+    window.scrollTo({ top: document.documentElement.clientHeight * currScroll.value, behavior: smooth ? 'smooth' : 'instant' })
 }
 
 onMounted(() => {
@@ -68,11 +70,11 @@ document.body.addEventListener("keydown", k => {
 })
 
 const fotkaVybrana = ref(0)
-const maxFotek = 9
+const maxFotek = 12
 let fotogalerie = ref<string[]>([])
 const loadFotky = async () => {
-    for (let i = 0; i < maxFotek; i++) {
-        fotogalerie.value.push(await import(`./obrazky/karusel/p${i + 1}.webp`).then(res => res.default))
+    for (let i = 1; i <= maxFotek; i++) {
+        fotogalerie.value.push(await import(`./obrazky/karusel/p${i}.webp`).then(res => res.default))
     }
 }
 loadFotky()
@@ -126,11 +128,11 @@ const posunoutFotku = (kam: number) => {
                 :style="{ clipPath: 'polygon(25% 20%, 74% 20%, 74% 94%, 25% 94%)', backgroundImage: `url(${fotogalerie[fotkaVybrana]})` }">
             </div>
         </div>
-        <div class="absolute top-0 right-0 z-10 w-1/2 h-[200vh] bg-gradient-to-l to-transparent from-geo-50"></div>
+        <div class="absolute top-0 right-0 z-10 w-1/2 h-[400vh] bg-gradient-to-l to-transparent from-geo-50"></div>
     </div>
 
     <Scrollbar @goto="currScroll = $event; reposition(true)" class="max-sm:hidden" />
-    <button class="absolute z-50 w-full opacity-50" v-if="currScroll < STRANKY -1" :style="{top: `${100 * (currScroll+1)}vh`}" @click="currScroll = Math.min(currScroll + 1, STRANKY - 1); reposition(true)">
+    <button class="absolute z-50 w-full opacity-50 sm:hidden" v-if="currScroll < STRANKY -1" :style="{top: `${100 * (currScroll+1)}vh`}" @click="currScroll = Math.min(currScroll + 1, STRANKY - 1); reposition(true)">
         <scrollDown class="absolute bottom-2 left-1/2 animate-pulse -translate-x-1/2" />
     </button>
 
@@ -208,10 +210,14 @@ const posunoutFotku = (kam: number) => {
                     <img src="./ikony/odkazClanek.webp" class="w-16 max-sm:w-10" alt="">
                     <p class="sm:h-12">Zajímavé články</p>
                 </a>
-                <a @focus="currScroll = 2; reposition()" href="https://kesky.cz" class="w-[11rem] max-sm:w-full rounded-md border-r-4 border-b-4 border-geo-400 sm:h-48 flex sm:flex-col sm:justify-center gap-3 items-center sm:p-2 max-sm:p-1 text-white bg-black bg-opacity-60" target="_blank">
+                <div @focus="currScroll = 2; reposition()" class="w-[11rem] max-sm:w-full rounded-md border-r-4 border-b-4 border-geo-400 sm:h-48 flex sm:flex-col sm:justify-center gap-3 items-center sm:p-2 max-sm:p-1 text-white bg-black bg-opacity-60" target="_blank">
                     <img src="./ikony/odkazMobil.webp" class="w-16 max-sm:w-10" alt="">
-                    <p class="sm:h-12">Geocaching aplikace</p>
-                </a>
+                    <p class="sm:h-4">Geocaching aplikace</p>
+                    <div class="flex gap-4">
+                        <a href="https://play.google.com/store/apps/details?id=com.groundspeak.geocaching.intro"><img src="./ikony/odkazGP.webp" alt=""></a>
+                        <a href="https://apps.apple.com/us/app/geocaching/id329541503"><img src="./ikony/odkazApple.webp" alt=""></a>
+                    </div>
+                </div>
             </div>
         </div>
 
