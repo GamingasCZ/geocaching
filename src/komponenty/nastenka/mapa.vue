@@ -3,7 +3,7 @@ import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
-import { inject, ref, watch, type StyleValue } from 'vue';
+import { inject, ref, watch, type StyleValue, onUnmounted } from 'vue';
 
 import BodTrasy from './bodTrasy.vue';
 import PridatIkona from "@/ikony/plus.svg"
@@ -13,6 +13,7 @@ import MapaIkona from "@/ikony/mapa.svg"
 import ZavritIkona from "@/ikony/zavrit.svg"
 import OdkazIkona from "@/ikony/odkaz.svg"
 import KompasIkona from "@/ikony/kompas.svg"
+import PolohaIkona from "@/ikony/poloha.svg"
 import { fromLonLat, transform } from "ol/proj";
 import Vzdalenost from "node-geo-distance";
 import VectorLayer from 'ol/layer/Vector';
@@ -26,13 +27,14 @@ import Fill from 'ol/style/Fill';
 import Text from 'ol/style/Text';
 import Stroke from 'ol/style/Stroke';
 import ImageStyle from 'ol/style/Image';
-// import kompas from "kompas";
+import bodTrasy from "@/ikony/bodTrasy.svg?url"
+import bodPolohy from "@/ikony/bodPolohy.svg?url"
+import Icon from 'ol/style/Icon';
 
-// kompas.watch()
-// const data = ref()
-// kompas.on("heading", x => {
-//     data.value = x
-// })
+
+const emit = defineEmits<{
+    (e: "zavrit"): void
+}>()
 
 const props = defineProps<{
     jmeno: string;
@@ -44,7 +46,25 @@ const props = defineProps<{
     objekt: IntKeska;
 }>()
 
+const ulozitKesky = inject<() => void>("ulozitKesky")
 const map = ref()
+
+const ikonaBoduTrasy = new Style({
+  image: new Icon({
+    anchor: [0.5, 46],
+    anchorXUnits: 'fraction',
+    anchorYUnits: 'pixels',
+    src: bodTrasy,
+  }),
+});
+const ikonaPolohy = new Style({
+  image: new Icon({
+    anchor: [0.5, 46],
+    anchorXUnits: 'fraction',
+    anchorYUnits: 'pixels',
+    src: bodPolohy,
+  }),
+});
 
 function mapGoto(lon: number, lat: number) {
     let myView = new View({
@@ -53,7 +73,6 @@ function mapGoto(lon: number, lat: number) {
     m.setView(myView);
 }
 
-
 let m;
 let VecLayer = new VectorLayer({
     source: new VectorSource({
@@ -61,6 +80,7 @@ let VecLayer = new VectorLayer({
     }),
 })
 const spawnMapy = () => {
+    if (m != undefined) return
     m = new Map({
         target: map.value,
         layers: [
@@ -71,7 +91,7 @@ const spawnMapy = () => {
         ],
     });
 
-    addPointToMap(props.pozice.longtitude, props.pozice.latitude, 0, "0")
+    addPointToMap(props.pozice.longtitude, props.pozice.latitude, 0, "X")
     let j = 1
     props.waypointy.forEach(wp => {
         addPointToMap(wp.longitude, wp.latitude, j, j.toString())
@@ -85,17 +105,23 @@ const spawnMapy = () => {
 }
 
 const addPointToMap = (lon: number, lat: number, id: number = 0, addText?: string, jinyStyl?: StyleLike) => {
-    let bod = new Feature(new Point(fromLonLat([lon, lat])))
+    let point = new Point(fromLonLat([lon, lat]))
+    let bod = new Feature(point)
     bod.setId(id)
     if (jinyStyl) bod.setStyle(jinyStyl)
     else {
-        bod.setStyle(new Style({
-            text: new Text({ text: addText }),
-            fill: new Fill
-        }))
+        let iconClone
+        if (addText != "Poloha") {
+            iconClone = ikonaBoduTrasy.clone()
+            iconClone.setText(new Text({text: addText, offsetY: -30,font: 'bold 16px sans-serif'}))
+        }
+        else {
+            iconClone = ikonaPolohy.clone()
+        }
+        bod.setStyle(iconClone)
     }
-    bod.setGeometry(new Circle(fromLonLat([lon, lat]), 18))
     VecLayer.getSource()!.addFeature(bod)
+    return [point, bod]
 }
 
 const dialog = ref<HTMLDialogElement>()
@@ -110,6 +136,7 @@ const close = () => {
     VecLayer.getSource()?.getFeatures().forEach((feat) => {
         feat.dispose()
     })
+    emit('zavrit')
 }
 dialog.value?.addEventListener("close", close)
 
@@ -123,11 +150,19 @@ const azimutRadian = ref("0")
 const nyniPoloha = ref({ latitude: 0, longitude: 0 })
 const polohaZakazana = ref(false)
 
+const polohaPoint = ref<Point>()
+const polohaFeature = ref<Feature>()
 watch(nyniPoloha, () => {
-    addPointToMap(nyniPoloha.value.longitude, nyniPoloha.value.latitude, -1, "1", new Style({
-        fill: new Fill({ color: "#1AB3D2" }),
-        stroke: new Stroke({ width: 1, color: "black" }),
-    }))
+    if (nyniPoloha.value.latitude == 0)
+        [polohaPoint.value, polohaFeature.value] = addPointToMap(nyniPoloha.value.longitude, nyniPoloha.value.latitude, -1, "Poloha")
+    else {
+        let pos = polohaFeature.value?.getGeometry()?.clone()
+        polohaPoint.value?.setCoordinates(nyniPoloha.value)
+    }
+    setInterval(() => {
+        // nyniPoloha.value.latitude += 0.01
+        let c = polohaPoint setCoordinates(nyniPoloha.value)
+    }, 500)
 })
 
 const nacitaniPolohy = ref(false)
@@ -152,7 +187,7 @@ function ziskatPozici() {
         }, (chyba) => {
             polohaZakazana.value = true
             nacitaniPolohy.value = false
-        }, { enableHighAccuracy: true })
+        }, { enableHighAccuracy: true, timeout: 30000 })
     }
 }
 
@@ -165,12 +200,45 @@ const addWaypoint = () => {
     workingOnWaypoint.value = true
 }
 
+const sledovaniPolohy = ref(false)
+var sledovaniID = -1
+const toggleSledovaniPolohy = () => {
+    sledovaniPolohy.value = !sledovaniPolohy.value
+    if (sledovaniPolohy.value) {
+        sledovaniID = navigator.geolocation.watchPosition((nyniPozice) => {
+            polohaPlusMinus.value = nyniPozice.coords.accuracy
+            nyniPoloha.value = { latitude: nyniPozice.coords.latitude, longitude: nyniPozice.coords.longitude }
+            let polohaKesky = { latitude: props.pozice.latitude, longitude: props.pozice.longtitude }
+            let vzdalenost = parseFloat(Vzdalenost.vincentySync(nyniPoloha.value, polohaKesky))
+            let az = Math.atan((nyniPoloha.value.longitude - polohaKesky.longitude) / (nyniPoloha.value.latitude - polohaKesky.latitude));
+            let a = az + Math.PI / 2
+            if (a < 0) a += 2 * Math.PI
+            let b = az * 180.0 / Math.PI
+            if (b < 0) b += 360
+    
+            azimutRadian.value = (a).toFixed(0);
+            azimut.value = (b).toFixed(0);
+            vzdalMetry.value = parseDistance(vzdalenost)
+        }, () => {return}, {enableHighAccuracy: true})
+    }
+    else {
+        navigator.geolocation.clearWatch(sledovaniID)
+    }
+}
+
+onUnmounted(() => {
+    if (sledovaniPolohy.value) {
+        navigator.geolocation.clearWatch(sledovaniID)
+        sledovaniID = -1
+    }
+})
+
 </script>
 
 <template>
     <dialog ref="dialog" class="backdrop:bg-black backdrop:bg-opacity-80">
         <section
-            class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full max-h-[45rem] h-[90vh] overflow-y-auto max-h-screen relative"
+            class="grid sm:grid-cols-[1fr_17rem] bg-geo-400 w-[90rem] max-w-full max-h-[45rem] h-[90vh] overflow-y-auto relative"
             :class="{ 'max-sm:grid-rows-[10rem_1fr]': !mapFullscreen, 'flex': mapFullscreen }">
             <!-- Mapa -->
             <div ref="map" class="relative h-full border-4 border-r-0 border-geo-400 skewButton">
@@ -183,7 +251,7 @@ const addWaypoint = () => {
             </div>
 
             <!-- Ovládání -->
-            <div class="flex absolute flex-col items-center w-[17rem] right-0 overflow-auto h-full max-sm:w-full"
+            <div class="flex max-sm:mt-40 bg-geo-400 absolute flex-col items-center w-[17rem] right-0 overflow-auto h-full max-sm:w-full"
                 v-if="!mapFullscreen">
                 <KompasIkona class="overflow-visible my-4 scale-75" :style="{ transform: `rotate(${azimut}deg)` }" />
                 <h2 class="text-xl font-bold text-center">{{ jmeno }}</h2>
@@ -194,6 +262,13 @@ const addWaypoint = () => {
                 <div v-if="!polohaZakazana && nacitaniPolohy" class="py-2 my-2 w-1/2 h-8 bg-black bg-opacity-40 rounded-md">
                 </div>
                 <div class="flex flex-col w-full h-full">
+                    <div>
+                        <button @click="toggleSledovaniPolohy()"
+                            class="flex gap-2 items-center px-1 py-2 w-full disabled:pointer-events-none disabled:opacity-30 hover:bg-black hover:bg-opacity-30">
+                            <PolohaIkona stroke="black" class="scale-75" />Živá poloha
+                            <input v-model="sledovaniPolohy" type="checkbox" class="mr-1.5 ml-auto shadow-sm shadow-black">
+                        </button>
+                    </div>
                     <div>
                         <button @click="napovedaShown = !napovedaShown" :class="{ 'bg-black bg-opacity-20': napovedaShown }"
                             :disabled="!napoveda"
@@ -219,10 +294,10 @@ const addWaypoint = () => {
                             </button>
                             <BodTrasy jmeno="Výchozí" :latitude="props.pozice.latitude" :longitude="props.pozice.longtitude"
                                 :def="true" @go-to-point="mapGoto($event.lon, $event.lat)" />
-                            <BodTrasy v-for="(wpt, index) in waypointy" v-bind="wpt" :keska="objekt"
+                            <BodTrasy v-for="(wpt, index) in waypointy" v-bind="wpt" :ind="index" :keska="objekt"
                                 @cancel="objekt.waypointy.splice(index, 1); workingOnWaypoint = false"
                                 @saved="objekt.waypointy[index].editing = false; workingOnWaypoint = false"
-                                @go-to-point="mapGoto($event.lon, $event.lat)" />
+                                @go-to-point="mapGoto($event.lon, $event.lat)" @remove-point="objekt.waypointy.splice($event, 1); ulozitKesky()" />
                         </div>
                     </div>
                     <div class="py-3"></div>

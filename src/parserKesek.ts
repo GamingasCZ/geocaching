@@ -148,8 +148,10 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
 
 export const parseDistance = (distMeters: number) => {
     switch (true) {
-        case distMeters >= 1000:
+        case distMeters >= 10000:
             return `${(distMeters/1000).toFixed(1)}km`; break;
+        case distMeters >= 1000:
+            return `${(distMeters/1000).toFixed(3)}km`; break;
         case distMeters >= 100:
             return `${distMeters.toFixed(0)}m`; break;
         case distMeters >= 10:

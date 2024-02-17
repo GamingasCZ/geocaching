@@ -126,7 +126,11 @@ const otevritMapu = (index: number, sekce: number) => {
     zobrazenaNaMapeKeska.value.geokod = keska.kod
     zobrazenaNaMapeKeska.value.waypointy = keska.waypointy
     zobrazenaNaMapeKeska.value.objekt = keska
-    mapaOtevrena.value = !mapaOtevrena.value
+    nextTick(() => mapaOtevrena.value = !mapaOtevrena.value)
+}
+
+const closeMap = () => {
+    zobrazenaNaMapeKeska.value.jmeno = ""
 }
 
 const selectMode = ref(false)
@@ -329,6 +333,9 @@ const smazatSekci = (ind: number) => {
     localStorage.setItem("sekce", JSON.stringify(vsechnySekce.value))
 }
 
+const ulozitKesky = () => localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value))
+provide("ulozitKesky", ulozitKesky)
+
 const smallScreen = ref(-1)
 const modifyWindow = () => {
     smallScreen.value = window.outerWidth < 540 ? 0 : -1
@@ -359,7 +366,7 @@ const obnovPolohy = () => {
 </script>
 
 <template>
-<Mapa v-bind="zobrazenaNaMapeKeska" :open="mapaOtevrena" />
+<Mapa v-bind="zobrazenaNaMapeKeska" v-if="zobrazenaNaMapeKeska.jmeno != ''" :open="mapaOtevrena" @zavrit="closeMap" />
 <ImportDialog :open="importExtra.open" :zaloha="importExtra" @update-caches="vsechnyKesky = $event"/>
 <Napoveda :open="helpOpen" />
 
