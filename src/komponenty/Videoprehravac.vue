@@ -60,7 +60,6 @@ const getVideo = async () => {
         
     })
     video.value?.addEventListener("waiting", () => buffering.value = true )
-    video.value?.addEventListener("progress", () => buffering.value = true )
     video.value?.addEventListener("playing", () => buffering.value = false )
 
     video.value?.addEventListener("ended", () => {
@@ -80,12 +79,13 @@ onMounted(() => {
     getVideo()
 
     document.addEventListener("fullscreenchange", e => {
+        console.log(e)
         if (e != null) {
             isFullscreened.value = document.body.classList.contains("clip")
             if (document.body.classList.contains("clip"))
-                document.body.classList.add("clip")
-            else
                 document.body.classList.remove("clip")
+            else
+                document.body.classList.add("clip")
         }
     })
 
