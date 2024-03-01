@@ -79,13 +79,12 @@ onMounted(() => {
     getVideo()
 
     document.addEventListener("fullscreenchange", e => {
-        console.log(e)
         if (e != null) {
-            isFullscreened.value = document.body.classList.contains("clip")
-            if (document.body.classList.contains("clip"))
-                document.body.classList.remove("clip")
-            else
+            if (document.fullscreen)
                 document.body.classList.add("clip")
+            else
+                document.body.classList.remove("clip")
+            isFullscreened.value = document.fullscreen
         }
     })
 
