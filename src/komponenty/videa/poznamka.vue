@@ -1,16 +1,24 @@
 <script setup lang="ts">
+import { hasLocalStorage } from '@/parserKesek';
 
-defineProps<{
+
+const props = defineProps<{
     nazev: string
     text: string
     cas: string
     url: string
+    casPrecizni: number
 }>()
+
+const saveTime = () => {
+    if (!hasLocalStorage()) return
+    sessionStorage.setItem("videoTime", props.casPrecizni.toString())
+}
 
 </script>
 
 <template>
-    <RouterLink :to="`/videa/${url}`" class="min-w-full">
+    <RouterLink :to="`/videa/${url}`" class="min-w-full" @click="saveTime">
         <div class="relative p-1 pl-2 text-white border-b-4 bg-geo-50 border-b-ext-fia noteFooter">
             <h1 class="font-bold font-lg">{{ nazev }}</h1>
             <p class="text-xs">{{ text }}</p>

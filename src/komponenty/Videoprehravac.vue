@@ -3,6 +3,7 @@ import { computed, onMounted, provide, ref, watch } from 'vue';
 import Sekce from "@/komponenty/ostatni/textovaSekce.vue";
 import Videa from "@/assety/videa"
 
+import Nacitani from "@/ikony/nacitani.svg"
 import Fullscreen from "@/ikony/fullscreen.svg"
 import Play from "@/ikony/play.svg"
 import Pause from "@/ikony/pause.svg"
@@ -27,7 +28,7 @@ const thumbDalsiVideo = ref("")
 const poznamkyProVideo = ref("")
 const videoLink = ref()
 const getVideo = async () => {
-    videoLink.value = await import(`@/videa/${Videa[videoIndex.value].url}.webm`).then(res => res.default)
+    videoLink.value = await import(`@/videa/${Videa[videoIndex.value].url}.mp4`).then(res => res.default)
     if (videoIndex.value > 0)
         thumbPredVideo.value = await import(`@/obrazky/videonahledy/${Videa[videoIndex.value - 1].url}-min.webp`).then(res => res.default)
     if (videoIndex.value < Videa.length - 1)
@@ -35,32 +36,56 @@ const getVideo = async () => {
     thumbTotoVideo.value = await import(`@/obrazky/videonahledy/${Videa[videoIndex.value].url}-max.webp`).then(res => res.default)
     if (hasLocalStorage()) {
         let pozn = JSON.parse(localStorage.getItem("poznamky")!) ?? []
-        poznamkyProVideo.value = pozn.filter(x => x[3] == Videa[videoIndex.value].url)
+        poznamkyProVideo.value = pozn.filter((x: string[]) => x[3] == Videa[videoIndex.value].url)
     }
-}
-
-const videoStarted = ref(false)
-const playbackTime = ref(0)
-const parsedDuration = ref("0:00")
-const parsedElapsedTime = ref("0:00")
-onMounted(() => {
-    getVideo()
+    
     video.value?.addEventListener("timeupdate", () => {
+        if (!video.value) return
+        buffering.value = false
         parsedDuration.value = parseTime(video.value?.duration)
         playbackTime.value = video.value?.currentTime / video.value?.duration
         parsedElapsedTime.value = parseTime(video.value?.currentTime)
     })
+    video.value?.addEventListener("loadedmetadata", () => {
+        if (!video.value) return
+        parsedDuration.value = parseTime(video.value?.duration)
+        if (hasLocalStorage() && sessionStorage.getItem("videoTime")) {
+            skocitNaCas(parseFloat(sessionStorage.getItem("videoTime")!))
+            playbackTime.value = video.value.currentTime
+            sessionStorage.removeItem("videoTime")
+        }
+        else
+            playbackTime.value = 0
+        parsedElapsedTime.value = parseTime(playbackTime.value)
+        
+    })
+    video.value?.addEventListener("waiting", () => buffering.value = true )
+    video.value?.addEventListener("progress", () => buffering.value = true )
+    video.value?.addEventListener("playing", () => buffering.value = false )
+
     video.value?.addEventListener("ended", () => {
         isPlaying.value = false
     })
     video.value?.addEventListener("error", () => {
         summonNotif("Nepodařilo se načíst video!")
     })
+}
+
+const videoStarted = ref(false)
+const buffering = ref(false)
+const playbackTime = ref(0)
+const parsedDuration = ref("0:00")
+const parsedElapsedTime = ref("0:00")
+onMounted(() => {
+    getVideo()
 
     document.addEventListener("fullscreenchange", e => {
-        if (e == null) {
-            isFullscreened.value = false
-            document.body.classList.remove("clip")
+        if (e != null) {
+            isFullscreened.value = document.body.classList.contains("clip")
+            if (document.body.classList.contains("clip"))
+                document.body.classList.add("clip")
+            else
+                document.body.classList.remove("clip")
         }
     })
 
@@ -191,6 +216,11 @@ const hoveringOverNote = ref(-1)
                     @mousemove="controlsHover"
                 ></video>
 
+                <!-- Nacitani -->
+                <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" v-if="videoStarted && buffering && isPlaying">
+                    <Nacitani class="animate-spin" />
+                </div>
+
                 <!-- Kliknutím přehrát -->
                 <button @click="playpauseVideo" v-if="!videoStarted" class="flex absolute scale-[2.2] hover:scale-[2] transition-transform p-3 top-1/2 left-1/2 justify-center items-center bg-black bg-opacity-50 -translate-x-1/2 -translate-y-1/2 rounded-full">
                     <Play fill="white" />
@@ -236,12 +266,12 @@ const hoveringOverNote = ref(-1)
 
         <nav class="flex relative justify-between items-center mt-8 w-full h-10 after:-skew-x-12 max-sm:flex-col">
             <h2 class="px-6 text-2xl font-bold">{{ Videa[videoIndex].nazev }}</h2>
-            <button class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 max-sm:py-2 bg-ext-fia" @click="showNotePanel">
+            <button :disabled="!videoStarted" class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 disabled:grayscale max-sm:py-2 bg-ext-fia" @click="showNotePanel">
                 <EditIkona class="w-6 h-6 skew-x-12" />
                 <span class="skew-x-12">Zapsat poznámku</span>
             </button>
         </nav>
-        <EditorPoznamky @cancel="notePanelShown = false" @changedNoteTime="changedNoteTime" @saved="noteSaved" v-if="notePanelShown" :time-ratio="videoRatio" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
+        <EditorPoznamky class="max-sm:mt-12" @cancel="notePanelShown = false" @changedNoteTime="changedNoteTime" @saved="noteSaved" v-if="notePanelShown" :time-ratio="videoRatio" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
 
         <section class="flex flex-wrap gap-y-4 justify-between pr-6 mt-2 ml-3 w-full max-sm:mt-16">
             <RouterLink class="vOdkaz grid text-white grid-cols-[max-content_1fr] w-full max-w-lg bg-geo-50 relative overflow-clip border-4 border-white" :to="Videa[videoIndex - 1].url" v-if="videoIndex > 0">

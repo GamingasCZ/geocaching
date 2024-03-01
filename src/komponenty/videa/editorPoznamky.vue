@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { hasLocalStorage } from '@/parserKesek';
+import { ref } from 'vue';
 
 const props = defineProps<{
     maxTime: string;
@@ -14,9 +15,10 @@ const emit = defineEmits<{
     (e: "changedNoteTime", allNotes: any[]): void
 }>()
 
-const saveNote = (form: Event) => {
+const form = ref()
+const saveNote = (f: Event) => {
     if (!hasLocalStorage()) return
-    let formData = (form.target as HTMLFormElement)
+    let formData = (form.value as HTMLFormElement)
     let notes = JSON.parse(localStorage.getItem("poznamky")!) ?? []
     notes.push([
         formData.elements[0].value,
@@ -25,6 +27,7 @@ const saveNote = (form: Event) => {
         props.currUrl,
         props.timeRatio
     ])
+    console.log(notes)
     localStorage.setItem("poznamky", JSON.stringify(notes))
     emit("saved", notes)
 }
@@ -32,7 +35,7 @@ const saveNote = (form: Event) => {
 </script>
 
 <template>
-    <form class="flex flex-col gap-2 p-3 m-3 bg-geo-400" @submit.prevent="saveNote">
+    <form class="flex flex-col gap-2 p-3 m-3 bg-geo-400" ref="form" @submit.prevent="saveNote">
         <input name="name" type="text" maxlength="25" required class="p-1 font-extrabold tracking-wide text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" autofocus autocomplete="off" placeholder="Název poznámky">
         <textarea name="text" required maxlength="300" class="p-1 text-white bg-black bg-opacity-40 placeholder:text-white placeholder:text-opacity-80" placeholder="Text poznámky"></textarea>
         <footer class="flex justify-between items-center">

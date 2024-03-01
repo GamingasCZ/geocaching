@@ -379,7 +379,7 @@ const obnovPolohy = () => {
  <div class="flex justify-center items-center max-w-[94vw] mx-auto mt-4">
      <RouterLink class="flex justify-center items-center h-10 bg-geo-400 aspect-square -scale-x-100" to="/"><PlayIkona /></RouterLink>
      <nav class="flex relative justify-between h-10 grow" :class="{'opacity-30 pointer-events-none': !hasLS, 'drop-shadow-2xl shadow-geo-400 !bg-black': pretahuje}">
-        <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" :nacitani-polohy="nacitaniPolohy" @pridat-sekci="pridatSekci" @obnovit-polohy="obnovPolohy" />
+        <Nastaveni :open="settingsOpen != -1" :ma-treti-sekci="vsechnySekce.length == 3" :nacitani-polohy="nacitaniPolohy" @pridat-sekci="pridatSekci" @napoveda="helpOpen = true" @obnovit-polohy="obnovPolohy" />
     
         <div class="flex gap-1 h-full">
             <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold after:!skew-x-0 navButton" v-if="!selectMode">

@@ -18,7 +18,7 @@ onMounted(() => {
 })
 
 
-const pr = ref(import.meta.env.BASE_URL)
+const pr = ref("https://gamingas.cz")
 </script>
 
 <template>

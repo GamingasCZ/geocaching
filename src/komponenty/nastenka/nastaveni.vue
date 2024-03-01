@@ -16,6 +16,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "pridatSekci"): void
     (e: "obnovitPolohy"): void
+    (e: "napoveda"): void
 }>()
 
 </script>
@@ -46,5 +47,8 @@ const emit = defineEmits<{
             <label>Zakázat přetahování</label>
             <input type="checkbox" name="" id="" v-model="Nastaveni.zakazatPretahovani">
         </div>
+        <button @click="emit('napoveda')" class="flex gap-4 justify-between p-2 border-b-2 border-black sm:hidden">
+            <span>Nápověda</span>
+        </button>
     </section>
 </template>
