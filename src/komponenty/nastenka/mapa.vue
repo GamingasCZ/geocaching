@@ -3,7 +3,7 @@ import Map from 'ol/Map.js';
 import OSM from 'ol/source/OSM.js';
 import TileLayer from 'ol/layer/Tile.js';
 import View from 'ol/View.js';
-import { inject, ref, watch, type StyleValue, onUnmounted, provide } from 'vue';
+import { inject, ref, watch, onUnmounted } from 'vue';
 
 import BodTrasy from './bodTrasy.vue';
 import PridatIkona from "@/ikony/plus.svg"
@@ -20,18 +20,14 @@ import Vzdalenost from "node-geo-distance";
 import VectorLayer from 'ol/layer/Vector';
 import VectorSource from 'ol/source/Vector';
 import { Feature } from 'ol';
-import { Circle, Geometry, Point } from 'ol/geom';
+import { Point } from 'ol/geom';
 import { parseDistance, type IntKeska, type Waypoint } from '@/parserKesek';
 import type { StyleLike } from 'ol/style/Style';
 import Style from 'ol/style/Style';
-import Fill from 'ol/style/Fill';
 import Text from 'ol/style/Text';
-import Stroke from 'ol/style/Stroke';
-import ImageStyle from 'ol/style/Image';
 import bodTrasy from "@/ikony/bodTrasy.svg?url"
 import bodPolohy from "@/ikony/bodPolohy.svg?url"
 import Icon from 'ol/style/Icon';
-import type RenderFeature from 'ol/render/Feature';
 
 
 const emit = defineEmits<{
@@ -53,7 +49,7 @@ const map = ref()
 
 const ikonaBoduTrasy = new Style({
   image: new Icon({
-    anchor: [0.5, 46],
+    anchor: [0.5, 16],
     anchorXUnits: 'fraction',
     anchorYUnits: 'pixels',
     src: bodTrasy,
@@ -61,7 +57,7 @@ const ikonaBoduTrasy = new Style({
 });
 const ikonaPolohy = new Style({
   image: new Icon({
-    anchor: [0.5, 46],
+    anchor: [0.5, 16],
     anchorXUnits: 'fraction',
     anchorYUnits: 'pixels',
     src: bodPolohy,
@@ -109,8 +105,6 @@ const spawnMapy = () => {
             klikPoloha.value = toLonLat(m.getCoordinateFromPixel(e.pixel))
             pickingWaypoint.value = false
         }
-        // m.forEachFeatureAtPixel(e.pixel, x => console.log(x.getId()))
-
     })
 }
 
@@ -124,7 +118,7 @@ const addPointToMap = (lon: number, lat: number, id: number = 0, addText?: strin
         let iconClone
         if (addText != "Poloha") {
             iconClone = ikonaBoduTrasy.clone()
-            iconClone.setText(new Text({text: addText, offsetY: -30,font: 'bold 16px sans-serif'}))
+            iconClone.setText(new Text({text: addText, offsetY: 0,font: 'bold 16px sans-serif'}))
         }
         else {
             iconClone = ikonaPolohy.clone()
