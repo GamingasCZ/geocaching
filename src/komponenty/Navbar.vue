@@ -2,24 +2,39 @@
 import IkonaVidea from "../ikony/videa.svg" 
 import IkonaHry from "../ikony/hry.svg"
 import IkonaNastenka from "../ikony/nastenka.svg"
+import IkonaJazyk from "../ikony/jazyk2.svg"
+import IkonaCZ from "../ikony/cesky.svg"
+import IkonaUK from "../ikony/english.svg"
+
+
 import Logo from "../ikony/logo.svg"
-import { ref } from "vue";
+import { nextTick, ref } from "vue";
+import { i18n, setLanguage } from "@/locales"
 
 const tlacitka = [
-    {na: '/videa', ikona: IkonaVidea, text: 'Videa'},
-    {na: '/hry', ikona: IkonaHry, text: 'Hry'},
-    {na: '/nastenka', ikona: IkonaNastenka, text: 'Nástěnka'},
+    {na: '/videa', ikona: IkonaVidea, text: 'videos'},
+    {na: '/hry', ikona: IkonaHry, text: 'games'},
+    {na: '/nastenka', ikona: IkonaNastenka, text: 'pinboard'},
 ]
 
 const vybranaStranka = ref(-1)
 
 const floating = ref(false)
 const hidden = ref(false)
+const langOpen = ref(false)
 
 window.addEventListener("scroll", () => {
     floating.value = document.documentElement.scrollTop > 0
     hidden.value = document.documentElement.scrollTop > window.innerHeight/10
 })
+
+const setLang = (ind: 0 | 1) => {
+    setLanguage(ind);
+    langOpen.value = false
+    setTimeout(() => {
+        window.location.reload()
+    }, 10)
+}
 
 </script>
 
@@ -50,11 +65,23 @@ window.addEventListener("scroll", () => {
                         class="absolute pr-3 pl-5 min-w-full h-full bg-black bg-opacity-0 transition-colors -skew-x-12 hover:bg-opacity-20"
                     ></div>
                     <component :is="odkaz.ikona" />
-                    <span class="transition-transform max-sm:hidden">{{ odkaz.text }}</span>
+                    <span class="transition-transform max-sm:hidden">{{ $t(`nav.${odkaz.text}`) }}</span>
                 </button>
             </RouterLink>
         </section>
 
-        <div></div>
+        <div class="flex relative items-center mr-6 ml-auto">
+            <button @click="langOpen = !langOpen" class="h-full flex transition-[gap] items-center text-lg tracking-wide justify-center text-black font-bold pl-5 pr-1 min-w-[2rem] navButton">
+                <IkonaJazyk />
+            </button>
+            <fieldset v-if="langOpen" class="flex absolute right-0.5 -bottom-full gap-4 justify-center items-center w-32 h-12 -skew-x-12 bg-geo-300">
+                <button @click="setLang(0)" class="w-9 h-9 rounded-full border-2 border-black skew-x-12 outline-geo-400 outline-4">
+                    <IkonaCZ class="scale-[2] translate-x-2" />
+                </button>
+                <button @click="setLang(1); langOpen = false" class="w-9 h-9 rounded-full border-2 border-black skew-x-12 outline-geo-400 outline-4">
+                    <IkonaUK class="scale-[2] translate-x-2" />
+                </button>
+            </fieldset>
+        </div>
     </nav>
 </template>

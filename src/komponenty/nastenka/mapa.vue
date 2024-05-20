@@ -285,7 +285,7 @@ onUnmounted(() => {
                     <div>
                         <button @click="toggleSledovaniPolohy()"
                             class="flex gap-2 items-center px-1 py-2 w-full disabled:pointer-events-none disabled:opacity-30 hover:bg-black hover:bg-opacity-30">
-                            <PolohaIkona stroke="black" class="scale-75" />Živá poloha
+                            <PolohaIkona stroke="black" class="scale-75" />{{ $t('map.live') }}
                             <input v-model="sledovaniPolohy" type="checkbox" class="mr-1.5 ml-auto shadow-sm shadow-black">
                         </button>
                     </div>
@@ -293,7 +293,7 @@ onUnmounted(() => {
                         <button @click="napovedaShown = !napovedaShown" :class="{ 'bg-black bg-opacity-20': napovedaShown }"
                             :disabled="!napoveda"
                             class="flex gap-2 items-center px-1 py-2 w-full disabled:pointer-events-none disabled:opacity-30 hover:bg-black hover:bg-opacity-30">
-                            <NapovedaIkona stroke="black" class="scale-75" />Nápověda
+                            <NapovedaIkona stroke="black" class="scale-75" />{{ $t('other.help') }}
                             <ViceIkona class="ml-auto scale-50" v-if="napoveda" :class="{ 'rotate-180': napovedaShown }" />
                         </button>
                         <p v-if="napovedaShown && napoveda" class="p-1 w-full text-sm bg-black bg-opacity-20">{{ napoveda }}
@@ -303,16 +303,16 @@ onUnmounted(() => {
                         <button @click="bodyTrasyShown = !bodyTrasyShown"
                             :class="{ 'bg-black bg-opacity-20': bodyTrasyShown }"
                             class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30">
-                            <MapaIkona stroke="black" class="scale-75" />Body trasy
+                            <MapaIkona stroke="black" class="scale-75" />{{ $t('nast.waypoint') }}
                             <ViceIkona class="ml-auto scale-50" :class="{ 'rotate-180': bodyTrasyShown }" />
                         </button>
                         <div v-if="bodyTrasyShown"
                             class="flex flex-col gap-2 px-4 py-1 w-full text-sm bg-black bg-opacity-20">
                             <button @click="addWaypoint" :disabled="workingOnWaypoint"
                                 class="flex gap-2 items-center pr-2 pl-1 mx-auto w-max font-medium border-2 border-black hover:bg-black hover:bg-opacity-20 disabled:pointer-events-none disabled:opacity-40">
-                                <PridatIkona class="scale-75" />Přidat
+                                <PridatIkona class="scale-75" />{{ $t('other.add') }}
                             </button>
-                            <BodTrasy jmeno="Výchozí" :latitude="props.pozice.latitude" :longitude="props.pozice.longtitude"
+                            <BodTrasy :jmeno="$t('nast.default')" :latitude="props.pozice.latitude" :longitude="props.pozice.longtitude"
                                 :def="true" @go-to-point="mapGoto($event.lon, $event.lat)" />
                             <BodTrasy v-for="(wpt, index) in waypointy" v-bind="wpt" :ind="index" :keska="objekt" :klik-poloha="klikPoloha"
                                 @cancel="objekt.waypointy.splice(index, 1); workingOnWaypoint = false" @picking-point="pickingWaypoint = true"
@@ -323,25 +323,25 @@ onUnmounted(() => {
                     <div class="py-3"></div>
                     <a :href="`https://www.geocaching.com/geocache/${geokod}`" target="_blank">
                         <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30">
-                            <OdkazIkona stroke="black" class="scale-75" />Zobrazit na Geocaching.com
+                            <OdkazIkona stroke="black" class="scale-75" />{{ $t('map.gccom') }}
                         </button>
                     </a>
                     <a :href="`https://mapy.cz/zakladni?source=coor&id=${pozice.longtitude}%2C${pozice.latitude}&x=${pozice.longtitude}&y=${pozice.latitude}&z=16`"
                         target="_blank">
                         <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30">
-                            <OdkazIkona stroke="black" class="scale-75" />Zobrazit na Mapách.cz
+                            <OdkazIkona stroke="black" class="scale-75" />{{ $t('map.mpcz') }}
                         </button>
                     </a>
                     <a :href="`https://www.google.com/maps/search/?api=1&query=${pozice.latitude}%2C${pozice.longtitude}`"
                         target="_blank">
                     <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30">
-                        <OdkazIkona stroke="black" class="scale-75" />Zobrazit na Google Mapách
+                        <OdkazIkona stroke="black" class="scale-75" />{{ $t('map.goomap') }}
                     </button>
                 </a>
                 <div class="grow"></div>
                 <button class="flex gap-2 items-center px-1 py-1.5 w-full hover:bg-black hover:bg-opacity-30"
                     @click="close">
-                    <ZavritIkona stroke="black" class="scale-75" />Zavřít
+                    <ZavritIkona stroke="black" class="scale-75" />{{ $t('other.close') }}
                 </button>
             </div>
         </div>

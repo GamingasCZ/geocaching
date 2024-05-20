@@ -28,6 +28,7 @@ import ExportIkona from "@/ikony/export.svg"
 import PlayIkona from "@/ikony/play.svg"
 import Napoveda from './komponenty/nastenka/napoveda.vue';
 import ImportDialog from './komponenty/nastenka/importDialog.vue';
+import { i18n } from './locales';
 
 const pretahuje = ref(false)
 
@@ -288,23 +289,23 @@ const vybraneRazeni = ref(0)
 const razeniAktivni = ref(-1)
 const zpusobyRazeni = [
     {
-        nazev: "vzdálenosti",
+        nazev: i18n.global.t('nast.dist'),
         fun: podleVzdalenosti
     },
     {
-        nazev: "druhu",
+        nazev: i18n.global.t('nast.kind'),
         fun: podleDruhu
     },
     {
-        nazev: "obtížnosti",
+        nazev: i18n.global.t('nast.difficulty'),
         fun: podleObtiznosti
     },
     {
-        nazev: "data přidání",
+        nazev: i18n.global.t('nast.dateAdded'),
         fun: podleData
     },
     {
-        nazev: "abecedy",
+        nazev: i18n.global.t('nast.alphabetically'),
         fun: podleAbecedy
     },
 ]
@@ -384,23 +385,23 @@ const obnovPolohy = () => {
         <div class="flex gap-1 h-full">
             <button @click="input?.click()" class="flex relative gap-2 items-center pl-4 ml-2 font-bold after:!skew-x-0 navButton" v-if="!selectMode">
                 <PridatIkona class="scale-75" />
-                <span class="max-sm:hidden">Přidat kešky</span>
+                <span class="max-sm:hidden">{{ $t('nast.addCaches') }}</span>
             </button>
             <button @click="selectMode = !selectMode" class="flex relative gap-2 items-center pl-4 font-bold after:!skew-x-0 navButton" :class="{'ml-2': selectMode}">
                 <VybratIkona class="scale-75" v-if="!selectMode" />
                 <PotvrditIkona class="scale-75" v-else stroke="black" />
-                <span class="max-sm:hidden" v-if="!selectMode">Vybrat</span>
-                <span class="max-sm:hidden" v-else>Zpět</span>
+                <span class="max-sm:hidden" v-if="!selectMode">{{ $t('nast.select') }}</span>
+                <span class="max-sm:hidden" v-else>{{ $t('nast.back') }}</span>
             </button>
         </div>
         <div class="flex mr-6 h-full" v-if="!selectMode">
             <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="importBackup?.click()">
                 <ImportIkona class="scale-75" />
-                <span class="max-sm:hidden">Import</span>
+                <span class="max-sm:hidden">{{ $t('nast.import') }}</span>
             </button>
             <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="exportData">
                 <ExportIkona class="scale-75" />
-                <span class="max-sm:hidden">Export</span>
+                <span class="max-sm:hidden">{{ $t('nast.export') }}</span>
             </button>
             <button class="flex relative items-center pl-4 font-bold after:!skew-x-0 navButton" @click="openDropdown(2)"><NastaveniIkona class="scale-75 stroke-black" /></button>
             <button class="flex relative items-center pl-4 font-bold after:!skew-x-0 navButton max-sm:hidden" @click="helpOpen = !helpOpen"><NapovedaIkona class="scale-75" /></button>
@@ -408,12 +409,12 @@ const obnovPolohy = () => {
         <div class="flex gap-1 mr-6 h-full" v-else>
             <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="removeSelectedCaches(selectedCaches)">
                 <SmazatIkona class="scale-75" stroke="black"/>
-                <span class="max-sm:hidden">Smazat</span>
+                <span class="max-sm:hidden">{{ $t('nast.remove') }}</span>
             </button>
             <button class="relative font-bold">
                 <div class="flex gap-2 items-center pr-1 pl-2 after:!skew-x-0 navButton" @click="openDropdown(0)">
                     <MoveIkona class="scale-75" />
-                    <span class="max-sm:hidden">Přesunout</span>
+                    <span class="max-sm:hidden">{{ $t('nast.move') }}</span>
                 </div>
     
                 <!-- Dropdown -->
@@ -423,7 +424,7 @@ const obnovPolohy = () => {
             </button>
             <button class="flex relative gap-2 items-center pr-1 pl-2 font-bold after:!skew-x-0 navButton" @click="moveSelectedToTop">
                 <NavrchIkona class="scale-75" />
-                <span class="max-sm:hidden">Na vrch</span>
+                <span class="max-sm:hidden">{{ $t('nast.up') }}</span>
             </button>
         </div>
      </nav>
@@ -472,20 +473,20 @@ const obnovPolohy = () => {
             <div class="flex sticky top-0 bottom-1 z-10 justify-around text-white" :class="{'!text-black': shouldBeDark(sekce)}" :style="{background: sekce.barva}" v-else>
                 <button class="flex relative gap-1 justify-center items-center font-bold hover:bg-black hover:bg-opacity-30 grow" @click="openDropdown(1, indexSekce)">
                     <RazeniIkona class="scale-75" :stroke="shouldBeDark(sekce) ? 'black' : 'white'"/>
-                    <span>Řazení</span>
+                    <span>{{ $t('nast.sort') }}</span>
                     <button v-if="razeniAktivni == indexSekce" @click.stop="zrusitDocasnySort" class="absolute right-0" >
                         <ZavritIkona :class="{'invert': !shouldBeDark(sekce)}" class="scale-50" />
                     </button>
                 </button>
                 <button class="flex gap-1 justify-center items-center font-bold grow hover:bg-black hover:bg-opacity-30" @click="filtrZobrazen = indexSekce; zrusitDocasnySort()">
                     <HledatIkona class="scale-75" :stroke="shouldBeDark(sekce) ? 'black' : 'white'" />
-                    <span>Hledat</span>
+                    <span>{{ $t('nast.search') }}</span>
                 </button>
             </div>
 
             <!-- Řazeni dropdown -->
             <div class="fixed z-10 py-1 mt-8 w-48 text-left drop-shadow-sharp bg-geo-300" v-if="sortDropdownOpen == indexSekce" @mouseup.capture.stop="">
-                <h3 class="px-2 py-2 border-b-2 border-opacity-40 border-b-black">Řadit podle...</h3>
+                <h3 class="px-2 py-2 border-b-2 border-opacity-40 border-b-black">{{ $t('nast.sortby') }}</h3>
                 <div class="flex flex-col w-full">
                     <div v-for="(razeni, rInd) in zpusobyRazeni" class="flex w-full hover:bg-opacity-40 odd:bg-black odd:bg-opacity-10 even:bg-black even:bg-opacity-20" :class="{'!bg-geo-400': rInd == vybraneRazeni}">
                         <input type="checkbox" class="pl-4 w-full text-left align-middle opacity-0" @click="vybraneRazeni = rInd; openDropdown(1, indexSekce)" :id="razeni.nazev">
@@ -493,23 +494,23 @@ const obnovPolohy = () => {
                     </div>
                 </div>
                 <div class="flex flex-col gap-3 justify-center px-6 mt-5 mb-4">
-                    <button class="p-1 border-2 border-black" @click="sortCaches(true, indexSekce)" >Seřadit natrvalo</button>
-                    <button class="p-1 border-2 border-black" @click="sortCaches(false, indexSekce)">Seřadit dočasně</button>
+                    <button class="p-1 border-2 border-black" @click="sortCaches(true, indexSekce)" >{{ $t('nast.sortType1') }}</button>
+                    <button class="p-1 border-2 border-black" @click="sortCaches(false, indexSekce)">{{ $t('nast.sortType2') }}</button>
                 </div>
             </div>
 
             <!-- Napoveda -->
             <div class="flex absolute top-1/2 left-1/2 flex-col items-center w-max text-center opacity-70 -translate-x-1/2 -translate-y-1/2 pointer-events-none" v-if="!vsechnyKesky[indexSekce].length && draggingWithFile != indexSekce">
                 <NicIkona />
-                <h3 class="text-xl font-medium">Nic tu není...</h3>
-                <p>Přetáhněte sem nějaké kešky</p>
+                <h3 class="text-xl font-medium">{{ $t('nast.nothing') }}</h3>
+                <p>{{ $t('nast.help1') }}</p>
             </div>
 
             <!-- Upustit -->
             <div class="flex absolute top-1/2 left-1/2 flex-col items-center w-max text-center opacity-70 -translate-x-1/2 -translate-y-1/2 pointer-events-none" v-if="!vsechnyKesky[indexSekce].length && draggingWithFile == indexSekce">
                 <SouboryIkona />
-                <h3 class="text-xl font-medium">Upusťte soubory</h3>
-                <p>Přidají se do této sekce</p>
+                <h3 class="text-xl font-medium">{{ $t('nast.dropFile') }}</h3>
+                <p>{{ $t('nast.dropHelp') }}</p>
             </div>
 
             <Keska
@@ -532,7 +533,7 @@ const obnovPolohy = () => {
     </div>
  </div>
  <div v-else class="flex flex-col justify-center items-center px-2 mt-7 w-full text-2xl font-light text-center text-white opacity-70">
-     <p>K fungování nástěnky je potřeba lokální úložiště/cookies.</p>
+     <p>{{ $t('nast.noLocalStorage') }}</p>
  </div>
 </main>
 

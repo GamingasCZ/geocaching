@@ -267,7 +267,7 @@ const hoveringOverNote = ref(-1)
             <h2 class="px-6 text-2xl font-bold">{{ Videa[videoIndex].nazev }}</h2>
             <button :disabled="!videoStarted" class="flex gap-2 items-center px-2 mr-3 h-full font-bold text-white -skew-x-12 disabled:grayscale max-sm:py-2 bg-ext-fia" @click="showNotePanel">
                 <EditIkona class="w-6 h-6 skew-x-12" />
-                <span class="skew-x-12">Zapsat poznámku</span>
+                <span class="skew-x-12">{{ $t('video.makeNote') }}</span>
             </button>
         </nav>
         <EditorPoznamky class="max-sm:mt-12" @cancel="notePanelShown = false" @changedNoteTime="changedNoteTime" @saved="noteSaved" v-if="notePanelShown" :time-ratio="videoRatio" :curr-url="Videa[videoIndex].url" :time="noteTimestamp" :max-time="parsedDuration" />
@@ -277,7 +277,7 @@ const hoveringOverNote = ref(-1)
                 <img :src="thumbPredVideo" class="w-44 z-10 max-w-[30vw]" :alt="Videa[videoIndex - 1].nazev">
                 <img :src="thumbPredVideo" class="absolute w-full h-full blur-xl brightness-50" :alt="Videa[videoIndex - 1].nazev">
                 <div class="flex isolate flex-col p-2">
-                    <h2 class="mb-5 text-xl font-extrabold">Předchozí video</h2>
+                    <h2 class="mb-5 text-xl font-extrabold">{{ $t('video.prev') }}</h2>
                     <span>{{ Videa[videoIndex - 1].nazev }}</span>
                 </div>
             </RouterLink>
@@ -287,16 +287,16 @@ const hoveringOverNote = ref(-1)
                 <img :src="thumbDalsiVideo" class="w-44 z-10 max-w-[30vw]" :alt="Videa[videoIndex + 1].nazev">
                 <img :src="thumbDalsiVideo" class="absolute w-full h-full blur-xl brightness-50" :alt="Videa[videoIndex + 1].nazev">
                 <div class="flex isolate flex-col p-2">
-                    <h2 class="mb-5 text-xl font-extrabold">Další video</h2>
+                    <h2 class="mb-5 text-xl font-extrabold">{{ $t('video.next') }}</h2>
                     <span>{{ Videa[videoIndex + 1].nazev }}</span>
                 </div>
             </RouterLink>
         </section>
 
         <section class="flex flex-col gap-5 px-2 my-8 ml-1 w-full">
-            <Sekce nadpis="Poznámky" v-if="poznamkyProVideo.length" :add-component="PrehravacPoznamka" :comp-props="{poznamky: poznamkyProVideo}" />
-            <Sekce nadpis="Popis" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
-            <Sekce nadpis="Zdroje" v-if="Videa[videoIndex].zdroje" :text="Videa[videoIndex].zdroje" />
+            <Sekce :nadpis="$t('video.notes')" v-if="poznamkyProVideo.length" :add-component="PrehravacPoznamka" :comp-props="{poznamky: poznamkyProVideo}" />
+            <Sekce :nadpis="$t('video.desc')" v-if="Videa[videoIndex].popis" :text="Videa[videoIndex].popis" />
+            <Sekce :nadpis="$t('video.sources')" v-if="Videa[videoIndex].zdroje" :text="Videa[videoIndex].zdroje" />
         </section>
     </main>
 </template>

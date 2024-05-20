@@ -15,7 +15,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-    <main class="flex gap-4 justify-between px-4 mx-auto text">
+    <main class="flex gap-4 justify-between px-4 pb-10 mx-auto">
         <section class="flex flex-wrap gap-4 mb-16 max-w-4xl overflow-x-clip nahledVidea max-h-[30rem]">
             <Nahled :nazev="Videa[0].nazev" :url="Videa[0].url" />
             <Poznamky v-if="smallScreen" />

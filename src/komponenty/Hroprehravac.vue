@@ -6,7 +6,7 @@ import Sekce from "@/komponenty/ostatni/textovaSekce.vue";
 
 const hraIndex = computed(() => {
     let param = useRouter().currentRoute.value.params.hra
-    return hry.findIndex(x => x.url == param)
+    return hry.value.findIndex(x => x.url == param)
 })
 
 const hra = ref<HTMLIFrameElement>()

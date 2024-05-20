@@ -6,6 +6,7 @@ import OdkazIkona from "@/ikony/odkaz.svg"
 import SmazatIkona from "@/ikony/smazat.svg"
 import ViceIkona from "@/ikony/more.svg"
 import { Nastaveni } from './nastaveniNastenky';
+import { i18n } from '@/locales';
 
 interface Extra {
     index: number;
@@ -43,17 +44,17 @@ const otevritNaMape = () => emit('showOnMap', props.index)
 
 const moznosti = [
     {
-        jmeno: "Zobrazit na mapě",
+        jmeno: i18n.global.t('nast.onmap'),
         ikona: MapaIkona,
         akce: otevritNaMape
     },
     {
-        jmeno: "Zobrazit na Geocaching.com",
+        jmeno: i18n.global.t('map.gccom'),
         ikona: OdkazIkona,
         akce: otevritNaGC
     },
     {
-        jmeno: "Smazat",
+        jmeno: i18n.global.t('nast.remove'),
         ikona: SmazatIkona,
         akce: smazatKesku
     },

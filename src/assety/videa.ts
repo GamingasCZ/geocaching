@@ -1,3 +1,6 @@
+import { i18n } from "@/locales"
+import { ref } from "vue"
+
 let intro = `
 <b>"I Got a Stick Arr Bryan Teoh"</b> Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>)<br />
 Licensed under Creative Commons: By Attribution 4.0 License<br />
@@ -7,9 +10,20 @@ Licensed under Creative Commons: By Attribution 4.0 License<br />
 <a href="http://creativecommons.org/licenses/by/4.0/">http://creativecommons.org/licenses/by/4.0/</a>
 `
 
+let titles = ref([
+    i18n.global.t('video.videoTitle1'),
+    i18n.global.t('video.videoTitle2'),
+    i18n.global.t('video.videoTitle3'),
+    i18n.global.t('video.videoTitle4'),
+    i18n.global.t('video.videoTitle5'),
+    i18n.global.t('video.videoTitle6'),
+    i18n.global.t('video.videoTitle7'),
+    i18n.global.t('video.videoTitle8')
+])
+
 export default [
     {
-        nazev: "Co je Geocaching?",
+        nazev: titles.value[0],
         url: "co-je-geocaching",
         popis: `Toto je první ze série videí, kde si povíme o základech Geocahingu. V tomto videu se dozvíte, co to vlastně ta keška je, jak vědět, kde ji hledat, a co k tomu potřebujete.<br><br>
 
@@ -21,7 +35,7 @@ ${ intro }
         `,
     },
     {
-        nazev: "Čím hledat kešky?",
+        nazev: titles.value[1],
         url: "cim-hledat",
         popis: `Už víme co to keška je, ale ještě nevíme, jak a čím ji hledat! To si v tomto videu objasníme.<br><br>
 
@@ -37,7 +51,7 @@ ${ intro }
         `,
     },
     {
-        nazev: "Druhy kešek",
+        nazev: titles.value[2],
         url: "druhy-kesek",
         popis: "Kešek je spoustu různých druhů, a nedělí se jen na to, jak jsou velké nebo co v nich je, ale i na spoustu dalších kategorií!",
         zdroje: `
@@ -48,7 +62,7 @@ ${ intro }
         `,
     },
     {
-        nazev: "Hledání kešky",
+        nazev: titles.value[3],
         url: "hledani-kesky",
         popis: "Dnes se vydáme do terénu a najdeme opravdovou kešku! Konečne na vlastní oči uvidíme, jak může keška vypadat, na jakých místech se může nacházet a co je vevnitř.",
         zdroje: `
@@ -67,7 +81,7 @@ Licensed under Creative Commons: By Attribution 4.0 License<br />
         `,
     },
     {
-        nazev: "Historie Geocachingu",
+        nazev: titles.value[4],
         url: "historie",
         popis: `Geocaching už existuje nějakou tu dobu! V tomto videu si povíme, jak hra začala, jaká byla první keška, jak se Geocaching postupně rozrůstal a stal se z něho fenomén. Podíváme se i na tom, jak se za ta léta dařilo Geocachingu i v Česku!<br><br>
         Keška na <a href="https://www.geocaching.com/geocache/GC189E5_prague-bridges-1-karluv-most">Karlově mostě</a>
@@ -81,7 +95,7 @@ ${ intro }
         `,
     },
     {
-        nazev: "Travel bugy",
+        nazev: titles.value[5],
         url: "travel-bugy",
         popis: `Obsah kešek může být všelijaký! Jednou z věcí, kterou tam ale můžeme najít, je travel bug. Co to je? Co s ním dělat? To se dneska dozvíme!<br><br>
 Aktivovat travel bug lze <a href="https://www.geocaching.com/track/activate.aspx">zde</a>.`,
@@ -90,7 +104,7 @@ ${ intro }
         `,
     },
     {
-        nazev: "Slovníček pojmů",
+        nazev: titles.value[6],
         url: "slovnicek-pojmu",
         popis: `Každá komunita má nějaké své zkratky a Geocaching není výjímkou. Dneska se podíváme na pár z nich, které se ti mohou hodit při psaní logů, nebo na diskuzních fórech!<br><br>
         <b>Bonus:</b><br>
@@ -105,7 +119,7 @@ ${ intro }
         `,
     },
     {
-        nazev: "Vtipy o kačerech",
+        nazev: titles.value[7],
         url: "necyklopedie",
         popis: `Nejen že kačeři jsou kontroverzními osobami, jelikož občas lezou tam kam nemají, ale jsou i terčem posměchu, protože poznat kačera není vůbec žádný problém.<br><br>
 

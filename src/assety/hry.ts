@@ -1,15 +1,12 @@
-export default [
+import { i18n } from "@/locales";
+import { ref } from "vue";
+
+export default ref([
     {
-        nazev: "Krabka vs. Svět",
+        nazev: i18n.global.t('game.krabka'),
         url: "krabka-vs-svet",
-        popis: "Dokážeš svou kešku ubránit před vlnami nemilosrdných mudlů?",
-        ovladani: `Tvým cílem je ubránit kešku před vlnami nepřátel. Toho docílíš takto:
-<ul>
-<li>Získávej body klikáním na logbook</li>
-<li>Za body kupuj zábrany, klikače a vylepšení</li>
-<li>Zábrany se pokládej do hracího pole, pak budou po nepřátelích střílet!</li>
-</ul>
-        `,
+        popis: i18n.global.t('game.krabkaDesc'),
+        ovladani: i18n.global.t('game.krabkaLongDesc'),
         zdroje: "",
     }
-]
+])
