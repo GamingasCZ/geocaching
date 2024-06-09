@@ -296,26 +296,66 @@ const scrollBonus = (val: number) => {
                         ref="bonusScroll"
                         class="aspect-video scroll-smooth grid grid-cols-[repeat(4,53rem)] grid-flow-col relative h-[30rem] border-4 rounded-md border-geo-400 overflow-hidden">
                         <BonusContainer>
-                            <img loading="eager" src="@/bonusy/hnusáci.webp" class="h-full" alt="">
+                            <div class="flex flex-col justify-center h-full">
+                                <h2 class="mb-2 text-4xl">{{ $t('homepage.project') }}</h2>
+                                <p>{{ $t('homepage.info') }}</p>
+                                <a class="mt-6 mb-2 text-2xl underline" href="https://gamingas.cz/geocaching/piscastprace.pdf">{{ $t('homepage.writtenPart') }}</a>
+                                <a class="underline" href="https://github.com/GamingasCZ/geocaching">{{ $t('homepage.source') }}</a>
+                            </div>
                         </BonusContainer>
                         <BonusContainer>
-                            <img loading="eager" src="@/bonusy/dk0.webp" class="w-full" alt="">
+                            <div class="flex flex-col justify-center h-full">
+                                <p>{{ $t('homepage.presenting') }}</p>
+                                <figure>
+                                    <img loading="eager" src="@/bonusy/hra.png" class="mx-auto mt-8 w-2/3" alt="">
+                                    <figcaption class="text-sm italic">{{ $t('homepage.playHere') }}</figcaption>
+                                </figure>
+                            </div>
                         </BonusContainer>
                         <BonusContainer>
-                            <img loading="eager" src="@/bonusy/dk1.webp" class="w-full" alt="">
+                            <div class="flex flex-col justify-center h-full">
+                                <p>{{ $t('homepage.notes') }}</p>
+                                <div class="grid grid-cols-2 gap-y-3 mt-8">
+                                    <figure>
+                                        <img loading="eager" src="@/bonusy/tb1.png" class="mx-auto w-96" alt="">
+                                        <figcaption class="text-sm italic">{{ $t('homepage.notebut') }}</figcaption>
+                                    </figure>
+                                    <figure>
+                                        <img loading="eager" src="@/bonusy/tb2.png" class="mx-auto w-84" alt="">
+                                        <figcaption class="text-sm italic">{{ $t('homepage.timeline') }}</figcaption>
+                                    </figure>
+                                    <figure>
+                                        <img loading="eager" src="@/bonusy/tb3.png" class="mx-auto w-96" alt="">
+                                        <figcaption class="text-sm italic">{{ $t('homepage.notesSection') }}</figcaption>
+                                    </figure>
+                                    <figure>
+                                        <img loading="eager" src="@/bonusy/tb4.png" class="mx-auto w-64" alt="">
+                                        <figcaption class="text-sm italic">{{ $t('homepage.sidePanel') }}</figcaption>
+                                    </figure>
+                                </div>
+                            </div>
                         </BonusContainer>
                         <BonusContainer>
-                            <img loading="eager" src="@/bonusy/dk2.webp" class="w-full" alt="">
+                            <img loading="lazy" src="@/bonusy/hnusáci.webp" class="h-full" alt="">
                         </BonusContainer>
                         <BonusContainer>
-                            <img loading="eager" src="@/bonusy/dk3.webp" class="w-full" alt="">
+                            <img loading="lazy" src="@/bonusy/dk0.webp" class="w-full" alt="">
                         </BonusContainer>
                         <BonusContainer>
-                            <img loading="eager" src="@/bonusy/past.webp" class="w-full" alt="">
+                            <img loading="lazy" src="@/bonusy/dk1.webp" class="w-full" alt="">
+                        </BonusContainer>
+                        <BonusContainer>
+                            <img loading="lazy" src="@/bonusy/dk2.webp" class="w-full" alt="">
+                        </BonusContainer>
+                        <BonusContainer>
+                            <img loading="lazy" src="@/bonusy/dk3.webp" class="w-full" alt="">
+                        </BonusContainer>
+                        <BonusContainer>
+                            <img loading="lazy" src="@/bonusy/past.webp" class="w-full" alt="">
                         </BonusContainer>
                         <BonusContainer>
                             <div class="flex flex-col gap-6 justify-center h-full">
-                                <h2 class="text-4xl">Vrstvy menu hudby</h2>
+                                <h2 class="text-4xl">{{ $t('homepage.layersmus') }}</h2>
                                 <audio :src="audio" controls></audio>
                                 <audio :src="audio1" controls></audio>
                                 <audio :src="audio2" controls></audio>
@@ -331,44 +371,44 @@ const scrollBonus = (val: number) => {
                         </BonusContainer>
                         <BonusContainer>
                             <div class="flex flex-col gap-6 justify-center h-full">
-                                <h2 class="text-4xl">Nepoužitá hudba</h2>
+                                <h2 class="text-4xl">{{ $t('homepage.unusedMusic') }}</h2>
                                 <audio :src="audioTut" controls></audio>
                             </div>
                         </BonusContainer>
                         
                         <BonusContainer>
                             <div class="flex flex-col gap-6 justify-center h-full">
-                                <h2 class="text-2xl">Co Vás vede k využívání ne úplně typických SW produktů?</h2>
+                                <h2 class="text-2xl">{{ $t('homepage.q1') }}</h2>
                                 <hr class="border-geo-400">
                                 <ul class="text-2xl list-disc text-left">
-                                    <li>Zvládnou vše, co potřebuji</li>
-                                    <li>Zadarmo a s otevřeným zdrojovým kódem</li>
-                                    <li>Bez telemetrie</li>
-                                    <li>Bez reklam, účtů, umělé inteligence</li>
+                                    <li>{{ $t('homepage.a11') }}</li>
+                                    <li>{{ $t('homepage.a12') }}</li>
+                                    <li>{{ $t('homepage.a13') }}</li>
+                                    <li>{{ $t('homepage.a14') }}</li>
                                 </ul>
                             </div>
                         </BonusContainer>
                         <BonusContainer>
                             <div class="flex flex-col gap-6 justify-center items-center h-full">
-                                <h2 class="text-2xl">Má LMMS podporu MIDI rozhraní pro el. hudební nástroje?</h2>
+                                <h2 class="text-2xl">{{ $t('homepage.q2') }}</h2>
                                 <hr class="w-full border-geo-400">
                                 <img src="@/bonusy/midi.png" class="w-64" alt="">
                             </div>
                         </BonusContainer>
                         <BonusContainer>
                             <div class="flex flex-col gap-6 justify-center h-full">
-                                <h2 class="text-2xl">Kolik vás stojí hosting webu?</h2>
+                                <h2 class="text-2xl">{{ $t('homepage.q3') }}</h2>
                                 <hr class="border-geo-400">
                                 <p class="text-2xl leading-loose text-left">
-                                    <u>2023:</u> 377 Kč<br>
-                                    <u>2022:</u> 193 Kč (se slevou)<br>
-                                    <u>Doména (1 rok):</u> 301 Kč
+                                    <u>2023:</u> 377 {{ $t('homepage.a41') }}<br>
+                                    <u>2022:</u> 193 {{ $t('homepage.a42') }}<br>
+                                    <u>{{ $t('homepage.a43') }}</u> 301 {{ $t('homepage.a41') }}
                                 </p>
                             </div>
                         </BonusContainer>
                         <BonusContainer>
                             <div class="flex flex-col gap-6 justify-center h-full">
-                                <h2 class="text-2xl">Jak dlouho hrajete Geocaching?</h2>
+                                <h2 class="text-2xl">{{ $t('homepage.q4') }}</h2>
                                 <hr class="border-geo-400">
                                 <img src="@/bonusy/stat.png" class="w-[35rem]" alt="">
                             </div>
