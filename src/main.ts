@@ -9,7 +9,7 @@ const app = createApp(App)
 
 app.use(i18n)
 app.use(router)
-let currLang = localStorage.getItem("lang") ?? (navigator.language != 'cs-CZ' | 0)
+let currLang = parseInt(localStorage.getItem("lang") ?? (navigator.language != 'cs' | 0)) as 0|1
 setLanguage(currLang)
 
 app.mount('body')

@@ -2,19 +2,19 @@ import { XMLParser } from "fast-xml-parser";
 import Barvy from "./assety/barvyKesek";
 import summonNotif from "./komponenty/ostatni/summonNotif";
 import Vzdalenost from "node-geo-distance";
+import { i18n } from "./locales";
 
 export interface IntKeska {
     jmeno: string;
     zakladatel: string;
     kod: string;
-    druh: string;
+    druh: number;
     obtiznost: number;
     teren: number;
     waypointy: Waypoint[];
     latitude: number;
     longtitude: number;
     napoveda: string;
-    barva: string;
     url: string;
     datumVlozeni: number;
     vzdalenost?: string;
@@ -34,13 +34,23 @@ export interface Sekce {
 
 export const VYCHOZI_SEKCE = [
     {
-        jmeno: "Nenalezené",
-        barva: Barvy.tradicni
+        jmeno: i18n.global.t('nast.undiscovered'),
+        barva: Barvy[0]
     },
     {
-        jmeno: "Nalezené",
-        barva: Barvy.multi
+        jmeno: i18n.global.t('nast.found'),
+        barva: Barvy[1]
     }
+]
+
+export const DRUHY_KESEK = [
+    i18n.global.t("nast.traditional"),
+    i18n.global.t("nast.multi"),
+    i18n.global.t("nast.mystery"),
+    i18n.global.t("nast.earth"),
+    i18n.global.t("nast.virtual"),
+    i18n.global.t("nast.event"),
+    i18n.global.t("nast.other")
 ]
 
 export const makeSectionArray = (): IntKeska[][] => {
@@ -86,7 +96,7 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
             parsedCache = parser.parse(await gpxData.item(i)?.text())
             if (parsedCache.gpx == undefined) throw new Error("Neni keska");
         } catch (e) {
-            summonNotif("Některý ze souborů není keška!")
+            summonNotif(i18n.global.t('nast.notACache'))
             return
         }
         
@@ -105,22 +115,22 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
         }
         else kesData = parsedCache.gpx.wpt
         
-        let typKese: string
+        let typKese: number
         switch (kesData.type) {
             case "Geocache|Traditional Cache":
-                typKese = "tradicni"; break;
+                typKese = 0; break;
             case "Geocache|Multi-cache":
-                typKese = "multi"; break;
+                typKese = 1; break;
             case "Geocache|Unknown Cache":
-                typKese = "mystery"; break;
+                typKese = 2; break;
             case "Geocache|Earthcache":
-                typKese = "earth"; break;
+                typKese = 3; break;
             case "Geocache|Virtual Cache":
-                typKese = "virtual"; break;
+                typKese = 4; break;
             case "Geocache|Event Cache":
-                typKese = "event"; break;
+                typKese = 5; break;
             default:
-                typKese = "jina"; break;
+                typKese = 0; break;
         }
 
         let keska: IntKeska = {
@@ -136,7 +146,6 @@ export async function handleDrop(gpxData: FileList, sekce: number) {
             napoveda: kesData['groundspeak:cache']['groundspeak:encoded_hints'],
             latitude: parseFloat(kesData['@_lat']),
             longtitude: parseFloat(kesData['@_lon']),
-            barva: Barvy[typKese],
         }
         
         // let platnaKeska = Object.values(keska).includes(undefined)

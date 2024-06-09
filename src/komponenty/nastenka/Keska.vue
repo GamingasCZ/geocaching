@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IntKeska } from '@/parserKesek';
+import { DRUHY_KESEK, type IntKeska } from '@/parserKesek';
 import { computed, ref, nextTick, watch, provide } from 'vue';
 import MapaIkona from "@/ikony/mapa.svg"
 import OdkazIkona from "@/ikony/odkaz.svg"
@@ -7,6 +7,7 @@ import SmazatIkona from "@/ikony/smazat.svg"
 import ViceIkona from "@/ikony/more.svg"
 import { Nastaveni } from './nastaveniNastenky';
 import { i18n } from '@/locales';
+import barvyKesek from '@/assety/barvyKesek';
 
 interface Extra {
     index: number;
@@ -88,6 +89,9 @@ watch(props, () => {
     if (!props.selectMode) selected.value = false
 })
 
+let barva = barvyKesek[props.druh]
+let jmenoDruhu = DRUHY_KESEK[props.druh]
+
 </script>
 
 <template>
@@ -103,7 +107,7 @@ watch(props, () => {
                 </h2>
                 <ul class="flex gap-4 text-sm" v-if="compact">
                     <span v-if="vzdalenost">{{ vzdalenost }}</span>
-                    <li class="opacity-60" :class="{'ml-2': !vzdalenost}">{{ druh.slice(0,1).toUpperCase() + druh.slice(1) }}</li>  
+                    <li class="opacity-60" :class="{'ml-2': !vzdalenost}">{{ jmenoDruhu }}</li>  
                     <li class="opacity-60">{{ kod }}</li>
                     <li class="opacity-60">D{{ obtiznost }}</li>
                     <li class="opacity-60">T{{ teren }}</li>

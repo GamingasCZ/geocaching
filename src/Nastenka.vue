@@ -89,7 +89,7 @@ const exportData = () => {
     document.body.appendChild(a);
     a.click();
     URL.revokeObjectURL(downloadUrl);
-    summonNotif('Export byl stažen!')
+    summonNotif(i18n.global.t('nast.exportDownloaded'))
 }
 
 const removeCache = (index: number, sekce: number) => {
@@ -280,7 +280,7 @@ const shouldBeDark = (sekce: Sekce) => darkThemes[Object.values(barvyKesek).inde
 
 const podleAbecedy = (arr: IntKeska[]) => arr.sort((a, b) => a.jmeno[0].toLowerCase() > b.jmeno[0].toLowerCase())
 const podleVzdalenosti = (arr: IntKeska[]) => arr.sort((a, b) => (a.vzdalenost ?? 0) > (b.vzdalenost ?? 0))
-const podleDruhu = (arr: IntKeska[]) => arr.sort((a, b) => a.druh > b.druh)
+const podleDruhu = (arr: IntKeska[]) => arr.sort((a, b) => {return a.druh - b.druh})
 const podleObtiznosti = (arr: IntKeska[]) => arr.sort((a, b) => a.obtiznost > b.obtiznost)
 const podleData = (arr: IntKeska[]) => arr.sort((a, b) => a.datumVlozeni > b.datumVlozeni)
 
@@ -323,7 +323,7 @@ const zrusitDocasnySort = () => {
 
 const pridatSekci = () => {
     vsechnyKesky.value.splice(1, 0, [])
-    vsechnySekce.value.splice(1, 0, {jmeno: 'Rozpracované', 'barva': barvyKesek.mystery})
+    vsechnySekce.value.splice(1, 0, {jmeno: i18n.global.t('nast.progressing'), 'barva': barvyKesek.mystery})
     localStorage.setItem("nastenka", JSON.stringify(vsechnyKesky.value))
     localStorage.setItem("sekce", JSON.stringify(vsechnySekce.value))
 }
@@ -516,6 +516,7 @@ const obnovPolohy = () => {
             <Keska
                 v-for="(keska, ind) in vsechnyKesky[indexSekce]"
                 v-bind="keska"
+                :key="keska.kod"
                 ref="test"
                 :index="ind"
                 :select-mode="selectMode"

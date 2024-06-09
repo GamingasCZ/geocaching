@@ -14,7 +14,31 @@
     "link3": "Zajímavé články",
     "link4": "Geocaching aplikace",
     "gallery": "Fotogalerie",
-    "bonuses": "Bonusy"
+    "bonuses": "Bonusy",
+    "layersmus": "Vrstvy menu hudby",
+    "project": "Toto byla má maturitní práce!",
+    "unusedMusic": "Nepoužitá hudba",
+    "timeline": "Časová osa",
+    "notebut": "Videa měla tlačítko k zapsání poznámky!",
+    "notesSection": "Sekce s poznámkami",
+    "sidePanel": "Boční panel s poznámkami",
+    "notes": "Přesunutím videí na YouTube jsem ale musel odebrat jednu funkci - poznámky. Se zabudovaným přehravačem si šlo k videím dělat poznámky.",
+    "playHere": "Hra šla hrát zde!",
+    "presenting": "Po odprezentování jsem tuto stránku nechal funkční, ale chtěl jsem ušetřit místo na serverech. Videa byla přesunuta na YouTube a hra na Newgrounds!",
+    "info": "Stránka, hry a videa byly vytvořeny v letech 2023-24! Odprezetntoval jsem ji 20. května 2024 na SPS a VOŠ Sokolská v Brně.",
+    "writtenPart": "Písemná část práce",
+    "source": "Zdrojový kód",
+    "q1": "Co Vás vede k využívání ne úplně typických SW produktů?",
+    "q2": "Má LMMS podporu MIDI rozhraní pro el. hudební nástroje?",
+    "q3": "Kolik vás stojí hosting webu?",
+    "q4": "Jak dlouho hrajete Geocaching?",
+    "a11": "Zvládnou vše, co potřebuji",
+    "a12": "Zadarmo a s otevřeným zdrojovým kódem",
+    "a13": "Bez telemetrie",
+    "a14": "Bez reklam, účtů, umělé inteligence",
+    "a43": "Doména (1 rok):",
+    "a41": "Kč",
+    "a42": "Kč (se slevou)"
   },
   "nav": {
     "games": "Hry",
@@ -37,7 +61,15 @@
     "prev": "Předchozí video",
     "next": "Další video",
     "desc": "Popis",
-    "sources": "Zdroje"
+    "sources": "Zdroje",
+    "videoDesc1": "Toto je první ze série videí, kde si povíme o základech Geocahingu. V tomto videu se dozvíte, co to vlastně ta keška je, jak vědět, kde ji hledat, a co k tomu potřebujete.<br><br> Geocaching účet si lze založit <a target=\"_blank\" href=\"https://www.geocaching.com\">zde</a>.<br><br> Tady jsou <a target=\"_blank\" href=\"https://www.geocaching.com/play/map\">kešky v okolí</a>.",
+    "videoDesc2": "Už víme co to keška je, ale ještě nevíme, jak a čím ji hledat! To si v tomto videu objasníme.<br><br> Pro stáhnutí některé z vyjmenovaných aplikací můžete kliknout na odkaz.<br> <u>Oficiální Geocaching aplikace</u><br> <b>Android</b>: <a href=\"https://play.google.com/store/apps/datasafety?id=com.groundspeak.geocaching.intro\">Stáhnout</a><br> <b>iOS</b>: <a href=\"https://apps.apple.com/us/app/geocaching/id329541503\">Stáhnout</a><br><br> <u>c:geo</u><br> <b>Android</b>: <a href=\"https://play.google.com/store/apps/details?id=cgeo.geocaching\">Stáhnout</a>",
+    "videoDesc3": "Kešek je spoustu různých druhů, a nedělí se jen na to, jak jsou velké nebo co v nich je, ale i na spoustu dalších kategorií!",
+    "videoDesc4": "Dnes se vydáme do terénu a najdeme opravdovou kešku! Konečne na vlastní oči uvidíme, jak může keška vypadat, na jakých místech se může nacházet a co je vevnitř.",
+    "videoDesc5": "Geocaching už existuje nějakou tu dobu! V tomto videu si povíme, jak hra začala, jaká byla první keška, jak se Geocaching postupně rozrůstal a stal se z něho fenomén. Podíváme se i na tom, jak se za ta léta dařilo Geocachingu i v Česku!<br><br> Keška na <a href=\"https://www.geocaching.com/geocache/GC189E5_prague-bridges-1-karluv-most\">Karlově mostě</a>",
+    "videoDesc6": "Obsah kešek může být všelijaký! Jednou z věcí, kterou tam ale můžeme najít, je travel bug. Co to je? Co s ním dělat? To se dneska dozvíme!<br><br> Aktivovat travel bug lze <a href=\"https://www.geocaching.com/track/activate.aspx\">zde</a>.",
+    "videoDesc7": "Každá komunita má nějaké své zkratky a Geocaching není výjímkou. Dneska se podíváme na pár z nich, které se ti mohou hodit při psaní logů, nebo na diskuzních fórech!<br><br> <b>Bonus:</b><br> Tady jsou dva protiklady. Něco jako oheň a voda, nebo jin a jang! <ul> <li><b>kačer</b> - je to každý, kdo hledá kešky</li> <li><b>mudla</b> - je to kolemjdoucí, který o keškách nic neví</li> </ul>",
+    "videoDesc8": "Nejen že kačeři jsou kontroverzními osobami, jelikož občas lezou tam kam nemají, ale jsou i terčem posměchu, protože poznat kačera není vůbec žádný problém.<br><br> Celý článek: <a href=\"https://necyklopedie.org/wiki/Geocaching\">https://necyklopedie.org/wiki/Geocaching</a>"
   },
   "nast": {
     "addCaches": "Přidat kešky",
@@ -85,7 +117,19 @@
     "onmap": "Zobrazit na mapě",
     "download": "Stáhnout kešky",
     "default": "Výchozí",
-    "waypoint": "Body trasy"
+    "waypoint": "Body trasy",
+    "progressing": "Rozpracované",
+    "notACache": "Některý ze souborů není keška!",
+    "undiscovered": "Nenalezené",
+    "found": "Nalezené",
+    "traditional": "Tradiční",
+    "multi": "Multi",
+    "mystery": "Mystery",
+    "earth": "Earth",
+    "virtual": "Virtuální",
+    "event": "Event",
+    "other": "Jiná",
+    "exportDownloaded": "Export byl stažen!"
   },
   "map": {
     "gccom": "Zobrazit na Geocaching.com",
@@ -101,6 +145,8 @@
   "game": {
     "krabka": "Krabka vs. Svět",
     "krabkaDesc": "Dokážeš svou kešku ubránit před vlnami nemilosrdných mudlů?",
-    "krabkaLongDesc": "Tvým cílem je ubránit kešku před vlnami nepřátel. Toho docílíš takto: <ul class=\"list-disc\"> <li>Získávej body klikáním na logbook</li> <li>Za body kupuj zábrany, klikače a vylepšení</li> <li>Zábrany se pokládej do hracího pole, pak budou po nepřátelích střílet!</li> </ul>"
+    "krabkaLongDesc": "Tvým cílem je ubránit kešku před vlnami nepřátel. Toho docílíš takto: <ul class=\"list-disc\"> <li>Získávej body klikáním na logbook</li> <li>Za body kupuj zábrany, klikače a vylepšení</li> <li>Zábrany se pokládej do hracího pole, pak budou po nepřátelích střílet!</li> </ul>",
+    "controls": "Ovládání",
+    "soonNG": "Brzy dostupné na Newgrounds!"
   }
 }

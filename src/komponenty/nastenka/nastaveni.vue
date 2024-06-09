@@ -4,11 +4,10 @@ import NekompaktniIkona from "@/ikony/nekompaktni.svg"
 import KompaktniIkona from "@/ikony/kompaktni.svg"
 import PridatIkona from "@/ikony/plus.svg"
 import ObnovitIkona from "@/ikony/refresh.svg"
-import ImportIkona from "@/ikony/download.svg"
 import { Nastaveni } from "./nastaveniNastenky";
 
 
-const props = defineProps<{
+defineProps<{
     open: boolean
     maTretiSekci: boolean
     nacitaniPolohy: boolean
@@ -20,22 +19,10 @@ const emit = defineEmits<{
     (e: "napoveda"): void
 }>()
 
-const download = () => {
-    let base = import.meta.env.BASE_URL
-    let link = document.createElement("a")
-    link.href = base + "/kesky.zip"
-    link.click()
-    link.remove()
-}
-
 </script>
 
 <template>
     <section class="flex absolute right-5 top-10 z-40 flex-col justify-start bg-geo-300" v-if="open" @mouseup.capture.stop="">
-        <button @click="download" class="flex gap-2 items-center p-2 bg-black bg-opacity-0 border-b-2 border-black cursor-pointer disabled:!bg-opacity-0 disabled:opacity-20 hover:bg-opacity-20 active:bg-opacity-40">
-            <ImportIkona />
-            <label>{{ $t('nast.download') }}</label>
-        </button>
         <button :disabled="Nastaveni.zakazatPolohu || nacitaniPolohy" @click="emit('obnovitPolohy')" class="flex gap-2 items-center p-2 bg-black bg-opacity-0 border-b-2 border-black cursor-pointer disabled:!bg-opacity-0 disabled:opacity-20 hover:bg-opacity-20 active:bg-opacity-40">
             <ObnovitIkona />
             <label v-if="!nacitaniPolohy">{{ $t('nast.updateLocation') }}</label>

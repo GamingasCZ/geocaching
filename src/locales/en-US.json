@@ -14,7 +14,31 @@
     "aboutGeocaching": "About Geocaching",
     "action": "See it in Action",
     "link3": "Read up on the News",
-    "bonuses": "Bonuses"
+    "bonuses": "Bonuses",
+    "project": "This was my school-leaving project!",
+    "notes": "Moving the videos to YouTube meant I had to remove a feature - notes. You were able to write down notes with the built-in player.",
+    "timeline": "Timeline",
+    "notesSection": "Notes Section",
+    "sidePanel": "Notes Side Panel",
+    "notebut": "Videos had a button to write notes!",
+    "layersmus": "Menu Music Layers",
+    "unusedMusic": "Unused Track",
+    "a12": "They're free and open-source",
+    "a13": "No telemetry",
+    "a14": "No ads, accounts, AI integration",
+    "a11": "They do what I want them to do",
+    "q1": "What leads you to use uncommon software?",
+    "q2": "Does LMMS have MIDI interface support for el. instruments?",
+    "q3": "How much is the web hosting?",
+    "source": "Source Code",
+    "writtenPart": "Written Part of the Project",
+    "q4": "How long have you been playing Geocaching?",
+    "playHere": "The game was playable here!",
+    "a41": "CZK",
+    "a42": "CZK (on discount)",
+    "a43": "Domain name (1 year):",
+    "info": "The Website, Game and Videos were made in 2023-24! I presented this project on May 20th, 2024 at SPSVOS Sokolska in Brno.",
+    "presenting": "After presenting the project, I left the site intact, but I wanted to save space on my servers. Videos were moved to YouTube and the game to Newgrounds!"
   },
   "nav": {
     "games": "Games",
@@ -37,7 +61,15 @@
     "sources": "Sources",
     "prev": "Previous Video",
     "next": "Next Video",
-    "makeNote": "Make a Note"
+    "makeNote": "Make a Note",
+    "videoDesc3": "There are tons of different kinds of caches and they're not just divided into how big they are or what's inside of them, but into tons of other categories!",
+    "videoDesc4": "Today, we find a real cache out in the wild' Finally you'll witness first-hand, how a cache can look like, where it can be found and what's on the inside.",
+    "videoDesc6": "You can find all sorts of stuff inside a cache! One of those things can be a travel bug. What is it? What to do with it? You'll find out today!<br><br>You can activate a travel bug <a href=\"https://www.geocaching.com/track/activate.aspx\">here</a>.",
+    "videoDesc2": "Now we know what a cache is, but we don't know how or with what to find it! We'll figure that out today.<br><br> To download one of the mentioned applications, you can use these links.<br> <u>Official Geocaching App</u><br> <b>Android</b>: <a href=\"https://play.google.com/store/apps/datasafety?id=com.groundspeak.geocaching.intro\">Download</a><br> <b>iOS</b>: <a href=\"https://apps.apple.com/us/app/geocaching/id329541503\">Download</a><br><br> <u>c:geo</u><br> <b>Android</b>: <a href=\"https://play.google.com/store/apps/details?id=cgeo.geocaching\">Download</a>",
+    "videoDesc5": "Geocaching has been a thing for a while now! In this video, we'll touch upon how the game started, what the first cache was and how Geocaching became so popular. We'll even talk out about how well it did in the Czech Republic!<br><br> The cache on <a href=\"https://www.geocaching.com/geocache/GC189E5_prague-bridges-1-karluv-most\">Charles Bridge</a>",
+    "videoDesc7": "Every community has their own acronyms and Geocaching is no slouch in that regard. We'll mention some of them today and how useful they are when logging or making threads on forums!<br><br> <b>Bonus:</b><br> Here are two exact opposited. Something like fire and water, or yin and yang! <ul> <li><b>cacher</b> - anyone who's looking for caches</li> <li><b>muggle</b> - a passerby, who doesn't know about Geocaching</li> </ul>",
+    "videoDesc1": "This is the first from a series of videos, where we'll talk about the basics of Geocaching. In this video, you'll learn what a cache is, where to find one and what you need for it.<br><br> A Geocaching account can be made <a target=\"_blank\" href=\"https://www.geocaching.com\">here</a>.<br><br> Here's a map of <a target=\"_blank\" href=\"https://www.geocaching.com/play/map\">caches near you</a>.",
+    "videoDesc8": "Not only are cachers controversial, because the pry their eyes into places they're not supposed to, but they're also get laughed at, because of how they fail badly at being inconspicuous.<br><br> The Article: <a href=\"https://necyklopedie.org/wiki/Geocaching\">https://necyklopedie.org/wiki/Geocaching</a>"
   },
   "nast": {
     "nothing": "Nothing is here yet!",
@@ -85,7 +117,19 @@
     "download": "Download Caches",
     "default": "Default",
     "onmap": "Display on Map",
-    "waypoint": "Waypoints"
+    "waypoint": "Waypoints",
+    "progressing": "Progressing",
+    "notACache": "One of the files is not a cache!",
+    "undiscovered": "Undiscovered",
+    "found": "Found",
+    "traditional": "Traditional",
+    "multi": "Multi",
+    "mystery": "Mystery",
+    "earth": "Earth",
+    "virtual": "Virtual",
+    "event": "Event",
+    "other": "Other",
+    "exportDownloaded": "Export dowloaded!"
   },
   "map": {
     "gccom": "Show on Geocaching.com",
@@ -101,6 +145,8 @@
   "game": {
     "krabkaLongDesc": "Your goal is to protect the cache from hoards of enemies. You can do it by: <ul class=\"list-disc\"> <li>Clicking the logbook - that will gift you points</li> <li>Use the points to buy towers, clickers and upgrades</li> <li>Place towers in the field to make them shoot enemies!</li> </ul>",
     "krabka": "Muggstride",
-    "krabkaDesc": "Can you save your cache from hoards of enemies?"
+    "krabkaDesc": "Can you save your cache from hoards of enemies?",
+    "controls": "Controls",
+    "soonNG": "Soon on Newgrounds!"
   }
 }

@@ -23,12 +23,14 @@ const pr = ref("https://gamingas.cz")
 
 <template>
     <main class="mx-auto w-screen max-w-[92rem] mt-4">
-        <iframe ref="hra" class="mx-auto w-full max-w-5xl border-4 border-geo-400 aspect-video" :src="`${pr}/${hry[hraIndex].url}/index.html`"></iframe>
+        <div ref="hra" class="flex justify-center items-center mx-auto w-full max-w-5xl text-2xl text-white bg-black border-4 border-geo-400 aspect-video">
+            <h2>{{ $t('game.soonNG') }}</h2>
+        </div>
         <nav class="flex relative justify-between mt-8 w-full h-10 after:-skew-x-12">
             <h2 class="px-6 text-2xl font-bold">{{ hry[hraIndex].nazev }}</h2>
         </nav>
         <section class="flex flex-col gap-5 px-2 my-8 ml-1 w-full">
-            <Sekce nadpis="Ovládání" :text="hry[hraIndex].ovladani" />
+            <Sekce :nadpis="$t('game.controls')" :text="hry[hraIndex].ovladani" />
         </section>
     </main>
 </template>
