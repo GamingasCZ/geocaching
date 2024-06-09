@@ -24,36 +24,27 @@ let titles = ref([
 export default [
     {
         nazev: titles.value[0],
+        link: "tULAzdH3DGE",
         url: "co-je-geocaching",
-        popis: `Toto je první ze série videí, kde si povíme o základech Geocahingu. V tomto videu se dozvíte, co to vlastně ta keška je, jak vědět, kde ji hledat, a co k tomu potřebujete.<br><br>
-
-        Geocaching účet si lze založit <a target="_blank" href="https://www.geocaching.com">zde</a>.<br><br>
-
-        Tady jsou <a target="_blank" href="https://www.geocaching.com/play/map">kešky v okolí</a>.`,
+        popis: i18n.global.t('video.videoDesc1'),
         zdroje: `
 ${ intro }
         `,
     },
     {
         nazev: titles.value[1],
+        link: "0pjrik1-7tM",
         url: "cim-hledat",
-        popis: `Už víme co to keška je, ale ještě nevíme, jak a čím ji hledat! To si v tomto videu objasníme.<br><br>
-
-        Pro stáhnutí některé z vyjmenovaných aplikací můžete kliknout na odkaz.<br>
-        <u>Oficiální Geocaching aplikace</u><br>
-        <b>Android</b>: <a href="https://play.google.com/store/apps/datasafety?id=com.groundspeak.geocaching.intro">Stáhnout</a><br>
-        <b>iOS</b>: <a href="https://apps.apple.com/us/app/geocaching/id329541503">Stáhnout</a><br><br>
-        
-        <u>c:geo</u><br>
-        <b>Android</b>: <a href="https://play.google.com/store/apps/details?id=cgeo.geocaching">Stáhnout</a>`,
+        popis: i18n.global.t('video.videoDesc2'),
         zdroje: `
 ${ intro }
         `,
     },
     {
         nazev: titles.value[2],
+        link: "dRSXXqX-c-E",
         url: "druhy-kesek",
-        popis: "Kešek je spoustu různých druhů, a nedělí se jen na to, jak jsou velké nebo co v nich je, ale i na spoustu dalších kategorií!",
+        popis: i18n.global.t('video.videoDesc3'),
         zdroje: `
 [1] "Cache sizes | Geocaching wiki | Fandom", geocaching.fandom.com. Viděno: 20. únor 2024. [Online]. Dostupné z: https://geocaching.fandom.com/wiki/Cache_Sizes<br>
 [2] "Learn about cache types", geocaching.com. Viděno: 20. únor 2024. [Online]. Dostupné z: https://www.geocaching.com/help/index.php?pg=kb.chapter&id=127<br><br>
@@ -63,8 +54,9 @@ ${ intro }
     },
     {
         nazev: titles.value[3],
+        link: "ELqywmgWHDM",
         url: "hledani-kesky",
-        popis: "Dnes se vydáme do terénu a najdeme opravdovou kešku! Konečne na vlastní oči uvidíme, jak může keška vypadat, na jakých místech se může nacházet a co je vevnitř.",
+        popis: i18n.global.t('video.videoDesc4'),
         zdroje: `
 <b>"I Got a Stick Arr Bryan Teoh"</b> Kevin MacLeod (<a href="https://incompetech.com">incompetech.com</a>)<br />
 Licensed under Creative Commons: By Attribution 4.0 License<br />
@@ -82,10 +74,9 @@ Licensed under Creative Commons: By Attribution 4.0 License<br />
     },
     {
         nazev: titles.value[4],
+        link: "aXGEpFr2xZ0",
         url: "historie",
-        popis: `Geocaching už existuje nějakou tu dobu! V tomto videu si povíme, jak hra začala, jaká byla první keška, jak se Geocaching postupně rozrůstal a stal se z něho fenomén. Podíváme se i na tom, jak se za ta léta dařilo Geocachingu i v Česku!<br><br>
-        Keška na <a href="https://www.geocaching.com/geocache/GC189E5_prague-bridges-1-karluv-most">Karlově mostě</a>
-        `,
+        popis: i18n.global.t('video.videoDesc5'),
         zdroje: `
 [1] „Geocaching - Wikipedie", cs.wikipedia.org. Viděno: 20. únor 2024. [Online]. Dostupné z: https://cs.wikipedia.org/wiki/Geocaching<br>
 [2] „Geocaching - Wikipedia", en.wikipedia.org. Viděno: 20. únor 2024. [Online]. Dostupné z: https://en.wikipedia.org/wiki/Geocaching<br>
@@ -96,34 +87,27 @@ ${ intro }
     },
     {
         nazev: titles.value[5],
+        link: "4BU7Ngu3Iq0",
         url: "travel-bugy",
-        popis: `Obsah kešek může být všelijaký! Jednou z věcí, kterou tam ale můžeme najít, je travel bug. Co to je? Co s ním dělat? To se dneska dozvíme!<br><br>
-Aktivovat travel bug lze <a href="https://www.geocaching.com/track/activate.aspx">zde</a>.`,
+        popis: i18n.global.t('video.videoDesc6'),
         zdroje: `
 ${ intro }
         `,
     },
     {
         nazev: titles.value[6],
+        link: "YbAjKlv3Pc4",
         url: "slovnicek-pojmu",
-        popis: `Každá komunita má nějaké své zkratky a Geocaching není výjímkou. Dneska se podíváme na pár z nich, které se ti mohou hodit při psaní logů, nebo na diskuzních fórech!<br><br>
-        <b>Bonus:</b><br>
-        Tady jsou dva protiklady. Něco jako oheň a voda, nebo jin a jang!
-        <ul>
-        <li><b>kačer</b> - je to každý, kdo hledá kešky</li>
-        <li><b>mudla</b> - je to kolemjdoucí, který o keškách nic neví</li>
-        </ul>
-        `,
+        popis: i18n.global.t('video.videoDesc7'),
         zdroje: `
 ${ intro }
         `,
     },
     {
         nazev: titles.value[7],
+        link: "QpxxbLYGsts",
         url: "necyklopedie",
-        popis: `Nejen že kačeři jsou kontroverzními osobami, jelikož občas lezou tam kam nemají, ale jsou i terčem posměchu, protože poznat kačera není vůbec žádný problém.<br><br>
-
-        Celý článek: <a href="https://necyklopedie.org/wiki/Geocaching">https://necyklopedie.org/wiki/Geocaching</a>`,
+        popis: i18n.global.t('video.videoDesc8'),
         zdroje: `
         "Sergio's Magic Dustbin " Kevin MacLeod (incompetech.com)
         Licensed under Creative Commons: By Attribution 4.0 License
